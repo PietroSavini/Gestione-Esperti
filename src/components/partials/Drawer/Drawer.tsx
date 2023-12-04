@@ -57,7 +57,7 @@ function ResponsiveDrawer(props: Props) {
                             )}
                         </ListItemIcon>
                     </div>
-                    <ListItemText primary={subItem.text} />
+                    <ListItemText color={subItem.color} primary={subItem.text} />
                 </>
             </ListItemButton>
         </Link>
@@ -79,7 +79,7 @@ function ResponsiveDrawer(props: Props) {
                             )}
                         </ListItemIcon>
 
-                        <ListItemText primary={item.text} />
+                        <ListItemText color={item.color} primary={item.text} />
                     </>
                 </ListItemButton>
             </Link>

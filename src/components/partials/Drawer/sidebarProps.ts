@@ -4,13 +4,14 @@ export const sidebarItems=[
       {
         "text": "Pagina 1",
         "method": "/",
-        "icon": "",
-        "color": "#FF5733"
+        "icon": "home",
+        "color": "#fff"
       },
       {
         "text": "Pagina 2",
         "method": "/pagina2",
         "image": "",
+        "icon": "star",
         "color": "#33FF57"
       },
       {
@@ -36,6 +37,7 @@ export const sidebarItems=[
   },
   {
     "title": "Sezione 2",
+    "titleColor":"blue",
     "items": [
       {
         "text": "Pagina 4",
