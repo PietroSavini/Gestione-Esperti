@@ -1,0 +1,25 @@
+.filter-dataTable{
+    max-width: 1200px;
+    margin: 0 auto;
+    .form-container{
+        max-width: 1200px;
+        min-width: 600px;
+        .form-header{
+            color: #fff;
+            background-color: #4B77BE;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .form-body{
+           
+           width: 70%;
+           margin: 0 auto;
+           h4{
+            margin: .5rem 0;
+           }
+        }
+    }
+}

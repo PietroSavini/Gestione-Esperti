@@ -1,0 +1,132 @@
+import { useRef, useState } from 'react';
+import { Button } from '@mui/material'
+import { FieldErrors, useForm  } from 'react-hook-form'
+
+
+/*/possiamo utilizzare questo componente per fare i
+l display di un form scritto a mano con textfield 
+o il display di piu componenti form interni passandogli le funzioni di react-hook-form
+//------------------------------------------------------------------------------------------------------
+*/
+type Props = {
+  serialize: boolean;
+}
+
+export const AxiosForm_formName = (props :Props) => {
+  
+  const { serialize } = props; 
+  const form = useForm<any>();
+  const { register, handleSubmit, control, formState } = form;
+  const { errors } = formState;
+  const [checkboxValue, setCheckboxValue] = useState()
+  const ref = useRef<HTMLFormElement>(null)
+
+  const onSubmit = (data: any) =>{
+     console.log(data)
+  }
+
+  const onError = (errors: FieldErrors<any>) => {
+     console.log("errori: ",errors)
+
+  }
+    
+  return (
+
+    <form onSubmit={handleSubmit(onSubmit, onError)} ref={ref} noValidate>
+
+///caso in cui abbiamo un form singolo
+        <TextField
+                sx={{ marginBottom: '10px' }}
+                error={!!errors.email}
+                helperText={errors.email?.message as string}
+                {...register('email', {required:'email è obbligatorio', pattern:{
+                    value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: 'digitare un email valida'
+                }  })}
+                type='email'
+                label='Email'
+                id='email2'
+            />
+
+           {/* altri componenti di input */}
+
+///caso in cui abbiamo un multiform (il secondo form appare al click della checkbox sul primo form)-------------------------------------------------------------
+        <h2>componenti di esempio per l utilizzo dei Form</h2>
+        <Form1 registerFn={register} errorsArr={errors} checkboxFn={setCheckboxValue}/>
+        
+        //considione che fa apparire altro form
+
+        {checkboxValue === 'on' && <Form2 registerFn={register} errorsArr={errors} />}
+///----------------------------------------------------------------------------------------------   
+
+        <Button type='submit' sx={{marginTop:'20px', }} color='warning' variant='contained'>submit</Button>
+
+    </form>
+  )
+}
+
+///----------------------------------------------------------------------------------------------   
+///----------------------------------------------------------------------------------------------   
+///----------------------------------------------------------------------------------------------   
+///----------------------------------------------------------------------------------------------   
+///----------------------------------------------------------------------------------------------   
+
+
+
+///-ESEMPIO DI FORM INNESTATO PER UTILIZZARLO NEL FORM PRINCIPALE-(ES FORM 1 CON CHECKBOX CHE ABILITANO IL RENDER DI FORM 2)---------------------------------------------------------------------------------------------------------------
+import { TextField } from '@mui/material';
+import { FieldErrors, UseFormRegister } from 'react-hook-form';
+
+type props = {
+    registerFn : any;
+    errorsArr : any;
+    checkboxFn : any;
+}
+export const Form1 = (props: props) => {
+
+    type data ={
+        username:string,
+        password:string,
+    };
+    
+    const { registerFn, checkboxFn, errorsArr  } = props;
+    const register = registerFn as UseFormRegister<data>;
+    const errors = errorsArr as FieldErrors<data>;
+    const setCheckboxValue = checkboxFn as React.Dispatch<React.SetStateAction<string>>;
+    
+  return (
+    <>
+      <div className='form'>
+          <h3>content 1</h3>
+          {/*  username */}
+            <TextField
+                  sx={{ marginBottom: '10px' }}
+                  error={!!errors.username}
+                  helperText={errors.username?.message as string}
+                  {...register('username')}
+                  type='text'
+                  label='Username'
+                  id='user'
+                  name='username'
+                  />
+            {/* / username */}
+
+            {/*password */}
+              <TextField
+                  sx={{ marginBottom: '10px' }}
+                  error={!!errors.password}
+                  helperText={errors.password?.message as string}
+                  {...register('password', {required:'password è obbligatorio', })}
+                  type='password'
+                  label='password'
+                  id='psw'
+                  name='password'
+                  />
+            {/* /password */}
+
+              <input type="checkbox" name="clickme" id="clickme"onChange={(e)=> setCheckboxValue(e.target.value)} />
+              <label htmlFor="clickme">(opzione che sblocca altro form)</label>
+      </div>
+    </>
+  );
+};

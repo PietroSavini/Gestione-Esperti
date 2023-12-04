@@ -1,0 +1,28 @@
+
+.login-form-container{
+    background-color: #fff;
+    width: 100%;
+    padding: 1.5rem .5rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    @media screen and (min-width:769px){
+        min-width: 300px;
+        width: 70%;
+        margin: 2rem auto;
+    }
+    form{
+        
+        width: 100%;
+        .gen-error{
+            color: #DB2F2F;
+            text-align: center;
+        }
+            
+    }
+    
+}
+
