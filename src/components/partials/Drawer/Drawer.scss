@@ -1,12 +1,95 @@
-.sidebar-toggler{
-    background-color: black;
-    width: 50px;
-    height: 50px;
-    border: 1px solid black;
-    // @media screen and (min-width: 600px){
-    //     display: none;
-    // }
+
+
+.sidebar{
+    overflow-x: hidden;
+    &>div{
+        transition: 300ms!important;
+        .MuiPaper-root{
+            transition: 300ms!important;
+            
+            .css-tlelie-MuiListItemText-root {   
+                -webkit-flex: 1 1 auto;
+                -ms-flex: 1 1 auto;
+                flex: 1 1 auto;
+                min-width: 0;
+                margin-top: 1px;
+                margin-bottom: 1px;
+                
+            }
+        }
+    }
+
+    .sidebar-button{
+
+        display: flex;
+        justify-content: end;
+        padding: 3px 3px;
+        
+        .sidebar-toggler{
+            background-color: rgb(255, 255, 255);
+            height: 40px; 
+            width: 40px;
+            border-radius: 100%;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 300ms;
+            color: #b4b3b3;
+            transform: rotate(180deg);
+            cursor: pointer;
+            &:hover{
+                color:#52A5CF;
+                background-color: #eae9e9;
+            }
+        
+        }
+    }
+    
+    ::-webkit-scrollbar {
+        width: 5px;
+        background-color: #F5F5F5;
+     }
+    .MuiButtonBase-root:hover{
+            span{
+                color: #52A5CF ;
+            }
+            .css-q5jb3f-MuiListItemText-root{
+                color:#52A5CF
+            }
+    }
 }
+
+
+.shrinked{
+    width: 60px !important;
+    .css-tlelie-MuiListItemText-root {
+        opacity: 0!important;
+        position: absolute;
+    }
+    .sidebar-button{
+        justify-content: center;
+        .sidebar-toggler{
+            transform: rotate(360deg);
+           
+        }
+    }
+    .css-d9ml5t-MuiDrawer-docked .MuiDrawer-paper {
+        box-sizing: border-box;
+        width: 60px; 
+        overflow-x: hidden;
+    }
+    ul li{
+        display:none !important;
+        
+    }
+}
+
+.css-cveggr-MuiListItemIcon-root {
+    min-width: 45px!important;
+    
+}
+
 .nested-element{
     background-color: #f1f1f1!important;
     &:hover{
@@ -21,3 +104,15 @@ a{
     color: inherit;
     text-decoration: none;
 }
+
+.sidebar-right{
+    order: 2;
+    .sidebar-button{
+        justify-content: start;
+        .sidebar-toggler{
+            transform: rotate(180deg);
+        }
+        
+    }
+}
+
