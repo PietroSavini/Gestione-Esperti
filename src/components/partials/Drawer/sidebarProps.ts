@@ -2,9 +2,9 @@ import { DrawerData } from "./Drawer"
 
 export const sidebar:DrawerData = {
   settings:{
-    position: "left",
+    position:'bottom',
     width:240,
-    isOpen:true,
+    isOpen: true,
     fontSize:'.8rem',
   },
   sections:[

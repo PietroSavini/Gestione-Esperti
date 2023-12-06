@@ -44,27 +44,36 @@ type Item = {
     subItems?: Items
 };
 
-
+type Variant = 'temporary' | 'permanent' | 'persistent' | undefined;
 
 function ResponsiveDrawer({ data }: { data: DrawerData }) {
-
+    
     const list = data.sections;
     const position = data.settings.position;
-    const location = useLocation()
+    const location = useLocation();
+    let sidebarInitialState: boolean = data.settings.isOpen
+    let variant: Variant= 'permanent';
     let drawerWidth = data.settings.width;
-    let shrinkedClass = 'shrinked'
+    let sidebarButtonClass;
+    let shrinkedClass = 'shrinked';
     let sidebarClass = 'sidebar';
     if (position === 'top' || position === 'bottom') {
         drawerWidth = 'auto';
-
+        variant= 'temporary'
+        sidebarButtonClass = position
+        console.log(sidebarInitialState)
+        if(sidebarInitialState){
+            sidebarInitialState = !sidebarInitialState
+        }
+        
     } else if (position === 'right') {
         sidebarClass = 'sidebar-right'
         shrinkedClass = 'shrinked-right'
     }
-
-
-    const [isOpen, setOpen] = React.useState(data.settings.isOpen);
+   
+    const [isOpen, setOpen] = React.useState(sidebarInitialState);
     const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
+
 
     const handleDrawerToggle = () => {
         //chiudo tutti i menu a tendina quando chiudo la sidebar
@@ -83,7 +92,7 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
 
     const listItemToggle = () => {
         const behavior = data.settings.isOpen;
-        if (!behavior) {
+        if (!behavior || variant === 'temporary') {
             setExpandedItems({})
             setOpen(false)
         }
@@ -198,10 +207,10 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
         <>
             <div className="sidebar-button">
                 <Box
-                    className='sidebar-toggler'
+                    className={`sidebar-toggler ${variant === "temporary" ? 'temporary-sidebar-toggler' : ''} ${variant === 'temporary' && position ==='top'? 'temporary-sidebar-toggler-top': ''} ${variant === 'temporary' && position ==='bottom'? 'temporary-sidebar-toggler-bottom': ''} ` }
                     onClick={() => handleDrawerToggle()}
                 >
-                    <ArrowForwardIosIcon />
+                    <ArrowForwardIosIcon className={`${position === 'top' ? 'toggler-top':''} ${position === 'bottom' ? 'toggler-bottom':''}`}/>
                 </Box>
             </div>
             {!!list && list.map((section: Section, index: number) => renderSection(section, index))}
@@ -209,8 +218,15 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
     );
 
     return (
-        <>
-
+        <>  
+            {variant === 'temporary' && 
+                <Box onClick={()=>setOpen(!isOpen)} component='div' className={`sidebar-extender sidebar-extender-${sidebarButtonClass}`}> 
+                    <Box component='div' className='sidebar-preview'>
+                        <Box component='div' className='sidebar-extender-button'><ArrowForwardIosIcon className='sidebar-extender-button-icon' /></Box>
+                    </Box>
+                </Box>
+            }
+            
             <Box
                 component="nav"
                 sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 }, position: 'relative' }}
@@ -220,7 +236,7 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
                 {/* da implementare un altro drawer chiamato dinamicamente quando position === top/bottom quello utilizzato per right e left non va bene */}
                 <Drawer
                     anchor={position}
-                    variant="permanent"
+                    variant={variant}
                     sx={{
                         display: { xs: 'none', sm: 'block' },
                         '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },

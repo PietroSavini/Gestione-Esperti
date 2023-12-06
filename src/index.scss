@@ -39,6 +39,7 @@
 
 body {
   box-sizing: border-box;
+  overflow-y: hidden;
   .wrapper{
     max-width: 1280px;
     height: 100%;
@@ -52,7 +53,6 @@ body {
   .APP{
     display: flex;
     height: 100vh;
-
     main{
       background-color: aliceblue;
       color: black;
@@ -81,5 +81,11 @@ ul{
   &>li{
     display: inline-block;
     margin-right: .5rem;
+  }
+}
+
+@media (min-width:0px){
+  .css-1y4lxgr-MuiModal-root-MuiDrawer-root{
+    display:block !important;
   }
 }

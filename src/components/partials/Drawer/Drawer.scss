@@ -1,25 +1,25 @@
-
-
-.sidebar{
+.sidebar {
     overflow-x: hidden;
-    &>div{
-        transition: 300ms!important;
-        .MuiPaper-root{
-            transition: 300ms!important;
-            
-          
+
+    &>div {
+        transition: 300ms !important;
+
+        .MuiPaper-root {
+            transition: 300ms !important;
+
+
         }
     }
 
-    .sidebar-button{
+    .sidebar-button {
 
         display: flex;
         justify-content: end;
         padding: 3px 3px;
-        
-        .sidebar-toggler{
+
+        .sidebar-toggler {
             background-color: rgb(255, 255, 255);
-            height: 40px; 
+            height: 40px;
             width: 40px;
             border-radius: 100%;
             border-radius: 50%;
@@ -30,94 +30,105 @@
             color: #b4b3b3;
             transform: rotate(180deg);
             cursor: pointer;
-            &:hover{
-                color:#52A5CF;
+
+            &:hover {
+                color: #52A5CF;
                 background-color: #eae9e9;
             }
-        
+
         }
     }
-    
+
     ::-webkit-scrollbar {
         width: 5px;
         background-color: #F5F5F5;
-     }
-    .MuiButtonBase-root:hover{
-            span{
-                color: #52A5CF ;
-            }
-            .css-q5jb3f-MuiListItemText-root{
-                color:#52A5CF
-            }
+    }
+
+    .MuiButtonBase-root:hover {
+        span {
+            color: #52A5CF;
+        }
+
+        .css-q5jb3f-MuiListItemText-root {
+            color: #52A5CF
+        }
     }
 }
 
 
-.shrinked{
+.shrinked {
     width: 60px !important;
-    
-    .sidebar-button{
+
+    .sidebar-button {
         text-align: center;
         margin-right: 8px;
-        .sidebar-toggler{
+
+        .sidebar-toggler {
             transform: rotate(360deg);
         }
     }
+
     .css-d9ml5t-MuiDrawer-docked .MuiDrawer-paper {
         box-sizing: border-box;
-        width: 60px; 
+        width: 60px;
         overflow-x: hidden;
-        
+
     }
-    .css-q5jb3f-MuiListItemText-root{
+
+    .css-q5jb3f-MuiListItemText-root {
         display: none !important;
     }
-    
-    ul li{
-        display:none !important;
-        
+
+    ul li {
+        display: none !important;
+
     }
 }
 
 .css-cveggr-MuiListItemIcon-root {
-    min-width: 45px!important;
-    
+    min-width: 45px !important;
+
 }
 
-.nested-element{
-    background-color: #f1f1f1!important;
-    &:hover{
-        background-color: #c9c9c9!important;
+.nested-element {
+    background-color: #f1f1f1 !important;
+
+    &:hover {
+        background-color: #c9c9c9 !important;
     }
-    .nested{
+
+    .nested {
         margin-left: 15px;
-        
+
     }
 }
-a{
+
+a {
     color: inherit;
     text-decoration: none;
 }
 
-.sidebar-right{
+.sidebar-right {
     order: 2;
     overflow-x: hidden;
-    &>div{
-        transition: 300ms!important;
-        .MuiPaper-root{
-            transition: 300ms!important;
+
+    &>div {
+        transition: 300ms !important;
+
+        .MuiPaper-root {
+            transition: 300ms !important;
         }
     }
 
-    .sidebar-button{
+    .sidebar-button {
 
         display: flex;
         justify-content: start;
         padding: 3px 3px;
-        
-        .sidebar-toggler{
+
+        .sidebar-toggler {
             background-color: rgb(255, 255, 255);
-            height: 40px; 
+            height: 40px;
             width: 40px;
             border-radius: 100%;
             border-radius: 50%;
@@ -126,67 +137,236 @@ a{
             align-items: center;
             transition: 300ms;
             color: #b4b3b3;
-            
+
             cursor: pointer;
-            &:hover{
-                color:#52A5CF;
+
+            &:hover {
+                color: #52A5CF;
                 background-color: #eae9e9;
             }
-        
+
         }
     }
-    
+
     ::-webkit-scrollbar {
         width: 5px;
         background-color: #F5F5F5;
-     }
-    .MuiButtonBase-root:hover{
-            span{
-                color: #52A5CF ;
-            }
-            .css-q5jb3f-MuiListItemText-root{
-                color:#52A5CF
-            }
+    }
+
+    .MuiButtonBase-root:hover {
+        span {
+            color: #52A5CF;
+        }
+
+        .css-q5jb3f-MuiListItemText-root {
+            color: #52A5CF
+        }
     }
 }
 
-.shrinked-right{
+.shrinked-right {
     width: 60px !important;
-    
-    .sidebar-button{
+
+    .sidebar-button {
         text-align: center;
         margin-left: 3px;
-        .sidebar-toggler{
+
+        .sidebar-toggler {
             transform: rotate(180deg);
         }
     }
+
     .css-d9ml5t-MuiDrawer-docked .MuiDrawer-paper {
         box-sizing: border-box;
-        width: 60px; 
+        width: 60px;
         overflow-x: hidden;
-        
+
     }
-    .css-q5jb3f-MuiListItemText-root{
+
+    .css-q5jb3f-MuiListItemText-root {
         display: none !important;
     }
-    
-    ul li{
-        display:none !important;
-        
+
+    ul li {
+        display: none !important;
+
     }
 }
 
-.selected{
- 
-    span{
-        color: #52A5CF ;
+.selected {
+
+    span {
+        color: #52A5CF;
     }
-    .css-q5jb3f-MuiListItemText-root{
-        color:#52A5CF
+
+    .css-q5jb3f-MuiListItemText-root {
+        color: #52A5CF
     }
 
 }
 
-.css-r6w6ce-MuiListSubheader-root{
+.css-r6w6ce-MuiListSubheader-root {
     position: static !important;
 }
+
+
+
+.sidebar-extender {
+    width: 100%;
+    position: absolute;
+    z-index: 100;
+    height: 40px;
+    left: 0;
+    cursor: pointer;
+
+    &.sidebar-extender-top{
+        top: 0;
+        .sidebar-preview {
+            position: relative;
+            height: 20px;
+            border: 1px solid rgb(200, 200, 200);
+            background-color: #ffffff;
+            box-shadow: 0px 0px 10px #888888;
+            margin-top: -20px;
+            transition: 200ms;
+    
+            .sidebar-extender-button {
+                width: 150px;
+                height: 20px;
+                background-color: rgb(255, 255, 255);
+                position: absolute;
+                bottom: -20px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 160;
+                border-bottom-left-radius: 30px;
+                border-bottom-right-radius: 30px;
+                box-shadow: 0px 8px 10px #dfdfdf;
+                display: flex;
+                justify-content: center;
+    
+                .sidebar-extender-button-icon {
+                    transform: rotate(90deg);
+                    font-size: 20px;
+                    color: #b4b3b3;
+                }
+    
+            }
+        }
+    
+        &:hover {
+            .sidebar-preview {
+                margin-top: -10px;
+            }
+    
+            .sidebar-extender-button-icon {
+                color: #52A5CF !important;
+            }
+        }
+    }
+
+    &.sidebar-extender-bottom{
+        bottom: 0;
+        .sidebar-preview{
+            position: relative;
+            margin-top: 20px;
+            bottom: -20px;
+            height: 20px;
+            border: 1px solid rgb(200, 200, 200);
+            background-color: #ffffff;
+            box-shadow: 0px 0px 10px #888888;
+            transition: 200ms;
+            
+            .sidebar-extender-button{
+                top: -20px;
+                width: 150px;
+                height: 20px;
+                background-color: rgb(255, 255, 255);
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 160;
+                background-color: rgb(255, 255, 255);
+                border-top-right-radius: 30px;
+                border-top-left-radius: 30px;
+                box-shadow: 0px -5px 10px #d2d2d2;
+                display: flex;
+                justify-content: center;
+                .sidebar-extender-button-icon {
+                    transform: rotate(-90deg);
+                    font-size: 20px;
+                    color: #b4b3b3;
+                }
+            }
+        }
+        &:hover {
+            .sidebar-preview {
+                margin-top: 0px;
+            }
+            .sidebar-extender-button-icon {
+                color: #52A5CF !important;
+            }
+        }
+    }
+
+}
+
+.temporary-sidebar-toggler {
+    transition: 300ms;
+    width: 150px;
+    height: 30px;
+    background-color: rgb(255, 255, 255);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 160;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    &.temporary-sidebar-toggler-top{
+        bottom: -25px;
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+        box-shadow: 0px 15px 15px  rgb(96, 96, 96);
+        .toggler-top{
+            transform: rotate(-90deg);
+            font-size: 20px;
+            color: #b4b3b3;
+        }
+        &:hover{
+            .toggler-top{
+                color: #52A5CF;
+            }
+        }
+    }
+    &.temporary-sidebar-toggler-bottom{
+        top: -20px;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        box-shadow: 0px -15px 15px  rgb(96, 96, 96);
+        .toggler-bottom{
+            transform: rotate(-90deg);
+            font-size: 20px;
+            color: #b4b3b3;
+        }
+        .toggler-bottom{
+            transform: rotate(-90deg);
+            font-size: 20px;
+            color: #b4b3b3;
+        }
+        &:hover{
+            .toggler-bottom{
+                color: #52A5CF;
+            }
+        }
+    }
+}
+.css-9emuhu-MuiPaper-root-MuiDrawer-paper{
+    overflow-y: visible !important;
+}
+.css-1nvnyqx-MuiPaper-root-MuiDrawer-paper{
+    overflow-y: visible !important;
+}
+
