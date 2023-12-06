@@ -18,10 +18,10 @@ export type DrawerData = {
 };
 
 type Settings = {
-    position?: 'top' | 'right' | 'bottom' | 'left' ;
+    position?: 'top' | 'right' | 'bottom' | 'left';
     width: number | string;
-    isOpen:boolean;
-    fontSize?:string
+    isOpen: boolean;
+    fontSize?: string
 }
 
 type Section = {
@@ -29,7 +29,7 @@ type Section = {
     items: Items;
     bgColor?: string;
     titleColor?: string;
-    fontSize?:string;
+    fontSize?: string;
     color?: string;
 };
 
@@ -47,20 +47,22 @@ type Item = {
 
 
 
-function ResponsiveDrawer({data}: {data:DrawerData}) {
-   
+function ResponsiveDrawer({ data }: { data: DrawerData }) {
+
     const list = data.sections;
     const position = data.settings.position;
     let drawerWidth = data.settings.width;
-    let sidebarClass = ''
-    if(position === 'top' || position === 'bottom'){
+    let shrinkedClass = 'shrinked'
+    let sidebarClass = 'sidebar';
+    if (position === 'top' || position === 'bottom') {
         drawerWidth = 'auto';
-        
-    }else if(position === 'right'){
-        sidebarClass = 'sidebar-right shrinked-right'
+
+    } else if (position === 'right') {
+        sidebarClass = 'sidebar-right'
+        shrinkedClass = 'shrinked-right'
     }
 
-    
+
     const [isOpen, setOpen] = React.useState(data.settings.isOpen);
     const [expandedItems, setExpandedItems] = React.useState<{ [key: string]: boolean }>({});
 
@@ -70,10 +72,10 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
         setOpen(!isOpen);
     };
 
-    const handleSubmenuToggle = (item:string) => {
-      
+    const handleSubmenuToggle = (item: string) => {
+
         //questo ci permette di aprire la sidebar se si clicca su un menù a tendina
-        if(!isOpen){
+        if (!isOpen) {
             setOpen(true)
         }
 
@@ -85,7 +87,7 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
 
     const renderStandardListItem = (item: Item, index: number) => (
         <>
-            <Link to={item.method? item.method : ''} key={`${item.text}-${index}`}>
+            <Link to={item.method ? item.method : ''} key={`${item.text}-${index}`}>
                 <ListItemButton key={item.text}>
                     <>
                         <ListItemIcon>
@@ -98,7 +100,7 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
                             )}
                         </ListItemIcon>
 
-                        <ListItemText disableTypography sx={{fontSize: data.settings?.fontSize, color:item.color}}  primary={item.text} />
+                        <ListItemText disableTypography sx={{ fontSize: data.settings?.fontSize, color: item.color }} primary={item.text} />
                     </>
                 </ListItemButton>
             </Link>
@@ -110,7 +112,7 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
         return (
 
             <>
-                <ListItemButton key={item.text}  onClick={() => handleSubmenuToggle(menuItem)}>
+                <ListItemButton key={item.text} onClick={() => handleSubmenuToggle(menuItem)}>
                     <>
                         <ListItemIcon>
                             {item.image ? (
@@ -122,14 +124,14 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
                             )}
                         </ListItemIcon>
 
-                        <ListItemText disableTypography sx={{fontSize: data.settings?.fontSize, color:item.color}} primary={item.text} />
+                        <ListItemText disableTypography sx={{ fontSize: data.settings?.fontSize, color: item.color }} primary={item.text} />
                         {expandedItems[menuItem] ? <ExpandLess /> : <ExpandMore />}
                     </>
                 </ListItemButton>
                 <Collapse in={expandedItems[menuItem]} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {item.subItems?.map((subItem, subIndex) => (
-                            <Link to={subItem.method? subItem.method : ''} key={subIndex}>
+                            <Link to={subItem.method ? subItem.method : ''} key={subIndex}>
                                 <ListItemButton sx={{ pl: 4 }} key={subIndex}>
                                     <ListItemIcon>
                                         {subItem.image ? (
@@ -140,7 +142,7 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
                                             subItem.icon ? <Icon>{subItem.icon}</Icon> : <Icon></Icon>
                                         )}
                                     </ListItemIcon>
-                                    <ListItemText  disableTypography sx={{fontSize: data.settings?.fontSize, color:subItem.color}} primary={subItem.text} />
+                                    <ListItemText disableTypography sx={{ fontSize: data.settings?.fontSize, color: subItem.color }} primary={subItem.text} />
                                 </ListItemButton>
                             </Link>
                         ))}
@@ -149,8 +151,8 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
             </>
         )
     }
-            
-    
+
+
 
     const renderListItem = (item: Item, index: number) => {
 
@@ -169,7 +171,7 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
         <List
             key={`${section.title}-${index}`}
             sx={{ backgroundColor: section.bgColor, color: section.color }}
-            subheader={<ListSubheader sx={{ color: section.titleColor , fontSize: section.fontSize}}>{section.title}</ListSubheader>}
+            subheader={<ListSubheader sx={{ color: section.titleColor, fontSize: section.fontSize }}>{section.title}</ListSubheader>}
         >
             {section.items.map((item, index) => (
                 <React.Fragment key={index}>
@@ -196,12 +198,12 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
 
     return (
         <>
-            
+
             <Box
                 component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 }, position:'relative'}}
+                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 }, position: 'relative' }}
                 aria-label="Sidebar"
-                className={`sidebar ${!isOpen ? 'shrinked': ''} ${sidebarClass}`}
+                className={`${!isOpen ? shrinkedClass : ''} ${sidebarClass}`}
             >
                 {/* da implementare un altro drawer chiamato dinamicamente quando position === top/bottom quello utilizzato per right e left non va bene */}
                 <Drawer

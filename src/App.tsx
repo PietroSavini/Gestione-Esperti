@@ -33,14 +33,12 @@ function App() {
       <Routes>
             {/*Protected Routes */}
         <Route path='/' element={<HomePage/>}>
+
+
+
           {/* persistent login ed auth dovrebbero avvolegere anche homepage ma a scopo di test e sviluppo ancora non possiamo farlo*/}
             <Route element={<PersistentLogin/>}>
               <Route element={<RequireAuth/>}>
-          
-
-           
-
-
            
               </Route>
             </Route>
