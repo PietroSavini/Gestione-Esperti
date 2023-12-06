@@ -85,17 +85,13 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
         }));
     };
 
-    const handleItemClick = (item: string) => {
-        setSelectedItem(item);
-    };
-
     const renderStandardListItem = (item: Item, index: number) => {
         const to = item.method ? item.method : '';
         const isActive = location.pathname === to;
         return (
             <>
                 <Link to={to} key={`${item.text}-${index}`}>
-                    <ListItemButton key={item.text} selected={isActive}>
+                    <ListItemButton key={item.text} className={isActive ? 'selected' : ''} selected={isActive}>
                         <>
                             <ListItemIcon>
                                 {item.image ? (
@@ -143,7 +139,7 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
                             const isActive = location.pathname === to;
                             return (
                                 <Link to={to} key={subIndex}>
-                                    <ListItemButton selected={isActive} sx={{ pl: 4 }} key={subIndex}>
+                                    <ListItemButton selected={isActive} className={isActive ? 'selected' : ''} sx={{ pl: 4 }} key={subIndex}>
                                         <ListItemIcon>
                                             {subItem.image ? (
                                                 <SvgIcon>
