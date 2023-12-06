@@ -73,21 +73,17 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
     };
 
     const handleSubmenuToggle = (item: string) => {
-
         //questo ci permette di aprire la sidebar se si clicca su un menù a tendina
-        if (!isOpen) {
-            setOpen(true)
-        }
-
+        if (!isOpen) setOpen(true)
         setExpandedItems((prevExpandedItems) => ({
             ...prevExpandedItems,
             [item]: !prevExpandedItems[item],
         }));
     };
 
-    const listItemToggle= () => {
+    const listItemToggle = () => {
         const behavior = data.settings.isOpen;
-        if (!behavior){
+        if (!behavior) {
             setExpandedItems({})
             setOpen(false)
         }
@@ -142,7 +138,7 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
                 </ListItemButton>
                 <Collapse in={expandedItems[menuItem]} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        {item.subItems?.map((subItem, subIndex) =>{ 
+                        {item.subItems?.map((subItem, subIndex) => {
                             const to = subItem.method ? subItem.method : '';
                             const isActive = location.pathname === to;
                             return (
@@ -160,7 +156,8 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
                                         <ListItemText disableTypography sx={{ fontSize: data.settings?.fontSize, color: subItem.color }} primary={subItem.text} />
                                     </ListItemButton>
                                 </Link>
-                        )})}
+                            )
+                        })}
                     </List>
                 </Collapse>
             </>
