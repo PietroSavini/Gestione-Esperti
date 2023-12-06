@@ -65,7 +65,7 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
 
     const [isOpen, setOpen] = React.useState(data.settings.isOpen);
     const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
-    const [selectedItem, setSelectedItem] = useState<string | null>(null)
+
     const handleDrawerToggle = () => {
         //chiudo tutti i menu a tendina quando chiudo la sidebar
         setExpandedItems({})
@@ -85,13 +85,21 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
         }));
     };
 
+    const listItemToggle= () => {
+        const behavior = data.settings.isOpen;
+        if (!behavior){
+            setExpandedItems({})
+            setOpen(false)
+        }
+    }
+
     const renderStandardListItem = (item: Item, index: number) => {
         const to = item.method ? item.method : '';
         const isActive = location.pathname === to;
         return (
             <>
                 <Link to={to} key={`${item.text}-${index}`}>
-                    <ListItemButton key={item.text} className={isActive ? 'selected' : ''} selected={isActive}>
+                    <ListItemButton key={item.text} className={isActive ? 'selected' : ''} selected={isActive} onClick={() => listItemToggle()}>
                         <>
                             <ListItemIcon>
                                 {item.image ? (
@@ -139,7 +147,7 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
                             const isActive = location.pathname === to;
                             return (
                                 <Link to={to} key={subIndex}>
-                                    <ListItemButton selected={isActive} className={isActive ? 'selected' : ''} sx={{ pl: 4 }} key={subIndex}>
+                                    <ListItemButton selected={isActive} className={isActive ? 'selected' : ''} sx={{ pl: 4 }} key={subIndex} onClick={() => listItemToggle()}>
                                         <ListItemIcon>
                                             {subItem.image ? (
                                                 <SvgIcon>
