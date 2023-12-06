@@ -14,7 +14,7 @@ function App() {
   useEffect(() => {
     //appena renderizza il componente dobbiamo salvare accessToken e RefreshToken nello state di redux prendendolo dall app di lancio che ce li passa all inizializzazione
 
-    Utility.Logger.disable()
+    //Utility.Logger.disable()
     //abilito / disabilito console.log()
     /*
       //per farlo funzionare si deve sviluppare EndPoint

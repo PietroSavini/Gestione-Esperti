@@ -7,15 +7,7 @@
         .MuiPaper-root{
             transition: 300ms!important;
             
-            .css-tlelie-MuiListItemText-root {   
-                -webkit-flex: 1 1 auto;
-                -ms-flex: 1 1 auto;
-                flex: 1 1 auto;
-                min-width: 0;
-                margin-top: 1px;
-                margin-bottom: 1px;
-                
-            }
+          
         }
     }
 
@@ -63,21 +55,21 @@
 
 .shrinked{
     width: 60px !important;
-    .css-tlelie-MuiListItemText-root {
-        opacity: 0!important;
-        position: absolute;
-    }
+    
     .sidebar-button{
         justify-content: center;
         .sidebar-toggler{
             transform: rotate(360deg);
-           
         }
     }
     .css-d9ml5t-MuiDrawer-docked .MuiDrawer-paper {
         box-sizing: border-box;
         width: 60px; 
         overflow-x: hidden;
+        
+    }
+    .css-q5jb3f-MuiListItemText-root{
+        display: none !important;
     }
     ul li{
         display:none !important;

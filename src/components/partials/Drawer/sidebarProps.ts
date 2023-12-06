@@ -4,7 +4,7 @@ export const sidebar:DrawerData = {
   settings:{
     position: "left",
     width:240,
-    isOpen:true,
+    isOpen:false,
     fontSize:'.8rem',
   },
   sections:[
@@ -61,6 +61,8 @@ export const sidebar:DrawerData = {
     },
     {
       "title": "Stampe",
+      "titleColor":"#426389",
+      "fontSize":"16px",
       "items": [
         {
           "text": "Pagina 4",
@@ -74,9 +76,36 @@ export const sidebar:DrawerData = {
     },
     {
       "title": "Utility",
+      "titleColor":"#426389",
+      "fontSize":"16px",
       "items":[
         {
           "text": "App",
+          "icon": "app_settings_alt",
+          "subItems": [
+            {
+              "text": "impostazioni",
+              "method": "/Impostazioni",
+              "icon": "settings_suggest",
+              
+            },
+            {
+              "text": "Supporto",
+              "method": "/Assistenza",
+              "icon": "support_agent",
+             
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Utility",
+      "titleColor":"#426389",
+      "fontSize":"16px",
+      "items":[
+        {
+          "text": "other settings",
           "icon": "app_settings_alt",
           "subItems": [
             {

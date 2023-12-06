@@ -65,23 +65,25 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
     const [expandedItems, setExpandedItems] = React.useState<{ [key: string]: boolean }>({});
 
     const handleDrawerToggle = () => {
+        //chiudo tutti i menu a tendina quando chiudo la sidebar
+        setExpandedItems({})
         setOpen(!isOpen);
     };
 
-    const handleSubmenuToggle = (index: number, text: string) => {
-
-        const key = `${text}-${index}`//non funzia
+    const handleSubmenuToggle = (item:string) => {
+      
+        //questo ci permette di aprire la sidebar se si clicca su un menù a tendina
         if(!isOpen){
             setOpen(true)
         }
+
         setExpandedItems((prevExpandedItems) => ({
             ...prevExpandedItems,
-            [index]: !prevExpandedItems[index],
+            [item]: !prevExpandedItems[item],
         }));
     };
 
     const renderStandardListItem = (item: Item, index: number) => (
-
         <>
             <Link to={item.method? item.method : ''} key={`${item.text}-${index}`}>
                 <ListItemButton key={item.text}>
@@ -103,47 +105,52 @@ function ResponsiveDrawer({data}: {data:DrawerData}) {
         </>
     )
 
-    const renderMenuListItem = (item: Item, index: number) => (
+    const renderMenuListItem = (item: Item, index: number) => {
+        const menuItem = `${item.text}-${index}`;
+        return (
 
-        <>
-            <ListItemButton key={item.text} onClick={() => handleSubmenuToggle(index,item.text)}>
-                <>
-                    <ListItemIcon>
-                        {item.image ? (
-                            <SvgIcon>
-                                <path d={item.image} />
-                            </SvgIcon>
-                        ) : (
-                            item.icon ? <Icon>{item.icon}</Icon> : <Icon></Icon>
-                        )}
-                    </ListItemIcon>
+            <>
+                <ListItemButton key={item.text}  onClick={() => handleSubmenuToggle(menuItem)}>
+                    <>
+                        <ListItemIcon>
+                            {item.image ? (
+                                <SvgIcon>
+                                    <path d={item.image} />
+                                </SvgIcon>
+                            ) : (
+                                item.icon ? <Icon>{item.icon}</Icon> : <Icon></Icon>
+                            )}
+                        </ListItemIcon>
 
-                    <ListItemText disableTypography sx={{fontSize: data.settings?.fontSize, color:item.color}} primary={item.text} />
-                    {expandedItems[index] ? <ExpandLess /> : <ExpandMore />}
-                </>
-            </ListItemButton>
-            <Collapse in={expandedItems[index]} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                    {item.subItems?.map((subItem, subIndex) => (
-                        <Link to={subItem.method? subItem.method : ''} key={subIndex}>
-                            <ListItemButton sx={{ pl: 4 }} key={subIndex}>
-                                <ListItemIcon>
-                                    {subItem.image ? (
-                                        <SvgIcon>
-                                            <path d={subItem.image} />
-                                        </SvgIcon>
-                                    ) : (
-                                        subItem.icon ? <Icon>{subItem.icon}</Icon> : <Icon></Icon>
-                                    )}
-                                </ListItemIcon>
-                                <ListItemText  disableTypography sx={{fontSize: data.settings?.fontSize, color:subItem.color}} primary={subItem.text} />
-                            </ListItemButton>
-                        </Link>
-                    ))}
-                </List>
-            </Collapse>
-        </>
-    )
+                        <ListItemText disableTypography sx={{fontSize: data.settings?.fontSize, color:item.color}} primary={item.text} />
+                        {expandedItems[menuItem] ? <ExpandLess /> : <ExpandMore />}
+                    </>
+                </ListItemButton>
+                <Collapse in={expandedItems[menuItem]} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        {item.subItems?.map((subItem, subIndex) => (
+                            <Link to={subItem.method? subItem.method : ''} key={subIndex}>
+                                <ListItemButton sx={{ pl: 4 }} key={subIndex}>
+                                    <ListItemIcon>
+                                        {subItem.image ? (
+                                            <SvgIcon>
+                                                <path d={subItem.image} />
+                                            </SvgIcon>
+                                        ) : (
+                                            subItem.icon ? <Icon>{subItem.icon}</Icon> : <Icon></Icon>
+                                        )}
+                                    </ListItemIcon>
+                                    <ListItemText  disableTypography sx={{fontSize: data.settings?.fontSize, color:subItem.color}} primary={subItem.text} />
+                                </ListItemButton>
+                            </Link>
+                        ))}
+                    </List>
+                </Collapse>
+            </>
+        )
+    }
+            
+    
 
     const renderListItem = (item: Item, index: number) => {
 
