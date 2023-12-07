@@ -1,9 +1,9 @@
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from 'react';
-import { useAppDispatch} from "../app/ReduxTSHooks";
+import { useAppDispatch} from "../../app/ReduxTSHooks";
 import { useSelector } from 'react-redux'
-import { selectToken, setCredentials } from "../app/store/Slices/authSlice";
-import { AxiosHTTP } from "../app/AXIOS_ENGINE/AxiosHTTP";
+import { selectToken, setCredentials } from "../../app/store/Slices/authSlice";
+import { AxiosHTTP } from "../../app/AXIOS_ENGINE/AxiosHTTP";
 
 export const PersistentLogin = () => {
     const dispatch = useAppDispatch();

@@ -8,12 +8,14 @@ import { DrawerData } from '../../components/partials/Drawer/Drawer';
 
 export const HomePage = () => {
     const data:DrawerData = sidebar
-
+    
   return (
     <div className='APP'>
         <ResponsiveDrawer data={data}/>
-        <Outlet/>
-        <Loader />
+        <main>
+          <Outlet/>
+          <Loader />
+        </main>
     </div>
   )
 }

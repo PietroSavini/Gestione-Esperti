@@ -4,9 +4,10 @@ import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom'
 import { HomePage } from './pages/HomePage/HomePage';
 import { NotFound } from './pages/404Page/NotFound'
-import { PersistentLogin } from './components/PersistentLogin';
-import  RequireAuth  from './components/RequireAuth'
+import { PersistentLogin } from './components/App_Components/PersistentLogin';
+import  RequireAuth  from './components/App_Components/RequireAuth'
 import { useAppDispatch } from './app/ReduxTSHooks';
+import { Dashboard } from './pages/Dashboard/Dashboard';
 
 
 
@@ -33,8 +34,7 @@ function App() {
       <Routes>
             {/*Protected Routes */}
         <Route path='/' element={<HomePage/>}>
-
-
+          <Route index path='/Gestione-Esperti' element={<Dashboard />}/>
 
           {/* persistent login ed auth dovrebbero avvolegere anche homepage ma a scopo di test e sviluppo ancora non possiamo farlo*/}
             <Route element={<PersistentLogin/>}>

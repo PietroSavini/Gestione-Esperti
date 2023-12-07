@@ -1,6 +1,6 @@
 .sidebar {
     overflow-x: hidden;
-
+    
     &>div {
         transition: 300ms !important;
 
@@ -15,7 +15,6 @@
 
         display: flex;
         justify-content: end;
-        padding: 3px 3px;
 
         .sidebar-toggler {
             background-color: rgb(255, 255, 255);
@@ -370,3 +369,8 @@ a {
     overflow-y: visible !important;
 }
 
+@media (min-width: 0px){
+    .css-d9ml5t-MuiDrawer-docked {
+        display: block  !important;
+    }
+}

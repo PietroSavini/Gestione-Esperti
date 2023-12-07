@@ -2,7 +2,7 @@ import { DrawerData } from "./Drawer"
 
 export const sidebar:DrawerData = {
   settings:{
-    position:'bottom',
+    position:'left',
     width:240,
     isOpen: true,
     fontSize:'.8rem',
@@ -12,7 +12,7 @@ export const sidebar:DrawerData = {
       "items":[
         {
           "text": "Gestione Esperti",
-          "method": "/",
+          "method": "/Gestione-Esperti",
           "icon":"auto_awesome_mosaic"
         }
       ]

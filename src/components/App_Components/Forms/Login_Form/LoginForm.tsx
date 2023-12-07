@@ -2,14 +2,14 @@ import { useRef, useState } from 'react';
 import { Box, Button, Chip, Paper, TextField } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../../app/ReduxTSHooks';
-import { setCredentials } from '../../../app/store/Slices/authSlice';
-import { AxiosHTTP } from '../../../app/AXIOS_ENGINE/AxiosHTTP';
+import { useAppDispatch } from '../../../../app/ReduxTSHooks';
+import { setCredentials } from '../../../../app/store/Slices/authSlice';
+import { AxiosHTTP } from '../../../../app/AXIOS_ENGINE/AxiosHTTP';
 import FaceIcon from '@mui/icons-material/Face';
-import useThrottled from '../../../app/Hooks/useThrottledHook';
-import Serializer from '../../../app/AXIOS_ENGINE/AxiosSERIALIZER';
+import useThrottled from '../../../../app/Hooks/useThrottledHook';
+import Serializer from '../../../../app/AXIOS_ENGINE/AxiosSERIALIZER';
 import './LoginForm.scss';
-import { closeLoader, openLoader } from '../../../app/store/Slices/loaderSlice';
+import { closeLoader, openLoader } from '../../../../app/store/Slices/loaderSlice';
 
 export const LoginForm = () => {
 
