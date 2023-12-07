@@ -1,4 +1,4 @@
-import { DrawerData } from "./Drawer"
+import { DrawerData } from "./DrawerTypes"
 
 export const sidebar:DrawerData = {
   settings:{

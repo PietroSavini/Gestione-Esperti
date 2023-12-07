@@ -10,41 +10,9 @@ import { Link, useLocation } from 'react-router-dom';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import './Drawer.scss'
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { DrawerData, Item, Section, Variant } from './DrawerTypes';
 
-export type DrawerData = {
-    settings: Settings
-    sections: Section[];
-};
 
-type Settings = {
-    position?: 'top' | 'right' | 'bottom' | 'left';
-    width: number | string;
-    isOpen: boolean;
-    fontSize?: string
-}
-
-type Section = {
-    title?: string;
-    items: Items;
-    bgColor?: string;
-    titleColor?: string;
-    fontSize?: string;
-    color?: string;
-};
-
-type Items = Item[];
-
-type Item = {
-    text: string;
-    method?: string;
-    baseUrl?: string;
-    image?: string;
-    icon?: string;
-    color?: string;
-    subItems?: Items
-};
-
-type Variant = 'temporary' | 'permanent' | 'persistent' | undefined;
 
 function ResponsiveDrawer({ data }: { data: DrawerData }) {
 
