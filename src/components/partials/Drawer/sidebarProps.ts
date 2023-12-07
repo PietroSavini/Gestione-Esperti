@@ -12,7 +12,7 @@ export const sidebar:DrawerData = {
       "items":[
         {
           "text": "Gestione Esperti",
-          "method": "/Gestione-Esperti",
+          "method": "/",
           "icon":"auto_awesome_mosaic"
         }
       ]
