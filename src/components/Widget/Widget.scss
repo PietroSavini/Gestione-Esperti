@@ -1,0 +1,37 @@
+.widget{
+    
+    border: 2px solid #53a5cfff ;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: 300ms;
+    .widget-header{
+        display: flex;
+        align-items: center;
+        margin-bottom: .7rem;
+        span{
+            font-size:2rem;
+        }
+    }
+    .widget-body{
+        display: flex;
+        justify-content: space-between;
+        padding-left: .3rem;
+        .widget-content{
+            display: flex;
+            align-items: center;
+           
+        }
+    }
+    .widget-link{
+        padding-left: .3rem;
+    }
+
+    &:hover{
+        transform: scale(1.03);
+        border-color:  rgb(98, 129, 255) ;
+        .widget-link p{
+            color: rgb(98, 129, 255);
+            text-decoration: underline;
+        }
+    }
+}

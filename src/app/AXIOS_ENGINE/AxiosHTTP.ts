@@ -4,7 +4,7 @@ import { setCredentials, logOut } from '../store/Slices/authSlice';
 import AxiosUtils from './AxiosUTILS';
 import { store } from '../store/store';
 
-type Options = {
+export type Options = {
     baseUrl?: string;
     url: string;
     method?: string;
@@ -32,6 +32,7 @@ export const AxiosHTTP = (options: Options) => {
         body: undefined,
         handleRes: undefined,
     };
+    
     //merging dei parametri di base con quelli passati alla funzione
     const newOptions = { ...defaultOptions, ...options };
     //preparo la baseQuery con headers della request dinamici

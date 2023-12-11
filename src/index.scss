@@ -19,6 +19,10 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+a{
+  text-decoration: none;
+  color: inherit;
+}
 
 .mc{
   margin: 0 auto;
@@ -59,7 +63,11 @@ body {
       color: black;
       flex-grow: 1;
       overflow-y: auto;
-      padding: 2rem 1rem;
+      //da vedere padding su main per width inferiori a 600 px in quanto dovrebbe essere applicato solo a sidebar laterali
+      padding: 2rem 1rem 2rem 45px;
+      @media screen and (min-width:600px){
+        padding: 2rem 1rem;
+      }
     }
 
   }

@@ -15,7 +15,21 @@ import Loader from './components/partials/Loader/Loader';
 
 function App() {  
   useEffect(() => {
-    //appena renderizza il componente dobbiamo salvare accessToken e RefreshToken nello state di redux prendendolo dall app di lancio che ce li passa all inizializzazione
+    //appena renderizza il componente dobbiamo salvare accessToken e RefreshToken nello state di redux prendendolo dall app di lancio che ce li passa all'inizializzazione
+    //controllo se i dati che devo fetchare sono nello State di Redux
+      //se ci sono =>
+       //non faccio nulla
+
+      //se non ci sono =>
+        //apro il loader
+        //fetching dei dati per sidebar 
+        //salvo i dati nella catche e nello state di redux
+        //chiudo il loader
+
+
+
+
+
 
     //Utility.Logger.disable()
     //abilito / disabilito console.log()
@@ -34,6 +48,7 @@ function App() {
   return (
     <>
       <div className="APP">
+        {/*condizionale che mostra loader a piena pagina se dati non sono presenti*/}
 
         <ResponsiveDrawer data={data}/>
         <main>
@@ -47,11 +62,6 @@ function App() {
                 </Route>
              */}
               <Route index element={<Dashboard />}/>
-
-
-
-
-
               {/* Catch All */}
               <Route path='*' element={<NotFound/>}/>
           </Routes>

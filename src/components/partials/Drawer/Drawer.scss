@@ -1,14 +1,17 @@
 .sidebar {
     overflow-x: hidden;
-    
     &>div {
         transition: 300ms !important;
 
         .MuiPaper-root {
             transition: 300ms !important;
-
-
         }
+    }
+    span.material-icons{
+        color: rgb(55, 55, 55);
+    }
+    .MuiListItemText-root{
+        color: rgb(55, 55, 55) ;
     }
 
     .sidebar-button {
@@ -194,7 +197,8 @@ a {
 
 .selected {
 
-    span {
+    
+    span.material-icons{
         color: #52A5CF;
     }
 
