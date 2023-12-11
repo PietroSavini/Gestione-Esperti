@@ -41,10 +41,12 @@ export const Widget = (props:props,) => {
     
 
     const fetchData = async (dataForCall:Options) => {
+        //if che controlla se data è salvato nello state redux, se si lo prende da li e returna se no fa la chiamata
         try{
             setIsLoading(true)
             const result = await AxiosHTTP({...dataForCall});
             data = result as Data;   
+            //salva i dati del widget nello state di redux
             setIsLoading(false)
         }catch(err){
             setIsLoading(false)
@@ -71,7 +73,7 @@ export const Widget = (props:props,) => {
 
   return (
     <>
-        <Box component='div' minWidth={228} className='widget'>
+        <Box component='div' minWidth={244} className='widget'>
            
             <Link to={data?.to ? data?.to : '/'}>
                 <Card sx={{minWidth:244}}>
