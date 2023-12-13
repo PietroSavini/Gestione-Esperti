@@ -86,7 +86,7 @@ export const Widget = (props:props,) => {
                                     </>
                                 ):(
                                 <>
-                                        {data?.image ? data?.image : <Icon sx={{fontSize:'4rem'}}>{data?.icon ? data?.icon : 'all_inbox'}</Icon>}
+                                        {data?.image ? data?.image : <Icon sx={{fontSize:'4rem', marginRight:'10px'}}>{data?.icon ? data?.icon : 'all_inbox'}</Icon>}
                                         <Typography  component='h6' fontSize={settings?.titleSize ? settings.titleSize : '1rem'} color={settings?.titleColor ? settings?.titleColor : '#877f87ff'} >{data?.title ? data.title : 'Titolo del Widget' }</Typography>
                                 </>
 

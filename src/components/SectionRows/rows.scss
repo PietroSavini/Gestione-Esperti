@@ -1,0 +1,19 @@
+.section-row{
+    transition: 200ms;
+    padding: .5rem 1rem;
+    &:hover{
+        background-color: #efefef;
+    }
+}
+.row-action{
+    border: 1px solid #53a5cfff;
+    border-radius: 30px;
+    margin-left: .5rem;
+    color: #53a5cfff;
+    transition: 200ms;
+    &:hover{
+        cursor: pointer;
+        color: #fff;
+        background-color: #53a5cfff;
+    }
+}

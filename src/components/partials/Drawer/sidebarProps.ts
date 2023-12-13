@@ -65,9 +65,36 @@ export const sidebar:DrawerData = {
       "fontSize":"16px",
       "items": [
         {
-          "text": "Pagina 4",
-          "method": "/pagina4",
-          "icon": "print",
+          "text": "Personaliza stampe",
+          "method": "/Personalizza-Stampe",
+          "icon": "auto_fix_high",
+          
+        },
+        
+       
+      ]
+    },
+    {
+      "title": "Archivi",
+      "titleColor":"#426389",
+      "fontSize":"16px",
+      "items": [
+        {
+          "text": "Anagrafiche",
+          "method": "/Anagrafiche",
+          "icon": "app_registration",
+          
+        },
+        {
+          "text": "Registro consensi",
+          "method": "/Registro-consensi",
+          "icon": "how_to_reg",
+          
+        },
+        {
+          "text": "Pubblicazioni",
+          "method": "/link esterno???",
+          "icon": "language",
           
         },
         

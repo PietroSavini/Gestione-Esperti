@@ -1,9 +1,9 @@
 .widget{
-    
+    box-shadow: 0px 5px 20px rgb(145, 145, 145);
     border: 2px solid #53a5cfff ;
     border-radius: 10px;
     overflow: hidden;
-    transition: 300ms;
+    transition: 200ms;
     .widget-header{
         display: flex;
         align-items: center;
@@ -27,8 +27,7 @@
     }
 
     &:hover{
-        transform: scale(1.03);
-        border-color:  rgb(98, 129, 255) ;
+        transform: scale(1.01);
         .widget-link p{
             color: rgb(98, 129, 255);
             text-decoration: underline;
