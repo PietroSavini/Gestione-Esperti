@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
@@ -11,22 +11,27 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { DrawerData, Item, Section, Variant } from './DrawerTypes';
 import './Drawer.scss'
+import useThrottled from '../../../app/Hooks/useThrottledHook';
 
 
 
 function ResponsiveDrawer({ data }: { data: DrawerData }) {
 
     const list = data.sections;
-    const position = data.settings.position;
+    const [position, setPosition ] = useState(data.settings.position)
     const location = useLocation();
     const [sidebarInitialState, setSidebarInitialState] =useState<boolean>(data.settings.isOpen)
+    const [isOpen, setOpen] = React.useState(sidebarInitialState);
+    const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
+    const [w, setW] = useState(window.innerWidth);
     let variant: Variant = 'permanent';
     let drawerWidth = data.settings.width;
     let sidebarButtonClass;
     let shrinkedClass = 'shrinked';
     let sidebarClass = 'sidebar';
 
-    if (position === 'top' || position === 'bottom') {
+    
+    if (position === 'top' || position === 'bottom' ) {
         drawerWidth = 'auto';
         variant = 'temporary';
         sidebarButtonClass = position;
@@ -34,23 +39,44 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
         if (sidebarInitialState) {
             setSidebarInitialState(false)
         }
-
+        
     } else if (position === 'right') {
         sidebarClass = 'sidebar-right';
         shrinkedClass = 'shrinked-right';
     }
+    
 
-    const [isOpen, setOpen] = React.useState(sidebarInitialState);
-    const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
 
+    //fn base che imposta il w (window size)
+    const handleResize = () => {
+      setW(window.innerWidth);
+      if(w < 550){
+        setPosition('top')
+      }
+      if(w > 550){
+        setPosition(data.settings.position)
+      }
+
+    };
+    // funzione wrapper di handlesize che utilizza useThrottled in modo che la funzione non viene eseguita ad ogni cambiamento di px di window.innersize
+    const delayedHandleResize = useThrottled(handleResize,100)
+
+    //utilizzo lo useEffect per determinare w (window size) in qunato serve un comportamento specifico sotto gli 800 px
+    useEffect(() => {
+      window.addEventListener("resize", delayedHandleResize);
+      return () => {
+        window.removeEventListener("resize",delayedHandleResize)
+      }
+    }, [w])
+
+    //fn che chiude tutti i menu a tendina quando chiudo la sidebar
     const handleDrawerToggle = () => {
-        //chiudo tutti i menu a tendina quando chiudo la sidebar
         setExpandedItems({})
         setOpen(!isOpen);
     };
 
+    //fn che ci permette di aprire la sidebar se si clicca su un menù a tendina
     const handleSubmenuToggle = (item: string) => {
-        //questo ci permette di aprire la sidebar se si clicca su un menù a tendina
         if (!isOpen) setOpen(true)
         setExpandedItems((prevExpandedItems) => ({
             ...prevExpandedItems,
@@ -58,13 +84,16 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
         }));
     };
 
+    //fn che determina il comportamento della sidebar sul click di un listitem sotto determinate specifiche
     const listItemToggle = () => {
-        const behavior = data.settings.isOpen;
-        if (!behavior || variant === 'temporary') {
+        const behavior = sidebarInitialState;
+        if (!behavior || variant === 'temporary' || w < 800) {
             setExpandedItems({})
             setOpen(false)
         }
     }
+
+    
 
     const renderStandardListItem = (item: Item, index: number) => {
         const to = item.method ? item.method : '';

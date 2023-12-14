@@ -136,5 +136,34 @@ export const data =[
         name:'Sinner Jannik',
         points:25,
         icon:'content_paste_search'
-    }
+    },
+    {
+      id:0,
+      role:'Psicologo',
+      name:'Rossi Mario',
+      points:35,
+      icon:'content_paste_search'
+  },
+  {
+      id:1,
+      role:'Medico Competente',
+      name:'Bianchi Carlo',
+      points:41,
+      icon:'content_paste_search'
+  },
+  {
+      id:2,
+      role:'Medico Competente',
+      name:'Verdi Luca',
+      points:6,
+      icon:'content_paste_search'
+  },
+  {
+      id:3,
+      role:'Traduttore Tedesco',
+      name:'Sinner Jannik',
+      points:25,
+      icon:'content_paste_search'
+  },
+  
 ]

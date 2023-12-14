@@ -39,7 +39,6 @@ export const Widget = (props:props,) => {
     const [isLoading, setIsLoading] = useState<boolean>(true)
     let data = props?.data;
     
-
     const fetchData = async (dataForCall:Options) => {
         //if che controlla se data è salvato nello state redux, se si lo prende da li e returna se no fa la chiamata
         try{
@@ -73,10 +72,10 @@ export const Widget = (props:props,) => {
     //da fare un singolo condizionale per variabile isLoading creando un componente widget-skeleton
     return (
         <>
-            <Box component='div' minWidth={244} className='widget'>
+            <Box component='div'  className='widget'>
             
                 <Link to={data?.to ? data?.to : '/'}>
-                    <Card sx={{minWidth:244}}>
+                    <Card >
                         <CardContent>
                             <Box component='div' className="widget-header">
                                 {isLoading ? (
