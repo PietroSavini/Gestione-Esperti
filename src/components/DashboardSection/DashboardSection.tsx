@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Skeleton,  Divider } from '@mui/material'
-import './Section.scss'
+import './DashboardSection.scss'
 import { AxiosHTTP, Options } from '../../app/AXIOS_ENGINE/AxiosHTTP';
 import { RowBando } from '../SectionRows/Bandi/RowBando';
 import { RowCandidatura } from '../SectionRows/Candidature/RowCandidatura';
 import { Settings } from '../SectionRows/settingsType';
-import { ActionButton } from '../SectionRows/actionButton';
+import { ActionButton } from '../SectionRows/ActionButton';
 
 
 type Props = {
@@ -14,11 +14,12 @@ type Props = {
     data?: Object[];
     handleCall?: Options
     settings?:Settings
+    to: string;
 }
 
-export const Section = (props: Props) => {
+export const DashboardSection = (props: Props) => {
 
-    const { title, handleCall, data , type} = props;
+    const { title, handleCall, data , type, to} = props;
     const [isLoading, setLoader] = useState<boolean>(true)
     const [showAll, setShowAll] = useState<boolean>(false)
     const [outputData,setOutputData] = useState<Object[]>([])
@@ -64,7 +65,7 @@ export const Section = (props: Props) => {
         <>
             {isLoading ? (
                 <>
-                    <Paper elevation={6} sx={{ padding: '1rem 2rem' }}>
+                    <Paper elevation={6} sx={{ padding: '1rem 2rem', marginBottom:'1,5rem' }}>
                         <Skeleton sx={{ marginBottom: '.8rem' }} />
                         <Skeleton sx={{ marginBottom: '.8rem' }} />
                         <Skeleton sx={{ marginBottom: '.8rem' }} />
@@ -78,12 +79,12 @@ export const Section = (props: Props) => {
                     </Paper>
                 </>
             ) : (
-                <Box component='div'>
+                <Box component='div' sx={{marginBottom:'2rem' }} >
                     {title &&
-                        <Typography sx={{paddingLeft:'2rem'}} variant='h6' component={'h3'} fontWeight={600}>{title}</Typography>
+                        <Typography sx={{paddingLeft:'1rem'}} variant='h6' component={'h3'} fontWeight={600}>{title}</Typography>
                     }
 
-                    <Paper sx={{minWidth:'100%', }} elevation={6}>
+                    <Paper  sx={{minWidth:'100%', minHeight:'520px'}} elevation={6}>
                         {outputData && outputData.map((element: any, index: number) => {
                             {switch (type) {
                                 case 'bandi':
@@ -91,7 +92,10 @@ export const Section = (props: Props) => {
                                     return(
                                         <RowBando key={index} data={element} settings={{}} />
                                     )
-                                    
+                                case 'candidature':
+                                    return(
+                                        <RowCandidatura key={index} data={element} settings={{}} />
+                                    )
                                 default:
                                     return(
                                         <>
@@ -103,8 +107,8 @@ export const Section = (props: Props) => {
                         {showAll && 
                             <>
                                 <Divider  />
-                                <Box sx={{padding:'1rem 1rem'}}>
-                                    <ActionButton to={'/Bandi'} text='Vedi tutto' icon='chevron_right'/>
+                                <Box className='show-all-row' sx={{padding:'1rem 1rem'}} >
+                                    <ActionButton to={to} text='Vedi tutto' icon='chevron_right'/>
                                 </Box>
                             </>
                         }

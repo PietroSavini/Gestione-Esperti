@@ -4,8 +4,9 @@ import { useAppDispatch } from '../../app/ReduxTSHooks'
 import { openLoader } from '../../app/store/Slices/loaderSlice';
 import { useEffect } from 'react';
 import { Widget } from '../../components/Widget/Widget';
-import { Section } from '../../components/Section/Section';
+import { DashboardSection } from '../../components/DashboardSection/DashboardSection';
 import { RowBando } from '../../components/SectionRows/Bandi/RowBando';
+import { data, otherData } from '../../components/SectionRows/data';
 
 export const Dashboard = () => {
     const dispatch = useAppDispatch();
@@ -22,115 +23,7 @@ export const Dashboard = () => {
 
     }, [])
     
-   const data =[
-    {
-      id: 0,
-      expirationDate: '15/12/2023',
-      role:'Psicologo',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 1,
-      expirationDate: '28/11/2023',
-      role:'Medico Competente',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 2,
-      expirationDate: '13/01/2024',
-      role:'Traduttore Tedesco',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 3,
-      expirationDate: '13/12/2023',
-      role:'Madrelingua - Inglese',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 4,
-      expirationDate: '15/12/2024',
-      role:'Madrelingua - Tedesco',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 0,
-      expirationDate: '15/12/2023',
-      role:'Psicologo',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 1,
-      expirationDate: '28/11/2023',
-      role:'Medico Competente',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 2,
-      expirationDate: '13/01/2024',
-      role:'Traduttore Tedesco',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 3,
-      expirationDate: '13/12/2023',
-      role:'Madrelingua - Inglese',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 4,
-      expirationDate: '15/12/2024',
-      role:'Madrelingua - Tedesco',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 0,
-      expirationDate: '15/12/2023',
-      role:'Psicologo',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 1,
-      expirationDate: '28/11/2023',
-      role:'Medico Competente',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 2,
-      expirationDate: '13/01/2024',
-      role:'Traduttore Tedesco',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 3,
-      expirationDate: '13/12/2023',
-      role:'Madrelingua - Inglese',
-      icon:'document_scanner',
-      
-    },
-    {
-      id: 4,
-      expirationDate: '15/12/2024',
-      role:'Madrelingua - Tedesco',
-      icon:'document_scanner',
-      
-    },
-    
-   
-  ]
+  
   return (
     <>
       {/* //widgets
@@ -160,7 +53,10 @@ export const Dashboard = () => {
           <Grid container spacing={2}>
             {/* eventuale ciclo di mapping da dati in ingresso */}
               <Grid item xs={12} lg={6}>
-                  <Section title='Bandi in scadenza/scaduti' type='bandi' data={data} />
+                  <DashboardSection to='/bandi' title='Bandi in scadenza/scaduti' type='bandi' data={data} />
+              </Grid> 
+              <Grid item xs={12} lg={6}>
+                <DashboardSection to='/candidature' title='Bandi in scadenza/scaduti' type='candidature' data={otherData} />
               </Grid> 
           </Grid>
         </Box>

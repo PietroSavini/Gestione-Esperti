@@ -3,7 +3,8 @@ import './RowBando.scss'
 import '../rows.scss'
 import { Settings } from '../settingsType';
 import { DateBando } from './DateBando';
-import { ActionButton } from '../actionButton';
+import { ActionButton } from '../ActionButton';
+
 
 type Props ={
   data:{
