@@ -10,7 +10,6 @@ import { Link, useLocation } from 'react-router-dom';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { DrawerData, Item, Section, Variant } from './DrawerTypes';
-
 import './Drawer.scss'
 
 
@@ -20,25 +19,25 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
     const list = data.sections;
     const position = data.settings.position;
     const location = useLocation();
-    let sidebarInitialState: boolean = data.settings.isOpen
+    const [sidebarInitialState, setSidebarInitialState] =useState<boolean>(data.settings.isOpen)
     let variant: Variant = 'permanent';
     let drawerWidth = data.settings.width;
     let sidebarButtonClass;
     let shrinkedClass = 'shrinked';
     let sidebarClass = 'sidebar';
+
     if (position === 'top' || position === 'bottom') {
         drawerWidth = 'auto';
         variant = 'temporary';
         sidebarButtonClass = position;
-        shrinkedClass= '';
-        console.log(sidebarInitialState)
+        shrinkedClass = '';
         if (sidebarInitialState) {
-            sidebarInitialState = !sidebarInitialState
+            setSidebarInitialState(false)
         }
 
     } else if (position === 'right') {
-        sidebarClass = 'sidebar-right'
-        shrinkedClass = 'shrinked-right'
+        sidebarClass = 'sidebar-right';
+        shrinkedClass = 'shrinked-right';
     }
 
     const [isOpen, setOpen] = React.useState(sidebarInitialState);

@@ -378,3 +378,13 @@ a {
         display: block  !important;
     }
 }
+
+@media (max-width: 800px){
+    .css-wc7o8o {
+        width: 55px !important;
+        -webkit-flex-shrink: 0;
+        -ms-flex-negative: 0;
+        flex-shrink: 0;
+    }
+
+}

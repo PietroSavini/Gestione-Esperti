@@ -64,7 +64,7 @@ body {
       flex-grow: 1;
       overflow-y: auto;
       //da vedere padding su main per width inferiori a 600 px in quanto dovrebbe essere applicato solo a sidebar laterali
-      padding: 2rem 1rem 2rem 45px;
+      padding: 2rem 1rem;
       @media screen and (min-width:600px){
         padding: 2rem 1rem;
       }
