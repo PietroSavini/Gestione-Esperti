@@ -1,5 +1,5 @@
 import { Box, Stack, Icon, Typography } from '@mui/material'
-import { ActionButton } from '../ActionButton'
+import { ActionButton } from '../../partials/Buttons/ActionButton'
 import './RowCandidatura.scss'
 import { Settings } from '../settingsType'
 
@@ -27,7 +27,7 @@ export const RowCandidatura = (props:Props) => {
         {props.data.img && <img /> }
         {!props.data.img  && <Icon>{props.data?.icon}</Icon>}
       </Box>
-      <Typography fontSize={settings?.fontSize} color={settings?.fontColor}>{`${role} - ${name}`}</Typography>
+      <Typography variant='body2' fontSize={settings?.fontSize} color={settings?.fontColor}>{`${role} - ${name}`}</Typography>
     </Stack>
     <Stack alignItems={'center'} direction={'row'} width={'30%'} justifyContent={'flex-end'}>
         <Typography fontWeight={600} fontSize={'1.4rem'} className='points'>{points}</Typography>

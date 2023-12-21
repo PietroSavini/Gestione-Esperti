@@ -3,7 +3,8 @@ import { DrawerData } from "./DrawerTypes"
 export const sidebar:DrawerData = {
   settings:{
     position:'left',
-    width:240,
+    //bug al cambio di width sull apertura e chiusura
+    width: 240,
     isOpen: true,
     fontSize:'.8rem',
   },

@@ -11,6 +11,8 @@ import ResponsiveDrawer from './components/partials/Drawer/Drawer';
 import { DrawerData } from './components/partials/Drawer/DrawerTypes';
 import { sidebar } from './components/partials/Drawer/sidebarProps';
 import Loader from './components/partials/Loader/Loader';
+import { SettingsPage } from './pages/SettingsPage/SettingsPage';
+import { TipologiaEsperto } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaEsperto';
 
 
 function App() {  
@@ -62,6 +64,8 @@ function App() {
                 </Route>
              */}
               <Route index element={<Dashboard />}/>
+              <Route path='/impostazioni' element={<SettingsPage />}/>
+             
               {/* Catch All */}
               <Route path='*' element={<NotFound/>}/>
           </Routes>

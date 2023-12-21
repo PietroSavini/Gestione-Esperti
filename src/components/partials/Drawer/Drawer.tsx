@@ -17,11 +17,11 @@ import useThrottled from '../../../app/Hooks/useThrottledHook';
 
 function ResponsiveDrawer({ data }: { data: DrawerData }) {
 
-    const list = data.sections;
-    const [position, setPosition ] = useState(data.settings.position)
     const location = useLocation();
-    const [sidebarInitialState, setSidebarInitialState] =useState<boolean>(data.settings.isOpen)
-    const [isOpen, setOpen] = React.useState(sidebarInitialState);
+    const list = data.sections;
+    const [position, setPosition] = useState(data.settings.position);
+    const sidebarInitialState = data.settings.isOpen;
+    const [isOpen, setOpen] = useState(sidebarInitialState);
     const [expandedItems, setExpandedItems] = useState<{ [key: string]: boolean }>({});
     const [w, setW] = useState(window.innerWidth);
     let variant: Variant = 'permanent';
@@ -30,54 +30,48 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
     let shrinkedClass = 'shrinked';
     let sidebarClass = 'sidebar';
 
-    
-    if (position === 'top' || position === 'bottom' ) {
+    if (position === 'top' || position === 'bottom') {
         drawerWidth = 'auto';
         variant = 'temporary';
         sidebarButtonClass = position;
         shrinkedClass = '';
-        if (sidebarInitialState) {
-            setSidebarInitialState(false)
-        }
-        
     } else if (position === 'right') {
         sidebarClass = 'sidebar-right';
         shrinkedClass = 'shrinked-right';
     }
-    
-
 
     //fn base che imposta il w (window size)
     const handleResize = () => {
-      setW(window.innerWidth);
-      if(w < 550){
-        setPosition('top')
-      }
-      if(w > 550){
-        setPosition(data.settings.position)
-      }
-
+        setW(window.innerWidth);
     };
+
     // funzione wrapper di handlesize che utilizza useThrottled in modo che la funzione non viene eseguita ad ogni cambiamento di px di window.innersize
-    const delayedHandleResize = useThrottled(handleResize,100)
+    const delayedHandleResize = useThrottled(handleResize, 100);
 
     //utilizzo lo useEffect per determinare w (window size) in qunato serve un comportamento specifico sotto gli 800 px
     useEffect(() => {
-      window.addEventListener("resize", delayedHandleResize);
-      return () => {
-        window.removeEventListener("resize",delayedHandleResize)
-      }
-    }, [w])
+        
+        if (w < 550) {
+            setPosition('top');
+        }
+        if (w > 550) {
+            setPosition(data.settings.position);
+        }
+        window.addEventListener("resize", delayedHandleResize);
+        return () => {
+            window.removeEventListener("resize", delayedHandleResize);
+        }
+    }, [w]);
 
     //fn che chiude tutti i menu a tendina quando chiudo la sidebar
     const handleDrawerToggle = () => {
-        setExpandedItems({})
+        setExpandedItems({});
         setOpen(!isOpen);
     };
 
     //fn che ci permette di aprire la sidebar se si clicca su un menù a tendina
     const handleSubmenuToggle = (item: string) => {
-        if (!isOpen) setOpen(true)
+        if (!isOpen) setOpen(true);
         setExpandedItems((prevExpandedItems) => ({
             ...prevExpandedItems,
             [item]: !prevExpandedItems[item],
@@ -93,11 +87,11 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
         }
     }
 
-    
+
 
     const renderStandardListItem = (item: Item, index: number) => {
         const to = item.method ? item.method : '';
-        const isActive = location.pathname === to;
+        const isActive =  (to === '/' && location.pathname === '/') || (to !== '/' && location.pathname.includes(`${to}`));
         return (
             <>
                 <Link to={to} key={`${item.text}-${index}`}>
@@ -124,7 +118,6 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
     const renderMenuListItem = (item: Item, index: number) => {
         const menuItem = `${item.text}-${index}`;
         return (
-
             <>
                 <ListItemButton key={menuItem} onClick={() => handleSubmenuToggle(menuItem)}>
                     <>
@@ -169,8 +162,6 @@ function ResponsiveDrawer({ data }: { data: DrawerData }) {
             </>
         )
     }
-
-
 
     const renderListItem = (item: Item, index: number) => {
 

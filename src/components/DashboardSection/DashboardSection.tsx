@@ -5,7 +5,7 @@ import { AxiosHTTP, Options } from '../../app/AXIOS_ENGINE/AxiosHTTP';
 import { RowBando } from '../SectionRows/Bandi/RowBando';
 import { RowCandidatura } from '../SectionRows/Candidature/RowCandidatura';
 import { Settings } from '../SectionRows/settingsType';
-import { ActionButton } from '../SectionRows/ActionButton';
+import { ActionButton } from '../partials/Buttons/ActionButton';
 
 
 type Props = {

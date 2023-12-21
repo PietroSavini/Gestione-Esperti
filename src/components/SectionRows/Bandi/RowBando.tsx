@@ -3,7 +3,7 @@ import './RowBando.scss'
 import '../rows.scss'
 import { Settings } from '../settingsType';
 import { DateBando } from './DateBando';
-import { ActionButton } from '../ActionButton';
+import { ActionButton } from '../../partials/Buttons/ActionButton';
 
 
 type Props ={
@@ -32,7 +32,7 @@ export const RowBando = (props:Props ) => {
           {props.data.img && <img /> }
           {!props.data.img  && <Icon>{props.data?.icon}</Icon>}
         </Box>
-        <Typography fontSize={settings?.fontSize} color={settings?.fontColor}>{role}</Typography>
+        <Typography variant='body2' fontSize={settings?.fontSize} color={settings?.fontColor}>{role}</Typography>
       </Stack>
       <Stack alignItems={'center'} direction={'row'} width={'50%'} justifyContent={'flex-end'}>
           <DateBando date={expirationDate}/>

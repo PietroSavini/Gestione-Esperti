@@ -73,6 +73,24 @@ body {
   }
 
 }
+
+
+
+.button{
+  border: 1px solid #53a5cfff;
+  border-radius: 10px;
+  margin-left: .5rem;
+  color: #53a5cfff;
+  transition: 200ms;
+  padding: 5px 10px ;
+  
+  
+  &:hover{
+      cursor: pointer;
+      color: #fff;
+      background-color: #53a5cfff;
+  }
+}
   
 h1 {
   font-size: 3.2em;

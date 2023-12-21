@@ -53,10 +53,10 @@ export const Dashboard = () => {
           <Grid container spacing={2}>
             {/* eventuale ciclo di mapping da dati in ingresso */}
               <Grid item xs={12} lg={6}>
-                  <DashboardSection to='/bandi' title='Bandi in scadenza/scaduti' type='bandi' data={data} />
+                  <DashboardSection to='/Bandi' title='Bandi in scadenza/scaduti' type='bandi' data={data} />
               </Grid> 
               <Grid item xs={12} lg={6}>
-                <DashboardSection to='/candidature' title='Bandi in scadenza/scaduti' type='candidature' data={otherData} />
+                <DashboardSection to='/Candidature' title='Ultime candidature ricevute' type='candidature' data={otherData} />
               </Grid> 
           </Grid>
         </Box>
