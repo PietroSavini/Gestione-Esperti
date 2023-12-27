@@ -3,9 +3,10 @@ import { DataGrid } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
 import './DataTable.scss'
 import { Data, Row } from './TipologiaEsperto'
+import { ActionButton } from '../../../../components/partials/Buttons/ActionButton'
 
 type TableData = Data
-
+//implementare lazy loading?  in quanto i dati della pagina in teoria dovrebbero essre gia presenti sullo state e presi da DB all' avvio dell app?
 
 //1) il Componente DataTable accetta un array di oggetti TableData come data
 export const DataTable = (data : TableData) => {
@@ -46,12 +47,17 @@ export const DataTable = (data : TableData) => {
     const columns = [
         {field: 'title', headerName: 'Tipologia', width: 200, sortable:false, filterable:false ,  },
         {field: 'description', headerName: 'Descrizione', width: 350,sortable:false, filterable:false },
-        {field: 'visible', type:'boolean', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>), headerName: 'Visibile', width: 100,sortable:false, filterable:false },
+        {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>), headerName: 'Visibile', width: 200,sortable:false, filterable:false },
+        {field:'actions',  headerName:'azioni',width: 200, renderCell: () => (<ActionButton text='Aggiungi' icon='add_box' direction='row-reverse'/>)}
     ];
 
     useEffect(() => {
-        //salvare dati su redux state, e inviare salvataggio a DB impostando loading della tabella su true fino alla fine della risposta
+        //salvare dati su redux state, e inviare salvataggio a DB 
+        //impostare loader su true per evitare spamming dello switch ed eventuali errori di salvataggio dei dati
+        // OPPURE invece del loader attivare una variabile "isDisabled" sui switch finchè la risposta di salvataggio non avviene
+        //la funzione che poi esegue il salvataggio DEVE avere throttling per ogni evenienza
       console.log(rows)
+
     }, [rows])
     
 
@@ -69,6 +75,7 @@ export const DataTable = (data : TableData) => {
                             paginationModel: { page: 0, pageSize: 10 },
                         },
                     }}
+                    
                     pageSizeOptions={[5, 10]}
                     sx={{
                         padding:'0',
