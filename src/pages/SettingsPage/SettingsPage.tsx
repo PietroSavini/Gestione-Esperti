@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Divider, Stack, Typography } from '@mui/material'
 import './settings.scss'
 import { Link, Outlet} from 'react-router-dom'
@@ -23,10 +23,13 @@ export const SettingsPage = () => {
     
       
     }, [])
+
     const [activeTab, setActiveTab] = useState('Tipologia Esperto')
+
     const handleTabClick = ( string : string) => {
       setActiveTab(string)
     }
+
     const tabs = [
       {
         key:'Tipologia-esperto',
@@ -39,32 +42,35 @@ export const SettingsPage = () => {
         active: activeTab === 'Requisiti e Punteggio'
       }
     ]
-    
-    const fetchedData = [
-      {
-        id:0,
-        title:'Medico competente',
-        description:'medico sportivo per attività semi-agonistica',
-        visible:true,
-      },
-      {
-        id:1,
-        title:'Psicologo',
-        description:'Psicologo espertoi in psicologia infantile',
-        visible:false,
-      },
-      {
-        id:2,
-        title:'DPO',
-        description:'DPO',
-        visible:true,
-      },
-    ]
+
+    //simulazione di dati in arrivo alla pagina tipologiaTesperto
+    const TipologiaEspertoData = {
+      tipologieDiSistema:[
+        {
+          id:0,
+          title:'Medico competente',
+          description:'medico sportivo per attività semi-agonistica',
+          visible:true,
+        },
+        {
+          id:1,
+          title:'Psicologo',
+          description:'Psicologo espertoi in psicologia infantile',
+          visible:false,
+        },
+        {
+          id:2,
+          title:'DPO',
+          description:'DPO',
+          visible:true,
+        },
+      ],
+      tipologiePersonalizzate:[]
+    }
 
   return (
     <>
         <Typography variant='h4' fontWeight={600}>Impostazioni Gestione esperti</Typography>
-        
         <Box display={'flex'} alignItems={'flex-end'} position={'absolute'} sx={{left:'0' , right:'0',  height:'50px', marginBottom:'1.5rem'}}>
           <Divider absolute sx={{bottom:'0', backgroundColor:'#52A5CF', height:'2px'}}/>
           <Stack flexDirection={'row'} sx={{padding:'0 1.5rem'}} className='tab-lables-container'>
@@ -82,7 +88,7 @@ export const SettingsPage = () => {
         
         <Box sx={{marginTop:'5rem'}}>
               {activeTab === 'Tipologia Esperto' ? (
-                <TipologiaEsperto data={fetchedData} />
+                <TipologiaEsperto {...TipologiaEspertoData} />
               ):(
                 <p>requisiti e boh</p>
               )}

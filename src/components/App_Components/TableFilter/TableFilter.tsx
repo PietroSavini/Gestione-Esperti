@@ -1,6 +1,6 @@
 import './TabelFilter.scss'
 import {  Grid, Paper, TextField,Button,FormControl, InputLabel, Select, MenuItem} from '@mui/material';
-import { DataTable } from '../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/DataTable'
+import { DataTable } from '../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/Tables/Table_tipologieDiSistema'
 import { useState } from 'react';
 
 interface UserData {

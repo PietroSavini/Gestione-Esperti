@@ -2,16 +2,30 @@ import { Box, Grid, Switch } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
 import './DataTable.scss'
-import { Data, Row } from './TipologiaEsperto'
-import { ActionButton } from '../../../../components/partials/Buttons/ActionButton'
+import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
 
-type TableData = Data
-//implementare lazy loading?  in quanto i dati della pagina in teoria dovrebbero essre gia presenti sullo state e presi da DB all' avvio dell app?
+type Props ={ 
+    fn? :  Function
+    data: Row[]
+}
 
-//1) il Componente DataTable accetta un array di oggetti TableData come data
-export const DataTable = (data : TableData) => {
-    const tableData = data.data
-    // utilizzo useMemo per memorizzare le Rows derivanti da Data, questo metodo previene ricalcoli non necessari quando il componente renderizza di nuovo
+export type Row = {
+    id:number;
+    title:string,
+    description:string;
+    visible:boolean;
+}
+
+type RowParam ={
+    id:number;
+    value:boolean
+}
+
+export const Table_tipologiePersonalizzate = ({data} : Props ) => {
+    const tableData = data
+    
+    //InitialState
+    // utilizzo useMemo per memorizzare le Rows derivanti da Data, questo metodo offre una migliore ottimizzazione
     const initialRows = React.useMemo(() => {
         if (tableData) {
             return tableData.map(item => ({
@@ -19,6 +33,7 @@ export const DataTable = (data : TableData) => {
 				title: item.title,
                 description: item.description,
                 visible: item.visible ,
+                
 			}));
 		}
 		return [];
@@ -27,38 +42,40 @@ export const DataTable = (data : TableData) => {
     const [rows, setRows] = useState<Row[]>(initialRows)
 
     const handleSwitchChange = (id: number) => {
-        // Crea una nuova array di righe, modificando solo quella specifica
+        // Creo un nuovo array di righe, modificando solo quella specifica
         const updatedRows = rows.map(row => 
           row.id === id ? { ...row, visible: !row.visible } : row
         );
     
-        // Aggiorna lo stato con la nuova array di righe
+        // Aggiorna lo stato con il nuovo array
         setRows(updatedRows);
     };
-    type RowParam ={
-        id:number;
-        value:boolean
-    }
+
+    
+ 
     const VisibleSwitch = ({id, value} : RowParam) => {
         return <Switch onChange={() => handleSwitchChange(id)} checked={value} />;
     };
 
     //dichiaro un array di oggetti "columns" per semplificare la creazione degli Headers delle colonne
     const columns = [
-        {field: 'title', headerName: 'Tipologia', width: 200, sortable:false, filterable:false ,  },
-        {field: 'description', headerName: 'Descrizione', width: 350,sortable:false, filterable:false },
+        {field: 'title', headerName: 'Tipologia', width: 200  },
+        {field: 'description', headerName: 'Descrizione', width: 350},
         {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>), headerName: 'Visibile', width: 200,sortable:false, filterable:false },
-        {field:'actions',  headerName:'azioni',width: 200, renderCell: () => (<ActionButton text='Aggiungi' icon='add_box' direction='row-reverse'/>)}
+        {field:'actions',  headerName:'azioni',width: 200, renderCell: (params:any) => (<ActionButton  text='Elimina' icon='delete' direction='row-reverse'/>), sortable:false, filterable:false }
     ];
 
     useEffect(() => {
-        //salvare dati su redux state, e inviare salvataggio a DB 
-        //impostare loader su true per evitare spamming dello switch ed eventuali errori di salvataggio dei dati
-        // OPPURE invece del loader attivare una variabile "isDisabled" sui switch finchè la risposta di salvataggio non avviene
-        //la funzione che poi esegue il salvataggio DEVE avere throttling per ogni evenienza
-      console.log(rows)
+        //salvare dati su redux state,
 
-    }, [rows])
+        //aprire loader tabella
+        //inviare salvataggio a DB
+        //chiudere loader tabella
+        // OPPURE invece del loader attivare una variabile "isDisabled" sui switch finchè la risposta di salvataggio non avviene
+        setRows(initialRows)
+        
+
+    }, [data])
     
 
   return (
@@ -66,7 +83,6 @@ export const DataTable = (data : TableData) => {
         <Grid container mb={10} ml={15} spacing={2}>
             <Grid item width={'100%'} padding={'0 !important'}>
                 <DataGrid
-                    
                     autoHeight
                     rows={rows}
                     columns={columns}
