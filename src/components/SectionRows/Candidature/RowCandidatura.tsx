@@ -30,8 +30,8 @@ export const RowCandidatura = (props:Props) => {
       <Typography variant='body2' fontSize={settings?.fontSize} color={settings?.fontColor}>{`${role} - ${name}`}</Typography>
     </Stack>
     <Stack alignItems={'center'} direction={'row'} width={'30%'} justifyContent={'flex-end'}>
-        <Typography fontWeight={600} fontSize={'1.4rem'} className='points'>{points}</Typography>
-        <ActionButton to={`/Candidature/Candidatura-${id}`} text='vai' icon='chevron_right'/>
+        <Typography sx={{marginRight:'1rem'}} fontWeight={600} fontSize={'1.4rem'} className='points'>{points}</Typography>
+        <ActionButton color='primary' to={`/Candidature/Candidatura-${id}`} text='vai' icon='chevron_right'/>
     </Stack>
   </Box>
   )

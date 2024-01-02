@@ -36,7 +36,7 @@ export const RowBando = (props:Props ) => {
       </Stack>
       <Stack alignItems={'center'} direction={'row'} width={'50%'} justifyContent={'flex-end'}>
           <DateBando date={expirationDate}/>
-          <ActionButton to={`/Bandi/Bando-${id}`} text='vai' icon='chevron_right'/>
+          <ActionButton color='primary' to={`/Bandi/Bando-${id}`} text='vai' icon='chevron_right'/>
       </Stack>
     </Box>
   )

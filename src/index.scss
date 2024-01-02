@@ -77,18 +77,22 @@ body {
 
 
 .ms_button{
-  border: 1px solid #53a5cfff;
   border-radius: 10px;
-  color: #53a5cfff;
   transition: 200ms;
   padding: 5px 10px ;
-  
-  
-  &:hover{
-      cursor: pointer;
-      color: #fff;
-      background-color: #53a5cfff;
+  border: 1px solid rgb(33, 33, 33);
+  cursor: pointer;
+  &.ms_button-primary{
+    color: #53a5cfff;
+    border: 1px solid #53a5cfff;
+    &:hover{
+        cursor: pointer;
+        color: #fff;
+        background-color: #53a5cfff;
+    }
+
   }
+  
 }
   
 h1 {

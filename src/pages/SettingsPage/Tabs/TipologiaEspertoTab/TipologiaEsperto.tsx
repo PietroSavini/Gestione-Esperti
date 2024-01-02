@@ -34,15 +34,14 @@ export const TipologiaEsperto = (data:Data) => {
         //una volta prese le tipologie (personalizzate e di sistema)
         //salvare i dati presi dalla risposta della chiamata nel Redux Store.
         dispatch(setTipologieData(data))
+        dispatch(closeLoader())
             //le tabelle saranno popolate
       }
       //SE NON E' VUOTO: 
           // non faccio nulla in qunato i dati per le tabelle sono già presenti nel Redux Store
           
       //funzione che avvia processo di update su dtate e su DB alla modifica di TipologiePersonalizzate
-          console.log('tipologie di Sistema: ' , tipologieDiSistema)
-          console.log('tipologie Personalizzate: ' , tipologiePersonalizzate)
-    }, [dispatch, data])
+    }, [data])
 
     //funzione che gestisce apertura e chiusura degli accordion
     const handleChange = (panel: number) => (_: React.SyntheticEvent, isExpanded: boolean) => {
@@ -67,7 +66,7 @@ export const TipologiaEsperto = (data:Data) => {
 
   if(tipologieDiSistema.length !== 0){
     //attualmente gestire la chiusura del loader da qui da problemi, infatti l'apertura e la chiusura del loader andrebbe gestita all'interno dello useEffect quando si esegue la chiamata a DB
-    dispatch(closeLoader())
+    
     return (
       <>
   

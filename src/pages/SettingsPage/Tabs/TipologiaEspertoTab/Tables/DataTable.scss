@@ -10,5 +10,25 @@
     .css-ak0vx-MuiDataGrid-root .MuiDataGrid-cell:focus {
         outline: none;
     }
-    
+    .css-ak0vx-MuiDataGrid-root .MuiDataGrid-columnHeader:focus, .css-ak0vx-MuiDataGrid-root .MuiDataGrid-cell:focus {
+        outline: none;
+    }
+    .css-ak0vx-MuiDataGrid-root .MuiDataGrid-row {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
+        width: fit-content;
+        break-inside: avoid;
+        //non riesco a separare le ROWS in qunato sputtana la table appena provo ad aggiungere del padding, dobbiamo trovare un modo alternat
+    }
+    .MuiDataGrid-columnHeader, .MuiDataGrid-cell{
+        border-right: 1px solid grey;
+    }
+    .dataGrid-actions{
+        display: flex;
+        gap: .5rem;
+    }
 }

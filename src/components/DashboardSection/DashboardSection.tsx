@@ -108,7 +108,7 @@ export const DashboardSection = (props: Props) => {
                             <>
                                 <Divider  />
                                 <Box className='show-all-row' sx={{padding:'1rem 1rem'}} >
-                                    <ActionButton to={to} text='Vedi tutto' icon='chevron_right'/>
+                                    <ActionButton color='primary' to={to} text='Vedi tutto' icon='chevron_right'/>
                                 </Box>
                             </>
                         }

@@ -1,5 +1,5 @@
 import { Box, Grid, Switch } from '@mui/material'
-import { DataGrid } from '@mui/x-data-grid'
+import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
 import './DataTable.scss'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
@@ -77,17 +77,24 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
                 const updatedRows = rows.filter(row => row.id !== id);
                 setRows(updatedRows);
                 dispatch(removeTipologiaPersonalizzata(id));
+                setIsLoading(false)
             //else
             //faccio display di messaggio di errore
       
       };
 
     //dichiaro un array di oggetti "columns" per semplificare la creazione degli Headers delle colonne
-    const columns = [
+    const columns: GridColDef[] = [
         {field: 'title', flex:0.5, minWidth:150, headerName: 'Tipologia', width: 200  },
         {field: 'description',flex:1,minWidth:350, headerName: 'Descrizione', width: 350},
-        {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>), headerName: 'Visibile', width: 200,sortable:false, filterable:false },
-        {field:'actions',  headerName:'azioni',width: 200, renderCell: (params:any) => (<ActionButton  onClick={() => handleDeleteClick(params.id)} text='Elimina' icon='delete' direction='row-reverse'/>), sortable:false, filterable:false }
+        {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>),minWidth: 70, align:'center', headerAlign:'center', flex:.3, headerName:'Visibile', width: 200,sortable:false, filterable:false },
+        {field:'actions', headerAlign:'center', align:'center', headerName:'azioni',width: 200, renderCell: (params:any) => (
+            <div className="dataGrid-actions">
+                <ActionButton color='error' onClick={() => handleDeleteClick(params.id)} text='Elimina' icon='delete' direction='row-reverse'/>
+                <ActionButton color='warning' onClick={() => {}} text='Visualizza' icon='preview' direction='row-reverse'/>
+            </div>
+        ), 
+        sortable:false, filterable:false }
     ];
 
     useEffect(() => {
@@ -97,8 +104,6 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
         //chiudere loader tabella
         // OPPURE invece del loader attivare una variabile "isDisabled" sui switch finchè la risposta di salvataggio non avviene
         setRows(initialRows)
-        console.log('DATA di TIPOLOGIE PERSONALIZZATE', initialRows)
-
     }, [data])
     
 
@@ -113,7 +118,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
                     columns={columns}
                     initialState={{
                         pagination: {
-                            paginationModel: { page: 0, pageSize: 10 },
+                            paginationModel: { page: 0, pageSize: 5 },
                         },
                     }}
                     
