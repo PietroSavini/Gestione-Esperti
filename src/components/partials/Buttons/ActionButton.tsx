@@ -27,7 +27,7 @@ export const ActionButton = (props:Props) => {
             </Box>
           </Link>
         ) : (
-          <Box onClick={onClick} flexDirection={direction ? direction : 'row'} className='ms_button' display={'flex'} alignItems={'center'} justifyContent={'center'}>
+          <Box onClick={onClick} flexDirection={direction ? direction : 'row'} className={`ms_button ms_button-${color}`} display={'flex'} alignItems={'center'} justifyContent={'center'}>
             <Typography className='button-text' variant='caption' >{text}</Typography>
             <Icon fontSize='small' className='button-icon'>{icon}</Icon>
           </Box>

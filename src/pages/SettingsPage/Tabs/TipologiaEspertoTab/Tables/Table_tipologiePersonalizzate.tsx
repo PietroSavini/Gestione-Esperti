@@ -61,13 +61,6 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
                 //faccio uscire un messaggio di errore in qulache modo
     };
 
-
-    
- 
-    const VisibleSwitch = ({id, value} : RowParam) => {
-        return <Switch onChange={() => handleSwitchChange(id)} checked={value} />;
-    };
-
     const handleDeleteClick = (id: number) => {
         //apro il loader tabella
         setIsLoading(true)
@@ -81,28 +74,32 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
             //else
             //faccio display di messaggio di errore
       
-      };
+    };
+
+    const DataGridActions = ({id}:{id:number}) => {
+        return(
+            <div className='dataGrid-actions'>
+                <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e fa lo SHOW della tipologia*/}}} text='Visualizza' icon='preview' direction='row-reverse'/>
+                <ActionButton color='error' onClick={() => handleDeleteClick(id)} text='Elimina' icon='delete' direction='row-reverse' /> 
+            </div>
+        )
+    }
+ 
+    const VisibleSwitch = ({id, value} : RowParam) => {
+        return <Switch id={`${id}`} onChange={() => handleSwitchChange(id)} checked={value} />;
+    };
+
 
     //dichiaro un array di oggetti "columns" per semplificare la creazione degli Headers delle colonne
     const columns: GridColDef[] = [
         {field: 'title', flex:0.5, minWidth:150, headerName: 'Tipologia', width: 200  },
         {field: 'description',flex:1,minWidth:350, headerName: 'Descrizione', width: 350},
         {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>),minWidth: 70, align:'center', headerAlign:'center', flex:.3, headerName:'Visibile', width: 200,sortable:false, filterable:false },
-        {field:'actions', headerAlign:'center', align:'center', headerName:'azioni',width: 200, renderCell: (params:any) => (
-            <div className="dataGrid-actions">
-                <ActionButton color='error' onClick={() => handleDeleteClick(params.id)} text='Elimina' icon='delete' direction='row-reverse'/>
-                <ActionButton color='warning' onClick={() => {}} text='Visualizza' icon='preview' direction='row-reverse'/>
-            </div>
-        ), 
+        {field:'actions', headerAlign:'center', align:'center', headerName:'azioni',width: 200, renderCell: (params:any) => (<DataGridActions id={params.id} />), 
         sortable:false, filterable:false }
     ];
 
     useEffect(() => {
-
-        //aprire loader tabella
-        //inviare salvataggio a DB
-        //chiudere loader tabella
-        // OPPURE invece del loader attivare una variabile "isDisabled" sui switch finchè la risposta di salvataggio non avviene
         setRows(initialRows)
     }, [data])
     

@@ -24,6 +24,7 @@
         break-inside: avoid;
         //non riesco a separare le ROWS in qunato sputtana la table appena provo ad aggiungere del padding, dobbiamo trovare un modo alternat
     }
+    //debug per bordi colonne
     .MuiDataGrid-columnHeader, .MuiDataGrid-cell{
         border-right: 1px solid grey;
     }

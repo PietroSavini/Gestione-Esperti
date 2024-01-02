@@ -82,15 +82,33 @@ body {
   padding: 5px 10px ;
   border: 1px solid rgb(33, 33, 33);
   cursor: pointer;
+  //primario
   &.ms_button-primary{
     color: #53a5cfff;
     border: 1px solid #53a5cfff;
     &:hover{
-        cursor: pointer;
         color: #fff;
         background-color: #53a5cfff;
     }
 
+  }
+  //warning
+  &.ms_button-warning{
+    color: rgb(255, 166, 0);
+    border: 1px solid rgb(255, 166, 0);
+    &:hover{
+        color: #fff;
+        background-color: rgb(255, 166, 0);
+    }
+  }
+  //error
+  &.ms_button-error{
+    color: rgb(255, 34, 0);
+    border: 1px solid rgb(255, 34, 0);
+    &:hover{
+        color: #fff;
+        background-color: rgb(255, 34, 0);
+    }
   }
   
 }

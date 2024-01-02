@@ -74,8 +74,17 @@ export const Table_tipologieDiSistema = ({data, fn, loader} : Props ) => {
     }
  
     const VisibleSwitch = ({id, value} : RowParam) => {
-        return <Switch onChange={() => handleSwitchChange(id)} checked={value} />;
+        return <Switch id={`${id}`} onChange={() => handleSwitchChange(id)} checked={value} />;
     };
+
+    const DataGridActions = ({id}:{id:number}) => {
+        return(
+            <div className='dataGrid-actions'>
+                <ActionButton color='primary' onClick={() => handleAddClick(id)} text='Duplica' icon='content_copy' direction='row-reverse' /> 
+                <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e fa lo SHOW della tipologia*/}}} text='Visualizza' icon='preview' direction='row-reverse'/>
+            </div>
+        )
+    }
 
    
     //dichiaro un array di oggetti "columns" per semplificare la creazione degli Headers delle colonne
@@ -83,14 +92,7 @@ export const Table_tipologieDiSistema = ({data, fn, loader} : Props ) => {
         {field: 'title', headerName: 'Tipologia', minWidth:150, flex:0.5, sortable:false, filterable:false ,  },
         {field: 'description', headerName: 'Descrizione', flex:1, minWidth:350 ,sortable:false, filterable:false },
         {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>), headerName: 'Visibile', minWidth: 70, align:'center', headerAlign:'center', flex:.3, sortable:false, filterable:false },
-        {field: 'actions', headerAlign:'center', align:'center',headerName:'azioni', width: 200 , sortable:false, filterable:false ,
-            renderCell: (params:any) => (
-            <div className='dataGrid-actions'>
-                <ActionButton color='primary' onClick={() => handleAddClick(params.id)} text='Duplica' icon='content_copy' direction='row-reverse'/> 
-                <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e fa lo SHOW della tipologia*/}}} text='Visualizza' icon='preview' direction='row-reverse'/>
-            </div>
-            )
-        }
+        {field: 'actions', headerAlign:'center', align:'center',headerName:'azioni', width: 200 , sortable:false, filterable:false , renderCell: (params:any) => (<DataGridActions id={params.id as number}/>)}
     ]; 
 
   return (
