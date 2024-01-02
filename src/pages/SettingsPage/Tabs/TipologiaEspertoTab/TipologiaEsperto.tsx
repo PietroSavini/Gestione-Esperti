@@ -6,7 +6,6 @@ import { useAppDispatch } from '../../../../app/ReduxTSHooks'
 import { useSelector } from 'react-redux'
 import { addTipologiaPersonalizzata, selectTipologie, setTipologieData } from '../../../../app/store/Slices/TipologieSlice'
 import { closeLoader, openLoader } from '../../../../app/store/Slices/loaderSlice'
-import Loader from '../../../../components/partials/Loader/Loader'
 
 //implementare lazy loading?  in quanto i dati della pagina in teoria dovrebbero essre gia presenti sullo state e presi da DB all' avvio dell app?
 
@@ -67,6 +66,7 @@ export const TipologiaEsperto = (data:Data) => {
     }
 
   if(tipologieDiSistema.length !== 0){
+    //attualmente gestire la chiusura del loader da qui da problemi, infatti l'apertura e la chiusura del loader andrebbe gestita all'interno dello useEffect quando si esegue la chiamata a DB
     dispatch(closeLoader())
     return (
       <>

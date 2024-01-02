@@ -3,6 +3,8 @@ import { DataGrid } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
 import './DataTable.scss'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
+import { useAppDispatch } from '../../../../../app/ReduxTSHooks'
+import { removeTipologiaPersonalizzata, toggleVisible } from '../../../../../app/store/Slices/TipologieSlice'
 
 type Props ={ 
     fn? :  Function
@@ -23,7 +25,7 @@ type RowParam ={
 
 export const Table_tipologiePersonalizzate = ({data} : Props ) => {
     const tableData = data
-    
+    const dispatch = useAppDispatch()
     //InitialState
     // utilizzo useMemo per memorizzare le Rows derivanti da Data, questo metodo offre una migliore ottimizzazione
     const initialRows = React.useMemo(() => {
@@ -40,16 +42,25 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
 	}, [data]);
 
     const [rows, setRows] = useState<Row[]>(initialRows)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
+    
     const handleSwitchChange = (id: number) => {
-        // Creo un nuovo array di righe, modificando solo quella specifica
+        // aggiorno l'evento in UI facendo cambiare lo switch
         const updatedRows = rows.map(row => 
           row.id === id ? { ...row, visible: !row.visible } : row
         );
-    
-        // Aggiorna lo stato con il nuovo array
-        setRows(updatedRows);
+        setIsLoading(true)
+        //faccio chiamata ad endpoint per il salavataggio dei dati in DB
+            //se la risposta è positiva
+                // Aggiorna lo stato con il nuovo valore dello switch
+                setRows(updatedRows)
+                dispatch(toggleVisible(id))
+                setIsLoading(false)
+            //se la risposta è negativa
+                //faccio uscire un messaggio di errore in qulache modo
     };
+
 
     
  
@@ -57,23 +68,36 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
         return <Switch onChange={() => handleSwitchChange(id)} checked={value} />;
     };
 
+    const handleDeleteClick = (id: number) => {
+        //apro il loader tabella
+        setIsLoading(true)
+        //chiamata ad endpoint 'destroy' di DB 
+            //se risposta OK
+                // Rimozione dalla tabella e dalla Redux state
+                const updatedRows = rows.filter(row => row.id !== id);
+                setRows(updatedRows);
+                dispatch(removeTipologiaPersonalizzata(id));
+            //else
+            //faccio display di messaggio di errore
+      
+      };
+
     //dichiaro un array di oggetti "columns" per semplificare la creazione degli Headers delle colonne
     const columns = [
-        {field: 'title', headerName: 'Tipologia', width: 200  },
-        {field: 'description', headerName: 'Descrizione', width: 350},
+        {field: 'title', flex:0.5, minWidth:150, headerName: 'Tipologia', width: 200  },
+        {field: 'description',flex:1,minWidth:350, headerName: 'Descrizione', width: 350},
         {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>), headerName: 'Visibile', width: 200,sortable:false, filterable:false },
-        {field:'actions',  headerName:'azioni',width: 200, renderCell: (params:any) => (<ActionButton  text='Elimina' icon='delete' direction='row-reverse'/>), sortable:false, filterable:false }
+        {field:'actions',  headerName:'azioni',width: 200, renderCell: (params:any) => (<ActionButton  onClick={() => handleDeleteClick(params.id)} text='Elimina' icon='delete' direction='row-reverse'/>), sortable:false, filterable:false }
     ];
 
     useEffect(() => {
-        //salvare dati su redux state,
 
         //aprire loader tabella
         //inviare salvataggio a DB
         //chiudere loader tabella
         // OPPURE invece del loader attivare una variabile "isDisabled" sui switch finchè la risposta di salvataggio non avviene
         setRows(initialRows)
-        
+        console.log('DATA di TIPOLOGIE PERSONALIZZATE', initialRows)
 
     }, [data])
     
@@ -84,6 +108,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
             <Grid item width={'100%'} padding={'0 !important'}>
                 <DataGrid
                     autoHeight
+                    loading={isLoading}
                     rows={rows}
                     columns={columns}
                     initialState={{
