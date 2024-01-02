@@ -60,7 +60,7 @@ export const Table_tipologieDiSistema = ({data, fn, loader} : Props ) => {
                 dispatch(toggleVisible(id))
                 setIsLoading(false)
             //se la risposta è negativa
-                //faccio uscire un messaggio di errore in qulache modo
+                //faccio uscire un messaggio di errore
     };
 
     const handleAddClick = (id:number ) => {
