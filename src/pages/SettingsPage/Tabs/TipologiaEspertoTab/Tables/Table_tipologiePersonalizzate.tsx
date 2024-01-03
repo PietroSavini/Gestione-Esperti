@@ -34,8 +34,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
                 id: item.id,
 				title: item.title,
                 description: item.description,
-                visible: item.visible ,
-                
+                visible: item.visible,
 			}));
 		}
 		return [];
@@ -44,23 +43,27 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
     const [rows, setRows] = useState<Row[]>(initialRows)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    
+    /*Fn che gestisce il click dello switch in UI e su DB*/
     const handleSwitchChange = (id: number) => {
         // aggiorno l'evento in UI facendo cambiare lo switch
         const updatedRows = rows.map(row => 
           row.id === id ? { ...row, visible: !row.visible } : row
         );
+        //apro loader tabella
         setIsLoading(true)
         //faccio chiamata ad endpoint per il salavataggio dei dati in DB
             //se la risposta è positiva
-                // Aggiorna lo stato con il nuovo valore dello switch
+                // aggiorno UI
                 setRows(updatedRows)
+                // Aggiorno lo state con il nuovo valore dello switch
                 dispatch(toggleVisible(id))
+                //loader tabella false
                 setIsLoading(false)
             //se la risposta è negativa
-                //faccio uscire un messaggio di errore in qulache modo
+                //faccio uscire un messaggio di errore 
     };
 
+    /* Fn per cancellazione Row tabella sia UI che DB*/
     const handleDeleteClick = (id: number) => {
         //apro il loader tabella
         setIsLoading(true)
@@ -72,35 +75,38 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
                 dispatch(removeTipologiaPersonalizzata(id));
                 setIsLoading(false)
             //else
-            //faccio display di messaggio di errore
+                //faccio display di messaggio di errore
+                //non cambio la UI
       
     };
 
+    /* componente che renderizza i pulsanti azione all'interno della tabella */
     const DataGridActions = ({id}:{id:number}) => {
         return(
             <div className='dataGrid-actions'>
+                <ActionButton color='primary' onClick={() => {{/*rendering pagina che accetta id ROW e permette la modifica dell'elemento*/}}} text='Modifica' icon='edit' direction='row-reverse'/>
                 <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e fa lo SHOW della tipologia*/}}} text='Visualizza' icon='preview' direction='row-reverse'/>
                 <ActionButton color='error' onClick={() => handleDeleteClick(id)} text='Elimina' icon='delete' direction='row-reverse' /> 
             </div>
         )
     }
- 
+    /* componente che renderizza lo switch MUI nella tabella */
     const VisibleSwitch = ({id, value} : RowParam) => {
         return <Switch id={`${id}`} onChange={() => handleSwitchChange(id)} checked={value} />;
     };
 
 
-    //dichiaro un array di oggetti "columns" per semplificare la creazione degli Headers delle colonne
+    // array di oggetti "columns" per semplificare la creazione delle colonne
     const columns: GridColDef[] = [
         {field: 'title', flex:0.5, minWidth:150, headerName: 'Tipologia', width: 200  },
         {field: 'description',flex:1,minWidth:350, headerName: 'Descrizione', width: 350},
         {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>),minWidth: 70, align:'center', headerAlign:'center', flex:.3, headerName:'Visibile', width: 200,sortable:false, filterable:false },
-        {field:'actions', headerAlign:'center', align:'center', headerName:'azioni',width: 200, renderCell: (params:any) => (<DataGridActions id={params.id} />), 
-        sortable:false, filterable:false }
+        {field:'actions', headerAlign:'center', align:'center', headerName:'azioni', width: 320, renderCell: (params:any) => (<DataGridActions id={params.id} />), sortable:false, filterable:false }
     ];
 
     useEffect(() => {
         setRows(initialRows)
+
     }, [data])
     
 

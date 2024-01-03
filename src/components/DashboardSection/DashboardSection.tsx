@@ -84,7 +84,7 @@ export const DashboardSection = (props: Props) => {
                         <Typography sx={{paddingLeft:'1rem'}} variant='h6' component={'h3'} fontWeight={600}>{title}</Typography>
                     }
 
-                    <Paper  sx={{minWidth:'100%', minHeight:'520px'}} elevation={6}>
+                    <Paper  sx={{minWidth:'100%', minHeight:'548px'}} elevation={6}>
                         {outputData && outputData.map((element: any, index: number) => {
                             {switch (type) {
                                 case 'bandi':

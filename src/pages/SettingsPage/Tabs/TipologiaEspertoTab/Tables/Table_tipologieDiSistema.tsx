@@ -92,7 +92,7 @@ export const Table_tipologieDiSistema = ({data, fn, loader} : Props ) => {
         {field: 'title', headerName: 'Tipologia', minWidth:150, flex:0.5, sortable:false, filterable:false ,  },
         {field: 'description', headerName: 'Descrizione', flex:1, minWidth:350 ,sortable:false, filterable:false },
         {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>), headerName: 'Visibile', minWidth: 70, align:'center', headerAlign:'center', flex:.3, sortable:false, filterable:false },
-        {field: 'actions', headerAlign:'center', align:'center',headerName:'azioni', width: 200 , sortable:false, filterable:false , renderCell: (params:any) => (<DataGridActions id={params.id as number}/>)}
+        {field: 'actions', headerAlign:'center', align:'center',headerName:'azioni',  width: 320 , sortable:false, filterable:false , renderCell: (params:any) => (<DataGridActions id={params.id as number}/>)}
     ]; 
 
   return (
