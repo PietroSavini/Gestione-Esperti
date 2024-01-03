@@ -89,7 +89,7 @@ export const Table_tipologieDiSistema = ({data, fn, loader} : Props ) => {
    
     //dichiaro un array di oggetti "columns" per semplificare la creazione degli Headers delle colonne
     const columns:GridColDef[] = [
-        {field: 'title', headerName: 'Tipologia', minWidth:150, flex:0.5, sortable:false, filterable:false ,  },
+        {field: 'title', headerName: 'Tipologia', minWidth:150, flex:0.3, sortable:false, filterable:false ,  },
         {field: 'description', headerName: 'Descrizione', flex:1, minWidth:350 ,sortable:false, filterable:false },
         {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>), headerName: 'Visibile', minWidth: 70, align:'center', headerAlign:'center', flex:.3, sortable:false, filterable:false },
         {field: 'actions', headerAlign:'center', align:'center',headerName:'azioni',  width: 320 , sortable:false, filterable:false , renderCell: (params:any) => (<DataGridActions id={params.id as number}/>)}

@@ -88,7 +88,6 @@ export const DashboardSection = (props: Props) => {
                         {outputData && outputData.map((element: any, index: number) => {
                             {switch (type) {
                                 case 'bandi':
-                               
                                     return(
                                         <RowBando key={index} data={element} settings={{}} />
                                     )

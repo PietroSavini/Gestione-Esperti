@@ -1,10 +1,11 @@
-import { Box, Grid, Switch } from '@mui/material'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Switch } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
 import './DataTable.scss'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks'
 import { removeTipologiaPersonalizzata, toggleVisible } from '../../../../../app/store/Slices/TipologieSlice'
+import { DeleteButtonWithDialog } from '../../../../../components/partials/Buttons/DeleteButtonWithDialog'
 
 type Props ={ 
     fn? :  Function
@@ -80,13 +81,17 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
       
     };
 
+   
     /* componente che renderizza i pulsanti azione all'interno della tabella */
-    const DataGridActions = ({id}:{id:number}) => {
+    const DataGridActions = ({params}:any) => {
+        //estraggo i valori della ROW
+        const { row } = params 
+
         return(
             <div className='dataGrid-actions'>
                 <ActionButton color='primary' onClick={() => {{/*rendering pagina che accetta id ROW e permette la modifica dell'elemento*/}}} text='Modifica' icon='edit' direction='row-reverse'/>
                 <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e fa lo SHOW della tipologia*/}}} text='Visualizza' icon='preview' direction='row-reverse'/>
-                <ActionButton color='error' onClick={() => handleDeleteClick(id)} text='Elimina' icon='delete' direction='row-reverse' /> 
+                <DeleteButtonWithDialog row={row as Row} successFn={handleDeleteClick}/>
             </div>
         )
     }
@@ -98,10 +103,10 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
 
     // array di oggetti "columns" per semplificare la creazione delle colonne
     const columns: GridColDef[] = [
-        {field: 'title', flex:0.5, minWidth:150, headerName: 'Tipologia', width: 200  },
+        {field: 'title', flex:0.3, minWidth:150, headerName: 'Tipologia', width: 200  },
         {field: 'description',flex:1,minWidth:350, headerName: 'Descrizione', width: 350},
         {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>),minWidth: 70, align:'center', headerAlign:'center', flex:.3, headerName:'Visibile', width: 200,sortable:false, filterable:false },
-        {field:'actions', headerAlign:'center', align:'center', headerName:'azioni', width: 320, renderCell: (params:any) => (<DataGridActions id={params.id} />), sortable:false, filterable:false }
+        {field:'actions', headerAlign:'center', align:'center', headerName:'azioni', width: 320, renderCell: (params:any) => (<DataGridActions params={params} />), sortable:false, filterable:false }
     ];
 
     useEffect(() => {
