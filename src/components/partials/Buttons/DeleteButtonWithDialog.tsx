@@ -4,13 +4,12 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import { Row } from "../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/Tables/Table_tipologieDiSistema"
 
 
-export const DeleteButtonWithDialog = ({row ,successFn} : {row:Row, successFn:Function})=> {
+export const DeleteButtonWithDialog = ({row ,successFn} : {row:Row, successFn:Function}) => {
         
-    const [ open, setOpen ] = useState<boolean>(false)
-    // handleDeleteClick(id)
-    const { title, id } = row as Row
+    const [ open, setOpen ] = useState<boolean>(false);
+    const { title, id } = row as Row;
     const handleSuccess = (id:number) => {
-        successFn(id)
+        successFn(id);
     }
 
     return (
