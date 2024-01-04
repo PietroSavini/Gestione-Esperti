@@ -1,34 +1,34 @@
-import { Box, Grid, Switch } from '@mui/material'
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
-import React, { useEffect, useState } from 'react'
+import { Box, Grid, Pagination, PaginationItem, Switch, TablePaginationProps } from '@mui/material'
+import { DataGrid, GridColDef, GridPagination, gridPageCountSelector, useGridApiContext, useGridSelector } from '@mui/x-data-grid'
+import React, {  useState } from 'react'
 import './DataTable.scss'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
 import {v4 as uuidv4} from 'uuid'
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks'
-import { toggleVisible } from '../../../../../app/store/Slices/TipologieSlice'
+import { addTipologiaPersonalizzata, toggleVisible } from '../../../../../app/store/Slices/TipologieSlice'
+import { DuplicateButtonWithDialog } from '../../../../../components/partials/Buttons/DuplicateButtonWithDialog'
+import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination'
 
 type Props ={ 
     fn? :  Function
     data: Row[]
-    loader:boolean;
 }
 
 export type Row = {
-    id:number;
+    id:string;
     title:string,
     description:string;
     visible:boolean;
 }
 
 type RowParam ={
-    id:number;
+    id:string;
     value:boolean
 }
 
-export const Table_tipologieDiSistema = ({data, fn, loader} : Props ) => {
+export const Table_tipologieDiSistema = ({data} : Props ) => {
     const dispatch = useAppDispatch()
     const tableData = data
-    const addCustomModelRow = fn
     //InitialState
     // utilizzo useMemo per memorizzare le Rows derivanti da Data, questo metodo offre una migliore ottimizzazione
     const initialRows = React.useMemo(() => {
@@ -47,7 +47,7 @@ export const Table_tipologieDiSistema = ({data, fn, loader} : Props ) => {
     const [rows, setRows] = useState<Row[]>(initialRows)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    const handleSwitchChange = (id: number) => {
+    const handleSwitchChange = (id: string) => {
         // aggiorno l'evento in UI facendo cambiare lo switch
         const updatedRows = rows.map(row => 
           row.id === id ? { ...row, visible: !row.visible } : row
@@ -63,13 +63,11 @@ export const Table_tipologieDiSistema = ({data, fn, loader} : Props ) => {
                 //faccio uscire un messaggio di errore
     };
 
-    const handleAddClick = (id:number ) => {
-        const rowObj = rows[id]
+    const handleAddClick = (row:Row) => {
+        const rowObj = row
         const newId = uuidv4()
         const newRow = {...rowObj, id:newId}
-        if(addCustomModelRow){
-            addCustomModelRow(newRow)
-        }   
+        dispatch(addTipologiaPersonalizzata(newRow))
        
     }
  
@@ -77,10 +75,12 @@ export const Table_tipologieDiSistema = ({data, fn, loader} : Props ) => {
         return <Switch id={`${id}`} onChange={() => handleSwitchChange(id)} checked={value} />;
     };
 
-    const DataGridActions = ({id}:{id:number}) => {
+    const DataGridActions = ({params}:{params:any}) => {
+        const { row } = params.row
+
         return(
             <div className='dataGrid-actions'>
-                <ActionButton color='primary' onClick={() => handleAddClick(id)} text='Duplica' icon='content_copy' direction='row-reverse' /> 
+                <DuplicateButtonWithDialog row={ row } successFn={handleAddClick} />
                 <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e fa lo SHOW della tipologia*/}}} text='Visualizza' icon='preview' direction='row-reverse'/>
             </div>
         )
@@ -92,30 +92,46 @@ export const Table_tipologieDiSistema = ({data, fn, loader} : Props ) => {
         {field: 'title', headerName: 'Tipologia', minWidth:150, flex:0.3, sortable:false, filterable:false ,  },
         {field: 'description', headerName: 'Descrizione', flex:1, minWidth:350 ,sortable:false, filterable:false },
         {field: 'visible', renderCell: (params:any) => (<VisibleSwitch value={params.value} id={params.id}/>), headerName: 'Visibile', minWidth: 70, align:'center', headerAlign:'center', flex:.3, sortable:false, filterable:false },
-        {field: 'actions', headerAlign:'center', align:'center',headerName:'azioni',  width: 320 , sortable:false, filterable:false , renderCell: (params:any) => (<DataGridActions id={params.id as number}/>)}
+        {field: 'actions', headerAlign:'center', align:'center',headerName:'azioni',  width: 320 , sortable:false, filterable:false , renderCell: (params:any) => (<DataGridActions params={params}/>)}
     ]; 
+
+    const localText = {
+        noRowsLabel: 'Nessuna riga trovata',
+        page: 'Pagina',
+        of: 'di',
+        rowsPerPage: 'righe per pagina',
+    }
+ 
 
   return (
     <Box className="dataTable" >
         <Grid container mb={10} ml={15} spacing={2}>
             <Grid item width={'100%'} padding={'0 !important'}>
                 <DataGrid
+                    
+                    hideFooterSelectedRowCount
                     loading={isLoading}
                     autoHeight
                     rows={rows}
                     columns={columns}
                     initialState={{
                         pagination: {
-                            paginationModel: { page: 0, pageSize: 5 },
+                            paginationModel: { page: 0, pageSize: 1 },
+                            
                         },
                     }}
-                    
-                    pageSizeOptions={[5, 10]}
+                    pageSizeOptions={[1, 10, 20, 50]}
                     sx={{
                         padding:'0',
                         fontSize: 14,
-                        
                     }}
+                    localeText={{
+                        noRowsLabel:'Nessun elemento trovato',
+                        MuiTablePagination: {
+                            labelRowsPerPage: 'Righe per pagina:',
+                        },
+                    }}
+                    
                 />
             </Grid>
         </Grid>

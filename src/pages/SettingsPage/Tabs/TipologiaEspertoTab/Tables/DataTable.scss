@@ -32,4 +32,9 @@
         display: flex;
         gap: .5rem;
     }
+    
+    p.MuiTablePagination-displayedRows{
+        display: none;
+    }
+   
 }

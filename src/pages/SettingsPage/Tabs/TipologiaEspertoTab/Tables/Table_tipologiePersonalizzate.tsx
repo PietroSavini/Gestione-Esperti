@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Slide, Switch } from '@mui/material'
+import { Box, Grid, Switch } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
 import './DataTable.scss'
@@ -6,6 +6,7 @@ import { ActionButton } from '../../../../../components/partials/Buttons/ActionB
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks'
 import { removeTipologiaPersonalizzata, toggleVisible } from '../../../../../app/store/Slices/TipologieSlice'
 import { DeleteButtonWithDialog } from '../../../../../components/partials/Buttons/DeleteButtonWithDialog'
+import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination'
 
 type Props ={ 
     fn? :  Function
@@ -13,14 +14,14 @@ type Props ={
 }
 
 export type Row = {
-    id:number;
+    id:string;
     title:string,
     description:string;
     visible:boolean;
 }
 
 type RowParam ={
-    id:number;
+    id:string;
     value:boolean
 }
 
@@ -45,7 +46,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     /*Fn che gestisce il click dello switch in UI e su DB*/
-    const handleSwitchChange = (id: number) => {
+    const handleSwitchChange = (id: string) => {
         // aggiorno l'evento in UI facendo cambiare lo switch
         const updatedRows = rows.map(row => 
           row.id === id ? { ...row, visible: !row.visible } : row
@@ -65,7 +66,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
     };
 
     /* Fn per cancellazione Row tabella sia UI che DB*/
-    const handleDeleteClick = (id: number) => {
+    const handleDeleteClick = (id: string) => {
         //apro il loader tabella
         setIsLoading(true)
         //chiamata ad endpoint 'destroy' di DB 
@@ -95,6 +96,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
             </div>
         )
     }
+    
     /* componente che renderizza lo switch MUI nella tabella */
     const VisibleSwitch = ({id, value} : RowParam) => {
         return <Switch id={`${id}`} onChange={() => handleSwitchChange(id)} checked={value} />;
@@ -120,21 +122,29 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
         <Grid container mb={10} ml={15} spacing={2}>
             <Grid item width={'100%'} padding={'0 !important'}>
                 <DataGrid
+                    slots={{
+                        pagination: CustomPagination,
+                    }}
+                    hideFooterSelectedRowCount
                     autoHeight
                     loading={isLoading}
                     rows={rows}
                     columns={columns}
                     initialState={{
                         pagination: {
-                            paginationModel: { page: 0, pageSize: 5 },
+                            paginationModel: { page: 0, pageSize: 1 },
                         },
                     }}
-                    
-                    pageSizeOptions={[5, 10]}
+                    pageSizeOptions={[1, 10, 20, 50]}
                     sx={{
                         padding:'0',
                         fontSize: 14,
-                        
+                    }}
+                    localeText={{
+                        noRowsLabel:'Nessun elemento trovato',
+                        MuiTablePagination: {
+                            labelRowsPerPage: 'Righe per pagina:',
+                        },
                     }}
                 />
             </Grid>

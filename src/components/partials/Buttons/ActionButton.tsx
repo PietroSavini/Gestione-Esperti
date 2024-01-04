@@ -1,4 +1,4 @@
-import { Box, Typography, Icon, Stack } from '@mui/material'
+import { Box, Typography, Icon } from '@mui/material'
 import { Link } from 'react-router-dom'
 
 type Props ={ 

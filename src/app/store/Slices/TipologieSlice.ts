@@ -23,7 +23,7 @@ const tipologieSlice = createSlice({
     addTipologiaPersonalizzata: (state, action: PayloadAction<Row>) => {
       state.tipologiePersonalizzate.push(action.payload);
     },
-    toggleVisible: (state, action: PayloadAction<number>) => {
+    toggleVisible: (state, action: PayloadAction<string>) => {
       const indexDiSistema = state.tipologieDiSistema.findIndex(row => row.id === action.payload);
       if (indexDiSistema !== -1) {
         state.tipologieDiSistema[indexDiSistema].visible = !state.tipologieDiSistema[indexDiSistema].visible;
@@ -34,7 +34,7 @@ const tipologieSlice = createSlice({
         state.tipologiePersonalizzate[indexPersonalizzate].visible = !state.tipologiePersonalizzate[indexPersonalizzate].visible;
       }
     },
-    removeTipologiaPersonalizzata: (state, action: PayloadAction<number>) => {
+    removeTipologiaPersonalizzata: (state, action: PayloadAction<string>) => {
       state.tipologiePersonalizzate = state.tipologiePersonalizzate.filter(row => row.id !== action.payload);
     },
   }});

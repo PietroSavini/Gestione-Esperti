@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Table_tipologiePersonalizzate } from './Tables/Table_tipologiePersonalizzate'
 import { useAppDispatch } from '../../../../app/ReduxTSHooks'
 import { useSelector } from 'react-redux'
-import { addTipologiaPersonalizzata, selectTipologie, setTipologieData } from '../../../../app/store/Slices/TipologieSlice'
+import { selectTipologie, setTipologieData } from '../../../../app/store/Slices/TipologieSlice'
 import { closeLoader, openLoader } from '../../../../app/store/Slices/loaderSlice'
 
 //implementare lazy loading?  in quanto i dati della pagina in teoria dovrebbero essre gia presenti sullo state e presi da DB all' avvio dell app?
@@ -13,6 +13,7 @@ type Data = {
   tipologieDiSistema: Row[],
   tipologiePersonalizzate:Row[]
 }
+
 //il parametro 'data' passato al componente non dovrebbe esistere in situazione reale, il componente stesso farà chiamata all'endpoint o prende i dati già presenti nel redux store
 export const TipologiaEsperto = (data:Data) => {
     const dispatch = useAppDispatch();
@@ -22,7 +23,6 @@ export const TipologiaEsperto = (data:Data) => {
     const {tipologieDiSistema, tipologiePersonalizzate} = tipologieState;
     // hook per gestire espansione degli accordion
     const [expanded, setExpanded] = useState<boolean[]>([true,true]);
-    const [tableLoader, setTableLoader] = useState<boolean[]>([false,false]);
     
     //Hook useEffect che si avvia
     useEffect(() => {
@@ -51,22 +51,7 @@ export const TipologiaEsperto = (data:Data) => {
      
     };
 
-    //funzione che passo al bottone 'duplica' e che ha il compito di aggiungere la row a tipologiePersonalizzate partendo dalla row di sistema
-    const addToCustom = (row:Row) => {
-      
-      //apro loader tabella tipologie personalizzate
-      setTableLoader([false,true])
-      //aggiungo row a tipologiePersonalizzate state
-      dispatch(addTipologiaPersonalizzata(row))
-      //aggiungo la row al DB
-      //chiudo loader tabella tipologiepersonalizzate
-      setTableLoader([false,false])
-
-    }
-
-  if(tipologieDiSistema.length !== 0){
-    //attualmente gestire la chiusura del loader da qui da problemi, infatti l'apertura e la chiusura del loader andrebbe gestita all'interno dello useEffect quando si esegue la chiamata a DB
-    
+  if(tipologieDiSistema.length !== 0){    
     return (
       <>
   
@@ -75,7 +60,7 @@ export const TipologiaEsperto = (data:Data) => {
             <Typography variant='body1' fontWeight={600} color={'#42648aff'}> Tipologie di Sistema </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Table_tipologieDiSistema loader={tableLoader[0]} fn={addToCustom} data={tipologieDiSistema} />
+            <Table_tipologieDiSistema data={tipologieDiSistema} />
           </AccordionDetails>
         </Accordion>
   

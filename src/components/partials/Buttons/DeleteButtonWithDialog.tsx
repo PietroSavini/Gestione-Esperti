@@ -8,7 +8,7 @@ export const DeleteButtonWithDialog = ({row ,successFn} : {row:Row, successFn:Fu
         
     const [ open, setOpen ] = useState<boolean>(false);
     const { title, id } = row as Row;
-    const handleSuccess = (id:number) => {
+    const handleSuccess = (id:string) => {
         successFn(id);
     }
 
