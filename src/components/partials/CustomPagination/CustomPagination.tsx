@@ -24,10 +24,10 @@ function pagination({
 
                         <PaginationItem
                             slots={{
-                                last: (props) => <ActionButton color='error' text='Ultima' icon='keyboard_double_arrow_right' {...props} />,
-                                next: (props) =><ActionButton color='primary' text='successivo' icon='chevron_right' {...props} />,
-                                first: (props) => <ActionButton direction='row-reverse' color='warning' text='Prima' icon='keyboard_double_arrow_left' {...props} />,
-                                previous: (props) => <ActionButton direction='row-reverse' color='primary' text='Precedente' icon='chevron_left' {...props} />,
+                                last: (props) => <ActionButton color='error'  icon='keyboard_double_arrow_right' {...props} />,
+                                next: (props) =><ActionButton color='primary'  icon='chevron_right' {...props} />,
+                                first: (props) => <ActionButton direction='row-reverse' color='warning'  icon='keyboard_double_arrow_left' {...props} />,
+                                previous: (props) => <ActionButton direction='row-reverse' color='primary'  icon='chevron_left' {...props} />,
                             }}
                             {...item}
                         />
@@ -37,8 +37,8 @@ function pagination({
                 showLastButton
                 
             />
-            <Box sx={{display:{xs:'block',md:'none'}}}>
-               
+            <Box sx={{display:{xs:'block',md:'none'},}}>
+               <div>personal pagination</div>
             </Box >
             
         </>

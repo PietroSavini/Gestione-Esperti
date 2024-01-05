@@ -116,11 +116,11 @@ export const Table_tipologieDiSistema = ({data} : Props ) => {
                     columns={columns}
                     initialState={{
                         pagination: {
-                            paginationModel: { page: 0, pageSize: 1 },
+                            paginationModel: { page: 0, pageSize: 10 },
                             
                         },
                     }}
-                    pageSizeOptions={[1, 10, 20, 50]}
+                    pageSizeOptions={[5, 10, 20, 50]}
                     sx={{
                         padding:'0',
                         fontSize: 14,
