@@ -47,16 +47,17 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
 
     /*Fn che gestisce il click dello switch in UI e su DB*/
     const handleSwitchChange = (id: string) => {
+
         // aggiorno l'evento in UI facendo cambiare lo switch
-        const updatedRows = rows.map(row => 
-          row.id === id ? { ...row, visible: !row.visible } : row
-        );
+        // const updatedRows = rows.map(row => 
+        //   row.id === id ? { ...row, visible: !row.visible } : row
+        // );
         //apro loader tabella
         setIsLoading(true)
         //faccio chiamata ad endpoint per il salavataggio dei dati in DB
             //se la risposta è positiva
                 // aggiorno UI
-                setRows(updatedRows)
+                //setRows(updatedRows)
                 // Aggiorno lo state con il nuovo valore dello switch
                 dispatch(toggleVisible(id))
                 //loader tabella false
@@ -99,6 +100,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
     
     /* componente che renderizza lo switch MUI nella tabella */
     const VisibleSwitch = ({id, value} : RowParam) => {
+        console.log('sono renderizzato')
         return <Switch id={`${id}`} onChange={() => handleSwitchChange(id)} checked={value} />;
     };
 
