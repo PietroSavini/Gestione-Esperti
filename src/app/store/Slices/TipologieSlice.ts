@@ -41,4 +41,5 @@ const tipologieSlice = createSlice({
 
 export const { setTipologieData, addTipologiaPersonalizzata, toggleVisible, removeTipologiaPersonalizzata } = tipologieSlice.actions;
 export const selectTipologie = (state: RootState) => state.tipologie;
+export const selectTipologiePersonalizzate = (state: RootState) => state.tipologie.tipologiePersonalizzate;
 export default tipologieSlice.reducer;

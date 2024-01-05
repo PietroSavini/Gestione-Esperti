@@ -24,10 +24,9 @@ export const TipologiaEsperto = (data:Data) => {
     // hook per gestire espansione degli accordion
     const [expanded, setExpanded] = useState<boolean[]>([true,true]);
     
-    //Hook useEffect che si avvia
+    //Hook useEffect che si avvia al rendering del componente ed al cambio di data
     useEffect(() => {
-      //controllo se const tipologieDiSistema è vuoto
-      //SE VUOTO: (primo avvio dell'app)
+      //controllo se const tipologieDiSistema è vuoto SE VUOTO: (primo avvio dell'app)
       if(tipologieDiSistema.length === 0){
         console.log('NON HO LE TIPOLOGIE NELLO STORE, FACCIO CHIAMATA AD ENDPOINT')
         //effettuo la chiamata all'endpoint per prendere le tipologie da DB
