@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Icon, Typography } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Icon, Typography } from '@mui/material'
 import{ Table_tipologieDiSistema, Row }from './Tables/Table_tipologieDiSistema'
 import { useEffect, useState } from 'react'
 import { Table_tipologiePersonalizzate } from './Tables/Table_tipologiePersonalizzate'
@@ -6,6 +6,7 @@ import { useAppDispatch } from '../../../../app/ReduxTSHooks'
 import { useSelector } from 'react-redux'
 import { selectTipologie, setTipologieData } from '../../../../app/store/Slices/TipologieSlice'
 import { closeLoader, openLoader } from '../../../../app/store/Slices/loaderSlice'
+import { ActionButton } from '../../../../components/partials/Buttons/ActionButton'
 
 
 //implementare lazy loading?  in quanto i dati della pagina in teoria dovrebbero essre gia presenti sullo state e presi da DB all' avvio dell app?
@@ -67,10 +68,15 @@ export const TipologiaEsperto = (data:Data) => {
           </Accordion>
     
           <Accordion expanded={expanded[1]} onChange={handleChange(1)}>
-            <AccordionSummary expandIcon={<Icon>chevron_right</Icon>}>
+            <AccordionSummary  expandIcon={<Icon>chevron_right</Icon>}>
               <Typography variant='body1' fontWeight={600} color={'#42648aff'}> Tipologie Personalizzate </Typography>
+              
             </AccordionSummary>
             <AccordionDetails>
+              <Box display={'flex'} sx={{justifyContent:'flex-end'}}>
+
+                <ActionButton sx={{marginBottom:'1rem'}} color='primary' text='Crea Nuova Tipologia' icon='add'/>
+              </Box>
               <Table_tipologiePersonalizzate data={tipologiePersonalizzate} />
             </AccordionDetails>
           </Accordion>

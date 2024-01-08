@@ -7,11 +7,11 @@
         justify-content: center;
         align-items: center;
     }
-    .css-ak0vx-MuiDataGrid-root .MuiDataGrid-cell:focus {
+    .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-cell:focus {
         outline: none;
     }
-    .css-ak0vx-MuiDataGrid-root .MuiDataGrid-columnHeader:focus, .css-ak0vx-MuiDataGrid-root .MuiDataGrid-cell:focus {
-        outline: none;
+    .css-ak0vx-MuiDataGrid-root .MuiDataGrid-columnHeader:focus {
+        outline: none !important;
     }
     .css-ak0vx-MuiDataGrid-root .MuiDataGrid-row {
         display: -webkit-box;
@@ -36,6 +36,9 @@
     
     p.MuiTablePagination-displayedRows{
         display: none;
+    }
+    .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-cell:focus-within{
+        outline: none !important;
     }
    
 }

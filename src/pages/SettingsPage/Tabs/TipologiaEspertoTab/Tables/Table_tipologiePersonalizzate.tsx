@@ -4,10 +4,11 @@ import React, { useEffect, useState } from 'react'
 import './DataTable.scss'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks'
-import { removeTipologiaPersonalizzata, toggleVisible } from '../../../../../app/store/Slices/TipologieSlice'
+import { addTipologiaPersonalizzata, removeTipologiaPersonalizzata, toggleVisible } from '../../../../../app/store/Slices/TipologieSlice'
 import { DeleteButtonWithDialog } from '../../../../../components/partials/Buttons/DeleteButtonWithDialog'
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination'
-
+import { DuplicateButtonWithDialog } from '../../../../../components/partials/Buttons/DuplicateButtonWithDialog'
+import {v4 as uuidv4} from 'uuid'
 type Props ={ 
     fn? :  Function
     data: Row[]
@@ -82,7 +83,13 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
       
     };
 
-   
+    const handleAddClick = (row:Row) => {
+        const rowObj = row
+        const newId = uuidv4()
+        const newRow = {...rowObj, id:newId}
+        dispatch(addTipologiaPersonalizzata(newRow))
+       
+    }
     /* componente che renderizza i pulsanti azione all'interno della tabella */
     const DataGridActions = ({params}:any) => {
         //estraggo i valori della ROW
@@ -90,8 +97,8 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
 
         return(
             <div className='dataGrid-actions'>
-                <ActionButton color='primary' onClick={() => {{/*rendering pagina che accetta id ROW e permette la modifica dell'elemento*/}}} text='Modifica' icon='edit' direction='row-reverse'/>
-                <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e fa lo SHOW della tipologia*/}}} text='Visualizza' icon='preview' direction='row-reverse'/>
+                <DuplicateButtonWithDialog row={ row } successFn={handleAddClick}/>
+                <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e permette la modifica dell'elemento*/}}} text='Modifica' icon='edit' direction='row-reverse'/>
                 <DeleteButtonWithDialog row={row as Row} successFn={handleDeleteClick}/>
             </div>
         )
