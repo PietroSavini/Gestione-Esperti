@@ -1,0 +1,25 @@
+.custom-pagination{
+    flex-grow: 1;
+    .pagination-container{
+        padding-right: 16px;
+        justify-content: flex-end;
+        align-items: center;
+        gap: .5rem;
+        .pagination-action-container{
+            gap:0.5rem
+        }
+        .my_select-pages{
+            border-radius: 50px;
+            text-overflow: none;
+            height: 35px;
+            &.Mui-fucused {
+                outline-color: transparent !important;
+                border-color: transparent !important;
+            }
+        }
+    }
+    .css-1d3z3hw-MuiOutlinedInput-notchedOutline {
+        border: none !important;
+    }
+        
+}

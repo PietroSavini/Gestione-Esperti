@@ -12,10 +12,50 @@ import { DrawerData } from './components/partials/Drawer/DrawerTypes';
 import { sidebar } from './components/partials/Drawer/sidebarProps';
 import Loader from './components/partials/Loader/Loader';
 import { SettingsPage } from './pages/SettingsPage/SettingsPage';
-import { TipologiaEsperto } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaEsperto';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 
 function App() {  
+  const theme = createTheme({
+    components:{
+      MuiButton:{
+        styleOverrides:{
+          root:{
+            textTransform:'none'
+          }
+
+        }
+      },
+      // @ts-ignore
+      MuiDataGrid: {
+        styleOverrides: {
+          footerContainer: {
+            justifyContent: 'initial',
+          },
+        },
+      },
+      MuiTablePagination:{
+        styleOverrides:{
+          root:{
+            width:'100%',
+            overflow:'initial'
+            
+          },
+          spacer:{
+            display:'none'
+          },
+          toolbar:{
+            width:'100%',
+            justifyContent:'flex-end',
+            alignItems:'center',
+            minHeight:'50px',
+            flexWrap:'wrap',
+            padding:'.5rem .5rem'
+          }
+        }
+      }
+    }
+  })
   useEffect(() => {
     //appena renderizza il componente dobbiamo salvare accessToken e RefreshToken nello state di redux prendendolo dall app di lancio che ce li passa all'inizializzazione
     //controllo se i dati che devo fetchare sono nello State di Redux
@@ -49,29 +89,31 @@ function App() {
   const data:DrawerData = sidebar
   return (
     <>
-      <div className="APP">
-        {/*condizionale che mostra loader a piena pagina se dati non sono presenti*/}
+      <ThemeProvider theme={theme}>
+        <div className="APP">
+          
 
-        <ResponsiveDrawer data={data}/>
-        <main>
-          <Routes>
-              {/* 
-                persistent login ed auth dovrebbero avvolegere tutte le routes ma a scopo di test e sviluppo ancora non possiamo farlo
-                <Route element={<PersistentLogin />}>
-                  <Route element={<RequireAuth />}>
-              
+          <ResponsiveDrawer data={data}/>
+          <main>
+            <Routes>
+                {/* 
+                  persistent login ed auth dovrebbero avvolegere tutte le routes ma a scopo di test e sviluppo ancora non possiamo farlo
+                  <Route element={<PersistentLogin />}>
+                    <Route element={<RequireAuth />}>
+                
+                    </Route>
                   </Route>
-                </Route>
-             */}
-              <Route index element={<Dashboard />}/>
-              <Route path='/impostazioni' element={<SettingsPage />}/>
-             
-              {/* Catch All */}
-              <Route path='*' element={<NotFound/>}/>
-          </Routes>
-          <Loader/>
-        </main>
-      </div>
+              */}
+                <Route index element={<Dashboard />}/>
+                <Route path='/impostazioni' element={<SettingsPage />}/>
+              
+                {/* Catch All */}
+                <Route path='*' element={<NotFound/>}/>
+            </Routes>
+            <Loader/>
+          </main>
+        </div>
+      </ThemeProvider>
     </>
   )
 }

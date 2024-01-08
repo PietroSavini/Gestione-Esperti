@@ -77,12 +77,10 @@ body {
 
 
 .ms_button{
-  border-radius: 10px;
-  transition: 200ms;
-  padding: 5px 10px ;
-  border: 1px solid rgb(33, 33, 33);
-  gap: 0.3rem;
   
+  transition: 200ms;
+  padding: 5px 10px;
+
   cursor: pointer;
   //primario
   &.ms_button-primary{
@@ -111,6 +109,10 @@ body {
         color: #fff;
         background-color: rgb(255, 34, 0);
     }
+  }
+
+  &.ms_button-disabled{
+    border-color: #bdbdbdff !important;
   }
   
 }

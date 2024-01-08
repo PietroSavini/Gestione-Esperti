@@ -95,12 +95,6 @@ export const Table_tipologieDiSistema = ({data} : Props ) => {
         {field: 'actions', headerAlign:'center', align:'center',headerName:'azioni',  width: 320 , sortable:false, filterable:false , renderCell: (params:any) => (<DataGridActions params={params}/>)}
     ]; 
 
-    const localText = {
-        noRowsLabel: 'Nessuna riga trovata',
-        page: 'Pagina',
-        of: 'di',
-        rowsPerPage: 'righe per pagina',
-    }
  
 
   return (
@@ -108,7 +102,9 @@ export const Table_tipologieDiSistema = ({data} : Props ) => {
         <Grid container mb={10} ml={15} spacing={2}>
             <Grid item width={'100%'} padding={'0 !important'}>
                 <DataGrid
-                    
+                    slots={{
+                        pagination: CustomPagination,
+                    }}
                     hideFooterSelectedRowCount
                     loading={isLoading}
                     autoHeight

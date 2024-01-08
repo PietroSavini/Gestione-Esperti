@@ -1,36 +1,34 @@
-import { Box, Typography, Icon } from '@mui/material'
+import { Box, Typography, Icon, Button, ButtonProps } from '@mui/material'
 import { Link } from 'react-router-dom'
 
-type Props ={ 
-
+type Props = ButtonProps & { 
     to?:string;
     text?:string;
     icon?:string;
     direction?:any
-    color: 'primary' | 'warning' | 'error'
-    onClick? : React.MouseEventHandler<HTMLDivElement>
+    onClick? : React.MouseEventHandler<HTMLButtonElement>
 }
 
 
 
 export const ActionButton = (props:Props) => {
-    const {to,text,icon,direction,onClick,color} = props
+    const {to,text,icon,direction,onClick,color, ...buttonProps} = props
 
   return (
     <>
       <Box maxWidth={'400px'}  >
         {to ? (
           <Link to={to}>
-            <Box flexDirection={direction ? direction : 'row'} className={`ms_button ms_button-${color}`} display={'flex'} alignItems={'center'} justifyContent={'center'}>
+            <Box flexDirection={direction ? direction : 'row'} sx={{ borderRadius:'10px'}} className={`ms_button ms_button-${color}`} display={'flex'} alignItems={'center'} justifyContent={'center'}>
                   <Typography className='button-text' variant='caption' >{text}</Typography>
                   <Icon fontSize='small' className='button-icon'>{icon}</Icon>
             </Box>
           </Link>
         ) : (
-          <Box onClick={onClick} flexDirection={direction ? direction : 'row'} className={`ms_button ms_button-${color}`} display={'flex'} alignItems={'center'} justifyContent={'center'}>
-            <Typography className='button-text' variant='caption' >{text}</Typography>
+          <Button {...buttonProps} sx={{flexDirection:`${direction}`, borderRadius:'10px'}} onClick={onClick} color={color}  className={`ms_button ms_button-${color} ${buttonProps.disabled && 'ms_button-disabled'}`} >
+            <Typography  className='button-text' variant='caption'>{text}</Typography>  
             <Icon fontSize='small' className='button-icon'>{icon}</Icon>
-          </Box>
+          </Button>
         )}
       </Box>
     </>
