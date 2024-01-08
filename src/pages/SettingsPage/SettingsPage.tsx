@@ -47,19 +47,19 @@ export const SettingsPage = () => {
     const TipologiaEspertoData = {
       tipologieDiSistema:[
         {
-          id:0,
+          id:'0',
           title:'Medico competente',
           description:'medico sportivo per attività semi-agonistica',
           visible:true,
         },
         {
-          id:1,
+          id:'1',
           title:'Psicologo',
           description:'Psicologo espertoi in psicologia infantile',
           visible:false,
         },
         {
-          id:2,
+          id:'2',
           title:'DPO',
           description:'DPO',
           visible:true,
