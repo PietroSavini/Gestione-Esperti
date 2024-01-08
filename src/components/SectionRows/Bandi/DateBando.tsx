@@ -43,6 +43,6 @@ export const DateBando = (props:Props) => {
   // Applico i colori in base alle condizioni
   const colorStyle = isExpired ? 'red' : isExpiringSoon ? 'orange' : 'inherit';
 
-  return <Typography sx={{marginRight:'1rem'}} fontWeight={600} fontSize={'1.2rem'} style={{ color: colorStyle }}>{date}</Typography>;
+  return <Typography sx={{marginRight:'1rem'}} fontWeight={600} style={{ color: colorStyle }}>{date}</Typography>;
     
 }
