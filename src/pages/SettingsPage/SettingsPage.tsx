@@ -85,7 +85,7 @@ export const SettingsPage = () => {
             
           </Stack>
         </Box>
-        
+        {/* implementare switchCase? */}
         <Box sx={{marginTop:'5rem'}}>
               {activeTab === 'Tipologia Esperto' ? (
                 <TipologiaEsperto {...TipologiaEspertoData} />
