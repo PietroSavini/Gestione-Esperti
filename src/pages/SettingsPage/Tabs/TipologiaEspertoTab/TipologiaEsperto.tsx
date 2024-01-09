@@ -41,7 +41,7 @@ export const TipologiaEsperto = (data:Data) => {
             //le tabelle saranno popolate
       }
       //SE NON E' VUOTO: 
-          // non faccio nulla in qunato i dati per le tabelle sono già presenti nel Redux Store
+          // non faccio nulla in quanto i dati per le tabelle sono già presenti nel Redux Store
           
       //funzione che avvia processo di update su dtate e su DB alla modifica di TipologiePersonalizzate
     }, [data])

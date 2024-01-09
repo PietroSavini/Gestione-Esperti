@@ -1,5 +1,5 @@
-import { Box, Grid, Pagination, PaginationItem, Switch, TablePaginationProps } from '@mui/material'
-import { DataGrid, GridColDef, GridPagination, gridPageCountSelector, useGridApiContext, useGridSelector } from '@mui/x-data-grid'
+import { Box, Grid, Switch } from '@mui/material'
+import { DataGrid, GridColDef} from '@mui/x-data-grid'
 import React, {  useState } from 'react'
 import './DataTable.scss'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'

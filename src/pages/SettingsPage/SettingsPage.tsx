@@ -3,6 +3,7 @@ import { Box, Divider, Stack, Typography } from '@mui/material'
 import './settings.scss'
 import { Link, Outlet} from 'react-router-dom'
 import { TipologiaEsperto } from './Tabs/TipologiaEspertoTab/TipologiaEsperto'
+import { RequisitiTab } from './Tabs/RequisitiTab/RequisitiTab'
 
 export const SettingsPage = () => {
     useEffect(() => {
@@ -37,9 +38,9 @@ export const SettingsPage = () => {
         active: activeTab === 'Tipologia Esperto'
       },
       {
-        key:'Requisiti&punteggio',
-        text : 'Requisiti e Punteggio',
-        active: activeTab === 'Requisiti e Punteggio'
+        key:'Requisiti',
+        text : 'Requisiti',
+        active: activeTab === 'Requisiti'
       }
     ]
 
@@ -90,7 +91,7 @@ export const SettingsPage = () => {
               {activeTab === 'Tipologia Esperto' ? (
                 <TipologiaEsperto {...TipologiaEspertoData} />
               ):(
-                <p>requisiti e boh</p>
+                <RequisitiTab />
               )}
         </Box>
         

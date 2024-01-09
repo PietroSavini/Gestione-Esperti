@@ -15,7 +15,7 @@ function pagination({
         onPageChange(event, newPage - 1);
     };
 
-    if ( pageCount === 0){
+    if ( pageCount <= 1){
         return <></>
     }
     

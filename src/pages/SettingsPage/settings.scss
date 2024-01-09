@@ -21,3 +21,70 @@
 
     }
 }
+
+.dataTable{
+    margin: 0 auto;
+    width: 100%;
+    &>div{
+        width: 100% !important;
+        margin: 0;
+        justify-content: center;
+        align-items: center;
+    }
+    .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-cell:focus {
+        outline: none;
+    }
+    .css-ak0vx-MuiDataGrid-root .MuiDataGrid-columnHeader:focus {
+        outline: none !important;
+    }
+    .css-ak0vx-MuiDataGrid-root .MuiDataGrid-row {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
+        width: fit-content;
+        break-inside: avoid;
+        //non riesco a separare le ROWS in qunato sputtana la table appena provo ad aggiungere del padding, dobbiamo trovare un modo alternat
+    }
+    //debug per bordi colonne
+    .MuiDataGrid-columnHeader, .MuiDataGrid-cell{
+        border-right: 1px solid grey;
+    }
+    .dataGrid-actions{
+        display: flex;
+        gap: .5rem;
+        padding: 0 1rem;
+    }
+    //rimuovo 1 di n
+    p.MuiTablePagination-displayedRows{
+        display: none;
+    }
+    .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-cell:focus-within{
+        outline: none !important;
+    }
+   
+}
+
+.requisiti-table{
+    .MuiDataGrid-columnHeader, .MuiDataGrid-cell{
+        border-right:none;
+    }
+    .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-cell:focus-within{
+        outline: none !important;
+    }
+    .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-cell:focus {
+        outline: none;
+    }
+    .css-ak0vx-MuiDataGrid-root .MuiDataGrid-columnHeader:focus {
+        outline: none !important;
+    }
+    //rimuove 1 di n
+    p.MuiTablePagination-displayedRows{
+        display: none;
+    }
+    .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-columnHeader--moving {
+        background-color: inherit;
+    }
+}

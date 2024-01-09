@@ -10,12 +10,9 @@ type Props = ButtonProps & {
  
 }
 
-
-
 export const ActionButton = (props:Props) => {
     const {to,text,icon,direction,onClick,color, ...buttonProps} = props
     const sx = buttonProps?.sx;
-    console.log(sx)
   return (
     <>
       <Box maxWidth={'400px'}  >

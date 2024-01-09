@@ -92,6 +92,16 @@ body {
     }
 
   }
+  //secondario
+  &.ms_button-secondary{
+    color: rgb(255, 255, 255);
+    background-color:  #127aa3ff;
+    &:hover{
+        color: #fff;
+        background-color: #53a5cfff;
+    }
+
+  }
   //warning
   &.ms_button-warning{
     color: rgb(255, 166, 0);
