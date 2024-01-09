@@ -99,7 +99,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
             <div className='dataGrid-actions'>
                 <DuplicateButtonWithDialog row={ row } successFn={handleAddClick}/>
                 <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e permette la modifica dell'elemento*/}}} text='Modifica' icon='edit' direction='row-reverse'/>
-                <DeleteButtonWithDialog row={row as Row} successFn={handleDeleteClick}/>
+                <DeleteButtonWithDialog type='tipologie' row={row as Row} successFn={handleDeleteClick}/>
             </div>
         )
     }

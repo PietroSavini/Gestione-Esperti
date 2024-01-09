@@ -70,7 +70,7 @@ export const RequisitiTab = () => {
     
   return (
     <>
-        <Box sx={{marginBottom:'2rem'}}  display={'flex'} width={'100%'} justifyContent={'flex-end'}>
+        <Box sx={{marginBottom:'1.5rem'}}  display={'flex'} width={'100%'} justifyContent={'flex-start'}>
             <AddSectionButtonWithDialog successFn={handleAddSection} />
         </Box>
         <Box component='section' className='requisiti-section'>

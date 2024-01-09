@@ -5,6 +5,7 @@ import { AddRequisitoWithDialog } from '../../../../../components/partials/Butto
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination';
 import { EditRequisito } from '../../../../../components/partials/Buttons/EditRequisito';
+import { DeleteButtonWithDialog } from '../../../../../components/partials/Buttons/DeleteButtonWithDialog';
 type Rows = Row[] | [];
 
 type Row = {
@@ -30,6 +31,10 @@ export const RequisitiTable = ({data}:{data:Table}) => {
     console.log(rows)
   }
 
+  const handleDelete = (id: any) => {
+    setRows((prevState)=> [...prevState.filter(row => row.id !== id)])
+  }
+
   const TableActions = ({params}:{params:Row}) => {
 
     const handleEditRequisito = (title:string) => {
@@ -40,7 +45,10 @@ export const RequisitiTable = ({data}:{data:Table}) => {
     if(!params.sistema) {
       return (
         <>
-          <EditRequisito requisitoTitle={params.title}  successFn={handleEditRequisito} />
+          <Box display={'flex'} gap={'0.5rem'} width={'100%'} sx={{paddingRight:'1.5rem'}} justifyContent={'flex-end'}>
+            <EditRequisito requisitoTitle={params.title}  successFn={handleEditRequisito} />
+            <DeleteButtonWithDialog type='requisiti' row={params} successFn={handleDelete}/>
+          </Box>
         </>
       )
       }else{
@@ -69,8 +77,8 @@ export const RequisitiTable = ({data}:{data:Table}) => {
 
   const columns: GridColDef[] = [
     {field: 'title', flex:0.4, minWidth:220, headerName: 'requisito'  },
-    {field: 'sistema',flex:0.4,minWidth:50, headerName: 'sistema', renderCell:(params:any) =>( <Sistema params={params.row} />) },
-    {field: 'actions', renderCell: (params:any) => (<TableActions params={params.row} />),minWidth: 100, align:'center', headerName:'',headerAlign:'center', flex:.2, width: 200,sortable:false, filterable:false },
+    {field: 'sistema',flex:0.3,minWidth:70, headerName: 'sistema', renderCell:(params:any) =>( <Sistema params={params.row} />) },
+    {field: 'actions', renderCell: (params:any) => (<TableActions params={params.row} />),minWidth: 200, align:'center', headerName:'',headerAlign:'center', flex:.3, width: 200,sortable:false, filterable:false },
     ];
 
   return (

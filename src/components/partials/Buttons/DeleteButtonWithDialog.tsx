@@ -1,16 +1,26 @@
 import { useState } from "react"
 import { ActionButton } from "./ActionButton"
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material"
-import { Row } from "../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/Tables/Table_tipologieDiSistema"
 
 
-export const DeleteButtonWithDialog = ({row ,successFn} : {row:Row, successFn:Function}) => {
-        
+
+export const DeleteButtonWithDialog = ({row ,successFn, type} : {row:any, successFn:Function, type?: 'requisiti' | 'tipologie'}) => {
+    let innerText : string = '';
     const [ open, setOpen ] = useState<boolean>(false);
-    const { title, id } = row as Row;
-    const handleSuccess = (id:string) => {
+    const { title, id } = row 
+    const handleSuccess = (id:string | number) => {
         successFn(id);
     }
+
+    if(type === 'requisiti') {
+        innerText = `cliccando su "Si" cancellerai definitivamente l'elemento dalla lista `
+    }
+
+    if(type === 'tipologie'){
+        innerText = `cliccando su "Si" cancellerai definitivamente l'elemento dalla lista "Tipologie Personalizzate", potrai ricrearlo successivamente duplicando un modello personalizzato dalle Tipologie di Sistema.'`
+    }
+
+    
 
     return (
         <>
@@ -22,11 +32,10 @@ export const DeleteButtonWithDialog = ({row ,successFn} : {row:Row, successFn:Fu
                 aria-describedby="alert-dialog-slide-description"
                 
             >
-                <DialogTitle>{`Vuoi Cancellare definitivamente la riga selezionata: "${title}"?` }</DialogTitle>
+                <DialogTitle>{`Vuoi Cancellare definitivamente : "${title}"?` }</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">
-                       {`cliccando su "Si" cancellerai definitivamente l'elemento dalla lista "Tipologie Personalizzate", 
-                       potrai ricrearlo successivamente duplicando un modello personalizzato dalle Tipologie di Sistema.`}
+                       {innerText}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
