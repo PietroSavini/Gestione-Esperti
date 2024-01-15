@@ -17,32 +17,6 @@ type Row = {
   isNew:boolean
 }
 
-//custom toolBar -------------------------------------------------------------------------------------------------------------------
-interface EditToolbarProps {
-  setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
-  setRowModesModel: (
-    newModel: (oldModel: GridRowModesModel) => GridRowModesModel,
-  ) => void;
-}
-
-function EditToolbar(props: EditToolbarProps) {
-  const { setRows, setRowModesModel } = props;
-
-  const handleClick = () => {
-    const id = uuidv4();
-    setRows((oldRows) => [...oldRows, { id, title: 'Aggiungi Titolo Requisito', sistema: false, isNew: true }]);
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: 'title' },
-    }));
-  };
-
-  return (
-    <GridToolbarContainer sx={{ position:'absolute',left:0,right:0,top:'15px', zIndex:10,display:'flex',justifyContent:'flex-end'}}>
-      <ActionButton direction={'row-reverse'} text='Aggiungi Requisito' icon='add' color="secondary" onClick={handleClick} />
-    </GridToolbarContainer>
-  );
-}
 
 //dataTable -------------------------------------------------------------------------------------------------------------------------
 
@@ -51,6 +25,34 @@ export default function RequisitiTable ({data}:{data:Table}) {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const {title} = data
+  //custom toolBar -------------------------------------------------------------------------------------------------------------------
+  interface EditToolbarProps {
+    setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
+    setRowModesModel: (
+      newModel: (oldModel: GridRowModesModel) => GridRowModesModel,
+    ) => void;
+  }
+  
+  function EditToolbar(props: EditToolbarProps) {
+    const { setRows, setRowModesModel } = props;
+  
+    const handleClick = () => {
+      const id = uuidv4();
+      setRows((oldRows) => [...oldRows, { id, title: 'Aggiungi Titolo Requisito', sistema: false, isNew: true }]);
+      setRowModesModel((oldModel) => ({
+        ...oldModel,
+        [id]: { mode: GridRowModes.Edit, fieldToFocus: 'title' },
+      }));
+    };
+  
+    return (
+      <GridToolbarContainer className='requisiti-section-title' sx={{backgroundColor:'#ebeeffff',padding:'.5rem .5rem 0rem .5rem', justifyContent:'space-between'}}>
+        <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{title}</Typography>
+        <ActionButton direction={'row-reverse'} text='Aggiungi Requisito' icon='add' color="secondary" onClick={handleClick} />
+      </GridToolbarContainer>
+    );
+  }
+  //custom toolBar -------------------------------------------------------------------------------------------------------------------
 
   const Sistema = ({params}:{params:Row}) => {
     if(params.sistema){
@@ -111,43 +113,25 @@ export default function RequisitiTable ({data}:{data:Table}) {
   const columns: GridColDef[] = [
     {field: 'title', flex:0.4, minWidth:220, headerName: 'requisito' , headerClassName:'customHeader', editable:true },
     {field: 'sistema',flex:0.3,minWidth:80, headerName: 'sistema', renderCell:(params:any) =>( <Sistema params={params.row} />), headerClassName:'customHeader' },
-    {field: 'actions' , type:'actions',minWidth: 200, align:'right', headerName:'',headerAlign:'center', flex:.3, width: 200,sortable:false, filterable:false, headerClassName:'customHeader',
-        getActions: ({ id }: {id:any}) => {
-          
-          const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-          
-          if (isInEditMode) {
-            return [   
-              <ActionButton
-                icon='save'
-                
-                color='primary'
-                onClick={handleSaveClick(id)}
-              />,
-              <ActionButton
-                icon='cancel'
-                
-                color='error'
-                onClick={handleCancelClick(id)}
-              />,
-              
-            ];
+    {field: 'actions' , type:'actions',minWidth: 200, align:'right', headerName:'', flex:.3, width: 200,sortable:false, filterable:false, headerClassName:'customHeader',
+        renderCell: (params:any) => {
+          const {id} = params;
+          const {sistema} =params.row;
+          console.log(id)
+          if(sistema){
+            return <></>
           }
 
+          const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+          if (isInEditMode) {
+            return [   
+              <ActionButton sx={{marginRight:'5px'}} icon='save' color='primary' onClick={handleSaveClick(id)} />,
+              <ActionButton icon='cancel'color='error' onClick={handleCancelClick(id)} />,
+            ];
+          }
           return [
-            <ActionButton
-              icon='edit'
-              text='Modifica'
-              color='warning'
-              onClick={handleEditClick(id)}
-              
-            />,
-            <ActionButton
-              icon='delete'
-              text='Elimina'
-              onClick={handleDeleteClick(id)}
-              color='error'
-            />,
+            <ActionButton sx={{marginRight:'5px'}} icon='edit' text='Modifica' color='warning' onClick={handleEditClick(id)}/>,
+            <ActionButton icon='delete' text='Elimina' onClick={handleDeleteClick(id)} color='error'/>,
           ];
         }
       }
@@ -155,20 +139,15 @@ export default function RequisitiTable ({data}:{data:Table}) {
 
   return (
     <>
-      <Box className={`requisiti-section-title`} sx={{padding:'.7rem .5rem', backgroundColor:'#ebeeffff'}}>
-        <Box sx={{marginBottom:'.5rem'}} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
-          <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{title}</Typography>
-        </Box>
-        <Box className='create-requisito-row'></Box>
-      </Box>
+      
 
       <Box className='requisiti-table'  sx={{backgroundColor:'#fff'}} >
         <DataGrid
           
           
           slots={{
-              pagination: CustomPagination,
-              toolbar: EditToolbar,
+            pagination: CustomPagination,
+            toolbar: EditToolbar,
           }}
           slotProps={{
             toolbar: { setRows, setRowModesModel },
@@ -185,21 +164,21 @@ export default function RequisitiTable ({data}:{data:Table}) {
           hideFooterSelectedRowCount
           autoHeight
           initialState={{           
-              pagination: {    
-                  paginationModel: { page: 0, pageSize: 5 },
-              },
+            pagination: {    
+                paginationModel: { page: 0, pageSize: 10 },
+            },
           }}
           pageSizeOptions={[5, 10, 20, 50]}
           sx={{
-              marginTop:'-30px',
-              borderTop:'none',
-              fontSize: 14,
+            borderTopRightRadius:'10px',
+            borderTopLeftRadius:'10px',
+            fontSize: 14,
           }}
           localeText={{
-              noRowsLabel:'Nessun Requisito',
-              MuiTablePagination: {
-                  labelRowsPerPage: 'Righe per sezione:',
-              },
+            noRowsLabel:'Nessun Requisito',
+            MuiTablePagination: {
+                labelRowsPerPage: 'Righe per sezione:',
+            },
           }}
         />
       </Box>

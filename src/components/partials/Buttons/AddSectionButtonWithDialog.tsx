@@ -22,7 +22,7 @@ export const AddSectionButtonWithDialog = ({successFn}:{successFn :Function}) =>
 
     return (
         <>
-            <ActionButton color='secondary' onClick={() => setOpen(true)} text='Aggiungi Nuova Sezione' icon='add' direction='row-reverse' />  
+            <ActionButton sx={{marginBottom:'2rem'}} color='secondary' onClick={() => setOpen(true)} text='Aggiungi Nuova Sezione' icon='add' direction='row-reverse' />  
             <Dialog
                 open={open} 
                 keepMounted
