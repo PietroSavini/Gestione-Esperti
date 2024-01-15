@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react'
 import { AddSectionButtonWithDialog } from '../../../../components/partials/Buttons/AddSectionButtonWithDialog';
-import { RequisitiTable } from './Tables/RequisitiTable';
+import  RequisitiTable  from './Tables/RequisitiTable';
 
 export type Table = {
     id:string | number;
@@ -10,6 +10,7 @@ export type Table = {
         id: string | number;
         title: string;
         sistema: boolean;
+        isNew:boolean;
     }[] | [];
 }
 
@@ -28,17 +29,20 @@ export const RequisitiTab = () => {
                 {
                     id:'id878-8787',
                     title:'Laurea vecchio ordinamento',
-                    sistema:true
+                    sistema:true,
+                    isNew:false
                 },
                 {
                     id:'id878-8786',
                     title:'Laurea triennale',
-                    sistema:true
+                    sistema:true,
+                    isNew:false
                 },
                 {
                     id:'id878-8785',
                     title:'Laurea specialistica',
-                    sistema:true
+                    sistema:true,
+                    isNew:false
                 }
             ]
         },
@@ -73,7 +77,7 @@ export const RequisitiTab = () => {
             <AddSectionButtonWithDialog successFn={handleAddSection} />
         </Box>
         <Box component='section' className='requisiti-section'>
-            {tables?.map((table,index)=>(
+            {tables?.map((table,index) => (
                 <RequisitiTable key={index} data={table}/>
             ))}
         </Box>

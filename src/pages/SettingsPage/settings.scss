@@ -69,6 +69,28 @@
     }
    
 }
+.requisiti-section-title{
+    transition: 200ms;
+    position: relative;
+    z-index: 3;
+    border: 1px solid #e0e0e0ff;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    border-bottom: none;
+    .create-requisito-row{
+        display: none;
+        position: absolute;
+        left: 0 ;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+        padding: 5px 10px;
+        height: 56px;
+        background-color: #fff;
+        border: 1px solid black;
+    }
+}
+
 
 .requisiti-table{
 
@@ -86,19 +108,14 @@
     .MuiDataGrid-columnHeaders{
         align-items: center;
         border-bottom: none;
+        background-color: #ebeeffff;
+        align-items: flex-end;
     }
     .customHeader{
         height: 30px !important;
         min-height: none !important;
-        
+       
 
-    }
-    .MuiDataGrid-columnHeaderTitleContainer{
-        .MuiDataGrid-columnHeaderTitle {
-            position: relative;
-            z-index: 8;
-        }
-        
     }
     .MuiDataGrid-menuIcon{
         display: none !important;
@@ -109,8 +126,7 @@
     .MuiDataGrid-columnHeader:focus-within, .MuiDataGrid-cell:focus-within{
         outline: none !important;
     }
-}
-
-.custom-table-header{
-    color: rgb(85, 85, 85);
+    .custom-table-header{
+        color: rgb(85, 85, 85);
+    }
 }
