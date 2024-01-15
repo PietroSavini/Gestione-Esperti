@@ -1,7 +1,6 @@
 import { Box, Grid, Switch } from '@mui/material'
 import { DataGrid, GridColDef} from '@mui/x-data-grid'
 import React, {  useState } from 'react'
-import './DataTable.scss'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
 import {v4 as uuidv4} from 'uuid'
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks'

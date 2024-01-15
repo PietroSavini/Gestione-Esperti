@@ -4,21 +4,15 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 
 
 
-export const DeleteButtonWithDialog = ({row ,successFn, type} : {row:any, successFn:Function, type?: 'requisiti' | 'tipologie'}) => {
-    let innerText : string = '';
+export const DeleteButtonWithDialog = ({row ,successFn, message} : {row:any, successFn:Function, message?: string}) => {
+    let innerText : string = "Cliccando su Si cancellerai definitivamente lelemento dalla lista.";
     const [ open, setOpen ] = useState<boolean>(false);
     const { title, id } = row 
     const handleSuccess = (id:string | number) => {
         successFn(id);
     }
 
-    if(type === 'requisiti') {
-        innerText = `cliccando su "Si" cancellerai definitivamente l'elemento dalla lista `
-    }
-
-    if(type === 'tipologie'){
-        innerText = `cliccando su "Si" cancellerai definitivamente l'elemento dalla lista "Tipologie Personalizzate", potrai ricrearlo successivamente duplicando un modello personalizzato dalle Tipologie di Sistema.'`
-    }
+  
 
     
 
@@ -35,7 +29,7 @@ export const DeleteButtonWithDialog = ({row ,successFn, type} : {row:any, succes
                 <DialogTitle>{`Vuoi Cancellare definitivamente : "${title}"?` }</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">
-                       {innerText}
+                       {message? message : innerText}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

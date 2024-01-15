@@ -13,6 +13,7 @@ import { sidebar } from './components/partials/Drawer/sidebarProps';
 import Loader from './components/partials/Loader/Loader';
 import { SettingsPage } from './pages/SettingsPage/SettingsPage';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { TipologiaEdit } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaEdit/TipologiaEdit';
 
 
 function App() {  
@@ -106,9 +107,9 @@ function App() {
               */}
                 <Route index element={<Dashboard />}/>
                 <Route path='/impostazioni' element={<SettingsPage />}/>
-              
+                <Route path='/impostazioni/modifica-tipologia' element={<TipologiaEdit/>}  />
                 {/* Catch All */}
-                <Route path='*' element={<NotFound/>}/>
+                <Route path='*' element={<NotFound/>} />
             </Routes>
             <Loader/>
           </main>

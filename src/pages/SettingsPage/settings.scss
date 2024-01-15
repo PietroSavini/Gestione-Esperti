@@ -64,27 +64,53 @@
     .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-cell:focus-within{
         outline: none !important;
     }
+    .MuiDataGrid-menuIcon{
+        display: none !important;
+    }
    
 }
 
 .requisiti-table{
+
     .MuiDataGrid-columnHeader, .MuiDataGrid-cell{
         border-right:none;
     }
-    .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-cell:focus-within{
-        outline: none !important;
-    }
-    .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-cell:focus {
-        outline: none;
-    }
-    .css-ak0vx-MuiDataGrid-root .MuiDataGrid-columnHeader:focus {
-        outline: none !important;
-    }
-    //rimuove 1 di n
+    
+    //rimuove pagina 1 di n
     p.MuiTablePagination-displayedRows{
         display: none;
     }
     .css-1ajlm6j-MuiDataGrid-root .MuiDataGrid-columnHeader--moving {
         background-color: inherit;
     }
+    .MuiDataGrid-columnHeaders{
+        align-items: center;
+        border-bottom: none;
+    }
+    .customHeader{
+        height: 30px !important;
+        min-height: none !important;
+        
+
+    }
+    .MuiDataGrid-columnHeaderTitleContainer{
+        .MuiDataGrid-columnHeaderTitle {
+            position: relative;
+            z-index: 8;
+        }
+        
+    }
+    .MuiDataGrid-menuIcon{
+        display: none !important;
+    }
+    .MuiDataGrid-columnHeader:focus-within, .MuiDataGrid-cell:focus-within{
+        outline: none !important;
+    }
+    .MuiDataGrid-columnHeader:focus-within, .MuiDataGrid-cell:focus-within{
+        outline: none !important;
+    }
+}
+
+.custom-table-header{
+    color: rgb(85, 85, 85);
 }

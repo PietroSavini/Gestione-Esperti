@@ -1,7 +1,6 @@
 import { Box, Grid, Switch } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
-import './DataTable.scss'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks'
 import { addTipologiaPersonalizzata, removeTipologiaPersonalizzata, toggleVisible } from '../../../../../app/store/Slices/TipologieSlice'
@@ -9,6 +8,7 @@ import { DeleteButtonWithDialog } from '../../../../../components/partials/Butto
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination'
 import { DuplicateButtonWithDialog } from '../../../../../components/partials/Buttons/DuplicateButtonWithDialog'
 import {v4 as uuidv4} from 'uuid'
+import { useNavigate } from 'react-router-dom'
 type Props ={ 
     fn? :  Function
     data: Row[]
@@ -28,7 +28,8 @@ type RowParam ={
 
 export const Table_tipologiePersonalizzate = ({data} : Props ) => {
     const tableData = data
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     //InitialState
     // utilizzo useMemo per memorizzare le Rows derivanti da Data, questo metodo offre una migliore ottimizzazione
     const initialRows = React.useMemo(() => {
@@ -98,8 +99,8 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
         return(
             <div className='dataGrid-actions'>
                 <DuplicateButtonWithDialog row={ row } successFn={handleAddClick}/>
-                <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e permette la modifica dell'elemento*/}}} text='Modifica' icon='edit' direction='row-reverse'/>
-                <DeleteButtonWithDialog type='tipologie' row={row as Row} successFn={handleDeleteClick}/>
+                <ActionButton color='warning' onClick={() => navigate('/impostazioni/modifica-tipologia',{state:{...row}})} text='Modifica' icon='edit' direction='row-reverse'/>
+                <DeleteButtonWithDialog row={row as Row} successFn={handleDeleteClick}/>
             </div>
         )
     }

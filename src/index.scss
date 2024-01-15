@@ -66,7 +66,7 @@ body {
       //da vedere padding su main per width inferiori a 600 px in quanto dovrebbe essere applicato solo a sidebar laterali
       padding: 2rem 1rem;
       @media screen and (min-width:600px){
-        padding: 2rem 1rem;
+        padding: 1rem 1rem;
       }
     }
 
@@ -149,5 +149,14 @@ ul{
 @media (min-width:0px){
   .css-1y4lxgr-MuiModal-root-MuiDrawer-root{
     display:block !important;
+  }
+}
+
+
+.link{
+  cursor: pointer;
+  &:hover{
+    color: purple;
+    text-decoration: underline;
   }
 }
