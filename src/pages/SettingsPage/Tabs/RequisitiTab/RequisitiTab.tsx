@@ -6,17 +6,16 @@ import  RequisitiTable  from './Tables/RequisitiTable';
 export type Table = {
     id:string | number;
     title:string;
-    rows:{
+    rowsRequisiti:{
         id: string | number;
         title: string;
         sistema: boolean;
         isNew:boolean;
+        
     }[] | [];
 }
 
 type Tables = Table[]
-
-
 
 export const RequisitiTab = () => {
     //simulazione dati in ingresso
@@ -25,29 +24,30 @@ export const RequisitiTab = () => {
         {
             id: 'table1',
             title:'Titolo Di Studio',
-            rows:[
+            rowsRequisiti:[
                 {
                     id:'id878-8787',
                     title:'Laurea vecchio ordinamento',
                     sistema:true,
-                    isNew:false
+                    isNew:false,
                 },
                 {
                     id:'id878-8786',
                     title:'Laurea triennale',
                     sistema:true,
-                    isNew:false
+                    isNew:false,
                 },
                 {
                     id:'id878-8785',
                     title:'Laurea specialistica',
                     sistema:true,
-                    isNew:false
+                    isNew:false,    
                 }
             ]
         },
         //...altre table
     ];
+
 
     //al rendering del componente chiamo il webService per generare le Tabelle
     useEffect(() => {
@@ -61,7 +61,7 @@ export const RequisitiTab = () => {
        const newTable: Table ={
          id:`table-${title}`,
          title: title,
-         rows:[]
+         rowsRequisiti:[]
        }
        //Salvo la Tabella appena Creata nel DB
         //response:200 , ricevo id Table

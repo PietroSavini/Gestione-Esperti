@@ -1,12 +1,13 @@
 import { Box, Grid, Switch } from '@mui/material'
 import { DataGrid, GridColDef} from '@mui/x-data-grid'
-import React, {  useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
-import {v4 as uuidv4} from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks'
-import { addTipologiaPersonalizzata, toggleVisible } from '../../../../../app/store/Slices/TipologieSlice'
+import { copyTipologiaPersonalizzata, selectTipologie, toggleVisibleSistema } from '../../../../../app/store/Slices/TipologieSlice'
 import { DuplicateButtonWithDialog } from '../../../../../components/partials/Buttons/DuplicateButtonWithDialog'
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination'
+import { useSelector } from 'react-redux'
 
 type Props ={ 
     fn? :  Function
@@ -18,6 +19,7 @@ export type Row = {
     title:string,
     description:string;
     visible:boolean;
+    requisiti: Object[] | [];
 }
 
 type RowParam ={
@@ -27,36 +29,16 @@ type RowParam ={
 
 export const Table_tipologieDiSistema = ({data} : Props ) => {
     const dispatch = useAppDispatch()
-    const tableData = data
-    //InitialState
-    // utilizzo useMemo per memorizzare le Rows derivanti da Data, questo metodo offre una migliore ottimizzazione
-    const initialRows = React.useMemo(() => {
-        if (tableData) {
-            return tableData.map(item => ({
-                id: item.id,
-				title: item.title,
-                description: item.description,
-                visible: item.visible ,
-                row:item
-			}));
-		}
-		return [];
-	}, [data]);
-
-    const [rows, setRows] = useState<Row[]>(initialRows)
+    const tipologie = useSelector(selectTipologie)
+    const rows = tipologie.tipologieDiSistema
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const handleSwitchChange = (id: string) => {
-        // aggiorno l'evento in UI facendo cambiare lo switch
-        const updatedRows = rows.map(row => 
-          row.id === id ? { ...row, visible: !row.visible } : row
-        );
         setIsLoading(true)
         //faccio chiamata ad endpoint per il salavataggio dei dati in DB
             //se la risposta è positiva
                 // Aggiorna lo stato con il nuovo valore dello switch
-                setRows(updatedRows)
-                dispatch(toggleVisible(id))
+                dispatch(toggleVisibleSistema(id))
                 setIsLoading(false)
             //se la risposta è negativa
                 //faccio uscire un messaggio di errore
@@ -66,23 +48,20 @@ export const Table_tipologieDiSistema = ({data} : Props ) => {
         const rowObj = row
         const newId = uuidv4()
         const newRow = {...rowObj, id:newId}
-        dispatch(addTipologiaPersonalizzata(newRow))
-       
+        dispatch(copyTipologiaPersonalizzata(newRow))
     }
  
     const VisibleSwitch = ({id, value} : RowParam) => {
-        return <Switch id={`${id}`} onChange={() => handleSwitchChange(id)} checked={value} />;
+        return <Switch id={id} onChange={() => handleSwitchChange(id)} checked={value} />;
     };
 
-    const DataGridActions = ({params}:{params:any}) => {
-        const { row } = params.row
-
+    const DataGridActions = ({params}:{params:any}) => {   
         return(
             <div className='dataGrid-actions'>
-                <DuplicateButtonWithDialog row={ row } successFn={handleAddClick} />
+                <DuplicateButtonWithDialog row={ params.row } successFn={handleAddClick} />
                 <ActionButton color='warning' onClick={() => {{/*rendering pagina che accetta id ROW e fa lo SHOW della tipologia*/}}} text='Visualizza' icon='preview' direction='row-reverse'/>
             </div>
-        )
+        )  
     }
 
    

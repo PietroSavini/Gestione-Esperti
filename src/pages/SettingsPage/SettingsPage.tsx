@@ -1,27 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Box, Divider, Stack, Typography } from '@mui/material'
 import './settings.scss'
-import { Link, Outlet} from 'react-router-dom'
 import { TipologiaEsperto } from './Tabs/TipologiaEspertoTab/TipologiaEsperto'
 import { RequisitiTab } from './Tabs/RequisitiTab/RequisitiTab'
 
 export const SettingsPage = () => {
     useEffect(() => {
-      // controllo se i dati che devo fetchare sono presenti nello state di Redux
-      // se no, faccio chiamata per il fetching dei dati,
+      //la simulazione dei dati in ingresso si trova su: tipologieSlice.ts nello store redux, nel progetto reale la settingsPage chiamerà il DB ad ogni rendering per aggiornare i dati e di conseguenza lo store.
+     
+      // faccio chiamata per il fetching dei dati,
       // salvo i dati nello state di redux
-      // mostro i dati sulla tabella
-      // nella row della tabella il tasto "modifica" renderizza d una nuova pagina che si occupa di editare il contenuto dell oggetto della row
-            // alla fine delle operazioni, se i dati della row in ingresso, differiscono con i dati della row in entrata sostituisco l'array di ogetti presente nello state di redux con l'oggetto aggiornato e faccio partire la chiamata con i nuovi dati verso l'endpoint di update.
-            //OPPURE
-            // potremmo utilizzare uno useEffect che fa partire la chiamata verso l'endpoint UPDATE dei dati, solo quando 'data' cambia.
-      // se premo il pulsante "torna indietro" nella pagina modifica, deve esser fatto il controllo sui dati, se sono modificati chiedere se salvare o ignorare con un modal.
-      // qunado si torna indietro, la pagina della tabella deve contenere la row modificata (se modificata)
-      // quando si torna indietro la tabella deve mantenere il suo stato (ad es. eravamo su pagina 2 con il selected sulla row 10, deve rimanere così) (trovare modo di mantenere stato paginazione sulla table mostrata)
 
-      //*utilizzare table di luca su progetto AGD ci stanno lavorando. potrebbe essere più responsiva ed ottimizzata
-
-    
+      //dati TipologieEsperto
+      //dati requisiti
       
     }, [])
 
@@ -44,30 +35,9 @@ export const SettingsPage = () => {
       }
     ]
 
-    //simulazione di dati in arrivo alla pagina tipologiaTesperto
-    const TipologiaEspertoData = {
-      tipologieDiSistema:[
-        {
-          id:'0',
-          title:'Medico competente',
-          description:'medico sportivo per attività semi-agonistica',
-          visible:true,
-        },
-        {
-          id:'1',
-          title:'Psicologo',
-          description:'Psicologo espertoi in psicologia infantile',
-          visible:false,
-        },
-        {
-          id:'2',
-          title:'DPO',
-          description:'DPO',
-          visible:true,
-        },
-      ],
-      tipologiePersonalizzate:[]
-    }
+    
+  
+    
 
   return (
     <>
@@ -89,7 +59,7 @@ export const SettingsPage = () => {
         {/* implementare switchCase? */}
         <Box sx={{marginTop:'5rem'}}>
               {activeTab === 'Tipologia Esperto' ? (
-                <TipologiaEsperto {...TipologiaEspertoData} />
+                <TipologiaEsperto />
               ):(
                 <RequisitiTab />
               )}

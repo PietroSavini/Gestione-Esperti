@@ -12,51 +12,13 @@ import { DrawerData } from './components/partials/Drawer/DrawerTypes';
 import { sidebar } from './components/partials/Drawer/sidebarProps';
 import Loader from './components/partials/Loader/Loader';
 import { SettingsPage } from './pages/SettingsPage/SettingsPage';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { TipologiaEdit } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaEdit/TipologiaEdit';
-
+import {theme} from './ms_theme'
 
 function App() {  
-  const theme = createTheme({
-    components:{
-      MuiButton:{
-        styleOverrides:{
-          root:{
-            textTransform:'none'
-          }
+  // tema personalizzato per 
 
-        }
-      },
-      // @ts-ignore
-      MuiDataGrid: {
-        styleOverrides: {
-          footerContainer: {
-            justifyContent: 'initial',
-          },
-        },
-      },
-      MuiTablePagination:{
-        styleOverrides:{
-          root:{
-            width:'100%',
-            overflow:'initial'
-            
-          },
-          spacer:{
-            display:'none'
-          },
-          toolbar:{
-            width:'100%',
-            justifyContent:'flex-end',
-            alignItems:'center',
-            minHeight:'50px',
-            flexWrap:'wrap',
-            padding:'.5rem .5rem'
-          }
-        }
-      }
-    }
-  })
   useEffect(() => {
     //appena renderizza il componente dobbiamo salvare accessToken e RefreshToken nello state di redux prendendolo dall app di lancio che ce li passa all'inizializzazione
     //controllo se i dati che devo fetchare sono nello State di Redux
@@ -92,8 +54,6 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <div className="APP">
-          
-
           <ResponsiveDrawer data={data}/>
           <main>
             <Routes>

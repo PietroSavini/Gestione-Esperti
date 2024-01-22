@@ -3,23 +3,19 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks'
-import { addTipologiaPersonalizzata, removeTipologiaPersonalizzata, toggleVisible } from '../../../../../app/store/Slices/TipologieSlice'
+import { copyTipologiaPersonalizzata, removeTipologiaPersonalizzata, selectTipologie, toggleVisiblePersonalizzate } from '../../../../../app/store/Slices/TipologieSlice'
 import { DeleteButtonWithDialog } from '../../../../../components/partials/Buttons/DeleteButtonWithDialog'
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination'
 import { DuplicateButtonWithDialog } from '../../../../../components/partials/Buttons/DuplicateButtonWithDialog'
 import {v4 as uuidv4} from 'uuid'
 import { useNavigate } from 'react-router-dom'
+import { Row } from './Table_tipologieDiSistema'
+import { useSelector } from 'react-redux'
 type Props ={ 
     fn? :  Function
     data: Row[]
 }
 
-export type Row = {
-    id:string;
-    title:string,
-    description:string;
-    visible:boolean;
-}
 
 type RowParam ={
     id:string;
@@ -30,37 +26,21 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
     const tableData = data
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    //InitialState
-    // utilizzo useMemo per memorizzare le Rows derivanti da Data, questo metodo offre una migliore ottimizzazione
-    const initialRows = React.useMemo(() => {
-        if (tableData) {
-            return tableData.map(item => ({
-                id: item.id,
-				title: item.title,
-                description: item.description,
-                visible: item.visible,
-			}));
-		}
-		return [];
-	}, [data]);
-
-    const [rows, setRows] = useState<Row[]>(initialRows)
+    const tipologie = useSelector(selectTipologie)
+    const rows = tipologie.tipologiePersonalizzate
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     /*Fn che gestisce il click dello switch in UI e su DB*/
     const handleSwitchChange = (id: string) => {
-        // aggiorno l'evento in UI facendo cambiare lo switch
-        const updatedRows = rows.map(row => 
-          row.id === id ? { ...row, visible: !row.visible } : row
-        );
+        
         //apro loader tabella
         setIsLoading(true)
         //faccio chiamata ad endpoint per il salavataggio dei dati in DB
             //se la risposta è positiva
-                // aggiorno UI
-                setRows(updatedRows)
+                // aggiorno UI tabella
+                
                 // Aggiorno lo state con il nuovo valore dello switch
-                dispatch(toggleVisible(id))
+                dispatch(toggleVisiblePersonalizzate(id))
                 //loader tabella false
                 setIsLoading(false)
             //se la risposta è negativa
@@ -73,9 +53,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
         setIsLoading(true)
         //chiamata ad endpoint 'destroy' di DB 
             //se risposta OK
-                // Rimozione dalla tabella e dalla Redux state
-                const updatedRows = rows.filter(row => row.id !== id);
-                setRows(updatedRows);
+                // Rimozione dalla tabella e dal Redux state
                 dispatch(removeTipologiaPersonalizzata(id));
                 setIsLoading(false)
             //else
@@ -84,22 +62,21 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
       
     };
 
-    const handleAddClick = (row:Row) => {
+    const handleCopyClick = (row:Row) => {
         const rowObj = row
         const newId = uuidv4()
         const newRow = {...rowObj, id:newId}
-        dispatch(addTipologiaPersonalizzata(newRow))
+        dispatch(copyTipologiaPersonalizzata(newRow))
        
     }
     /* componente che renderizza i pulsanti azione all'interno della tabella */
     const DataGridActions = ({params}:any) => {
         //estraggo i valori della ROW
-        const { row } = params 
-
+        const { row , id} = params;
         return(
             <div className='dataGrid-actions'>
-                <DuplicateButtonWithDialog row={ row } successFn={handleAddClick}/>
-                <ActionButton color='warning' onClick={() => navigate('/impostazioni/modifica-tipologia',{state:{...row}})} text='Modifica' icon='edit' direction='row-reverse'/>
+                <DuplicateButtonWithDialog row={ row } successFn={handleCopyClick}/>
+                <ActionButton color='warning' onClick={() => navigate('/impostazioni/modifica-tipologia',{state:{...row, rowId: id}})} text='Modifica' icon='edit' direction='row-reverse'/>
                 <DeleteButtonWithDialog row={row as Row} successFn={handleDeleteClick}/>
             </div>
         )
@@ -107,7 +84,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
     
     /* componente che renderizza lo switch MUI nella tabella */
     const VisibleSwitch = ({id, value} : RowParam) => {
-        return <Switch id={`${id}`} onChange={() => handleSwitchChange(id)} checked={value} />;
+        return <Switch id={id} onChange={() => handleSwitchChange(id)} checked={value} />;
     };
 
 
@@ -119,10 +96,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
         {field:'actions', headerAlign:'center', align:'center', headerName:'azioni', width: 320, renderCell: (params:any) => (<DataGridActions params={params} />), sortable:false, filterable:false }
     ];
 
-    useEffect(() => {
-        setRows(initialRows)
-
-    }, [data])
+ 
     
 
   return (
@@ -139,9 +113,7 @@ export const Table_tipologiePersonalizzate = ({data} : Props ) => {
                     rows={rows}
                     columns={columns}
                     initialState={{
-                        
                         pagination: {
-                        
                             paginationModel: { page: 0, pageSize: 10 },
                         },
                     }}
