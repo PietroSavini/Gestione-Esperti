@@ -1,38 +1,51 @@
-import { Box, Icon, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { Box, FormHelperText, Icon, InputBase, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { selectTipologie } from '../../../../../app/store/Slices/TipologieSlice';
 import { useAppSelector } from '../../../../../app/ReduxTSHooks';
-import { Row } from '../Tables/Table_tipologieDiSistema';
 import { useForm } from 'react-hook-form';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
+import { RequisitoTable } from '../Tables/Table_tipologieDiSistema';
+
+
+
 
 export const TipologiaEdit = () => {
     const navigate = useNavigate()
-    const {state} = useLocation();
-    const {title, id, description, visible, requisiti, rowId } = state
+    const { state } = useLocation();
+    const { title, id, description, visible, requisitiTables } = state
+    //prelevo tipologie personalizzate dallo state redux per effettuare controllo al refresh della pagina
     const localState = useAppSelector(selectTipologie);
     const { tipologiePersonalizzate } = localState;
+    //variabili di stato per modifica descrizioni della tipologia da modificare
+    const [ newTitle, setNewTitle ] = useState<string>(title)
+    const [ newDescription, setNewDescription ] = useState<string>(description)
+    //elenco delle table da generare per ogni sezione contenuta all interno della tipologia esperto es: sezione titolo di studio (con i suoi requisiti etc..)
+    //ci serve anche per "aggiungi sezione"
+    const [tables, setTables] = useState<RequisitoTable>(requisitiTables)
+
     //react hook form
     const form = useForm<any>();
-    const { register, handleSubmit, control, formState } = form;
+    const { register, handleSubmit, formState } = form;
     const { errors } = formState;
-    const submit = () => {
-        console.log('hello')
-    }
+
+    //console.log(vari)
+    useEffect(() => {
+        console.log('quello che arriva alla pagina dopo il click modifica',state)
+        console.log('tabelle',tables)
+    }, [])
     
-    //funzione che controlla se al click del pulsante "torna Indietro" ci sono modifiche non salvate
-    //Funzione salva ed esci con useNavigate
-
-    //
-
     useEffect(() => {
         //elemento di controllo nell ipotesi venga effettuato un regresh della pagina o se per qualche motivo la row non è presente nella tabella
-        if(!tipologiePersonalizzate.some((tipologia) => tipologia.id === rowId)){
+        if(!tipologiePersonalizzate.some((tipologia) => tipologia.id === id)){
             navigate('/impostazioni')
         }
     }, [])
     
+    //funzione di submit del bottone per modifica descrizioni
+    const submit = () => {
+        console.log('hello')
+    }
   return (
     <>
         <Box marginBottom='1rem'>
@@ -40,14 +53,51 @@ export const TipologiaEdit = () => {
             <Typography fontWeight={600} variant='body2' component={'span'} > / Modifica Tipologia </Typography>
         </Box>
 
-        <Box display='flex' alignItems='center'>
+        <Box marginBottom={'1.5rem'} display='flex' alignItems='center'>
             <Icon onClick={() => navigate(-1)} className='link' sx={{marginRight:'1rem', fontSize:'2rem'}}>keyboard_backspace</Icon>
             <Typography variant='h5'>Modifica Tipologia: {title}</Typography>
         </Box>
 
         {/* form per modifica descrizioni */}
-        <Box component={'form'} noValidate onSubmit={handleSubmit(submit)}>
-            <ActionButton color='secondary' text='submit' type='submit' />
+        <Box sx={{marginBottom:'1rem'}} component={'form'} noValidate onSubmit={handleSubmit(submit)} display={'flex'}>
+            <Box width={'33%'} padding={'0 1rem'}>
+            <Typography  fontWeight={600} color={'#127aa3ff'}>Descrizione Breve</Typography>
+                <InputBase 
+                    className={`ms_input ${errors.title ? 'error' : ''}`}
+                    error = {!!errors.title}
+                    fullWidth 
+                    placeholder='Inserisci una descrizione breve' 
+                    {...register('title',{required:'La descrizione breve è richiesta'})} 
+                    value={newTitle} 
+                    onChange={(e) => setNewTitle(e.target.value)} 
+                    
+                />
+                {errors.title && <FormHelperText sx={{paddingLeft:'.5rem'}} error>{errors.title?.message as string}</FormHelperText> }
+
+            </Box>
+            <Box width={'33%'} padding={'0 1rem'} >
+                <Typography fontWeight={600} color={'#127aa3ff'}>Descrizione Lunga</Typography>
+                <InputBase 
+                   sx={{padding:'0 .5rem'}}
+                    multiline
+                    maxRows={4}
+                    className={`ms_input ${errors.description ? 'error' : ''}`}
+                    fullWidth 
+                    placeholder='Inserisci una descrizione lunga' 
+                    {...register('description',{required:'La descrizione lunga è richiesta'})} 
+                    value={newDescription} 
+                    onChange={(e) => setNewDescription(e.target.value)} 
+                    
+                />
+                {errors.description && <FormHelperText sx={{paddingLeft:'.5rem'}} error>{errors.description?.message as string}</FormHelperText> }
+                    
+            </Box>
+
+            <Box width={'33%'} padding={'0 1rem'} justifyContent={'flex-end'} display={'flex'} alignItems={'center'}>
+                <ActionButton sx={{height:'40px'}} color='secondary' text='submit' type='submit' />
+            </Box>
+
+            
         </Box>
         {/* END form per modifica descrizioni */}
     </>

@@ -37,6 +37,7 @@ export const theme = createTheme({
             padding:'.5rem .5rem'
           }
         }
-      }
+      },
+    
     }
   })

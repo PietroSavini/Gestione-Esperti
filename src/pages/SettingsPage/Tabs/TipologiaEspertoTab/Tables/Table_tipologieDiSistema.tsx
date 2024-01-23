@@ -11,15 +11,24 @@ import { useSelector } from 'react-redux'
 
 type Props ={ 
     fn? :  Function
-    data: Row[]
+    data: TipologiaEspertoRow[]
+}
+export type RequisitoTable = {
+    sectionTitle:string;
+    requisitiList:{
+        id: string | number;
+        title: string;
+        punteggio?: string | number;
+        isNew:boolean;
+    }[]|[]
 }
 
-export type Row = {
+export type TipologiaEspertoRow = {
     id:string;
     title:string,
     description:string;
     visible:boolean;
-    requisiti: Object[] | [];
+    requisitiTables: RequisitoTable[] | [];
 }
 
 type RowParam ={
@@ -44,7 +53,7 @@ export const Table_tipologieDiSistema = ({data} : Props ) => {
                 //faccio uscire un messaggio di errore
     };
 
-    const handleAddClick = (row:Row) => {
+    const handleAddClick = (row:TipologiaEspertoRow) => {
         const rowObj = row
         const newId = uuidv4()
         const newRow = {...rowObj, id:newId}

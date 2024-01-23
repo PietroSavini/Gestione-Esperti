@@ -85,7 +85,7 @@ export default function RequisitiTable ({data}:{data:Table}) {
       //risposta 200
         //aggiungo dati a store redux
       //risposta negativa
-        //mostro messaggio di errore
+        
   };
   //delete
   const handleDeleteClick = (id: GridRowId) => () => {

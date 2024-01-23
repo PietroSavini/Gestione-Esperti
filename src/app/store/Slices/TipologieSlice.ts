@@ -1,11 +1,11 @@
 // slices/tipologieSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { Row } from '../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/Tables/Table_tipologieDiSistema';
+import { TipologiaEspertoRow } from '../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/Tables/Table_tipologieDiSistema';
 
 interface TipologieState {
-  tipologieDiSistema: Row[];
-  tipologiePersonalizzate: Row[];
+  tipologieDiSistema: TipologiaEspertoRow[];
+  tipologiePersonalizzate: TipologiaEspertoRow[];
 }
 
 const initialState: TipologieState = {
@@ -15,21 +15,48 @@ const initialState: TipologieState = {
       title:'Medico competente',
       description:'medico sportivo per attività semi-agonistica',
       visible:true,
-      requisiti:[]
+
+      requisitiTables:[
+        {
+          sectionTitle:'titolo di Studio',
+          requisitiList:[
+            {
+              id:'0',
+              title:'Laurea Vecchio ordinamento',
+              punteggio:'3',
+              isNew:false,
+            },
+            {
+              id:'1',
+              title:'Laurea Triennale',
+              punteggio:'1',
+              isNew:false,
+            },
+            {
+              id:'2',
+              title:'Laurea specialistica',
+              punteggio:'2',
+              isNew:false
+            }
+          ]
+        }
+      ]
     },
     {
       id:'1',
       title:'Psicologo',
       description:'Psicologo espertoi in psicologia infantile',
       visible:false,
-      requisiti:[]
+      
+      requisitiTables:[]
     },
     {
       id:'2',
       title:'DPO',
       description:'DPO',
       visible:true,
-      requisiti:[]
+      
+      requisitiTables:[]
     },
   ],
   tipologiePersonalizzate: [],
@@ -45,7 +72,7 @@ const tipologieSlice = createSlice({
       return { ...state, ...action.payload };
     },
 
-    copyTipologiaPersonalizzata: (state, action: PayloadAction<Row>) => {
+    copyTipologiaPersonalizzata: (state, action: PayloadAction<TipologiaEspertoRow>) => {
       state.tipologiePersonalizzate.push(action.payload);
     },
 
