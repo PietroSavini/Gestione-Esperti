@@ -5,6 +5,7 @@ import {v4 as uuidv4} from 'uuid'
 import { DataGrid,  GridColDef, GridEditInputCell, GridEventListener, GridPreProcessEditCellProps, GridRenderEditCellParams, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer } from '@mui/x-data-grid';
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
+import { RequisitiList } from '../../TipologiaEspertoTab/Tables/Table_tipologieDiSistema';
 
 
 type Rows = Row[] | [];
@@ -20,11 +21,11 @@ type Row = {
 //dataTable -------------------------------------------------------------------------------------------------------------------------
 
 export default function RequisitiTable ({data}:{data:Table}) {
-  const [rows, setRows] = useState<Rows>(data.rowsRequisiti);
+  const [rows, setRows] = useState<RequisitiList>(data.requisitiList);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [hasError, setHasError] = useState<boolean>(true)
-  const {title} = data
+  const {sectionTitle} = data
   
   //custom toolBar -------------------------------------------------------------------------------------------------------------------
   interface EditToolbarProps {
@@ -52,7 +53,7 @@ export default function RequisitiTable ({data}:{data:Table}) {
   
     return (
       <GridToolbarContainer className='requisiti-section-title' sx={{backgroundColor:'#ebeeffff',padding:'.5rem .5rem 0rem .5rem', justifyContent:'space-between'}}>
-        <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{title}</Typography>
+        <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{sectionTitle}</Typography>
         <ActionButton direction={'row-reverse'} text='Aggiungi Requisito' icon='add' color="secondary" onClick={handleClick} />
       </GridToolbarContainer>
     );
@@ -78,7 +79,7 @@ export default function RequisitiTable ({data}:{data:Table}) {
     }
   };
   //create
-  const handleSaveClick = (id: GridRowId, row:Row) => () => {
+  const handleSaveClick = (id: GridRowId) => () => {
     //chiamata ed attesa risposta server
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     // invio dati a DB
@@ -171,13 +172,13 @@ export default function RequisitiTable ({data}:{data:Table}) {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
         if (isInEditMode) {
           return [   
-            <ActionButton key={id} sx={{marginRight:'5px'}} icon='save' disabled={error} color='primary' onClick={handleSaveClick(id, row)} />,
+            <ActionButton key={id} sx={{marginRight:'5px'}} icon='save' disabled={error} color='primary' onClick={handleSaveClick(id)} />,
             <ActionButton key={`${id}-1`} icon='cancel'color='error' onClick={handleCancelClick(id)} />,
           ];
         }
         return [
-          <ActionButton key={id} sx={{marginRight:'5px'}} icon='edit' text='Modifica' color='warning' onClick={handleEditClick(id)}/>,
-          <ActionButton key={`${id}-1`} icon='delete' text='Elimina' onClick={handleDeleteClick(id)} color='error'/>,
+          <ActionButton key={id} sx={{marginRight:'5px'}} icon='edit' color='warning' onClick={handleEditClick(id)}/>,
+          <ActionButton key={`${id}-1`} icon='delete' onClick={handleDeleteClick(id)} color='error'/>,
         ];
       }
     }

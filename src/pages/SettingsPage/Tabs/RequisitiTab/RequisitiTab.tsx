@@ -2,17 +2,12 @@ import { Box } from '@mui/material';
 import { useEffect, useState } from 'react'
 import { AddSectionButtonWithDialog } from '../../../../components/partials/Buttons/AddSectionButtonWithDialog';
 import  RequisitiTable  from './Tables/RequisitiTable';
+import { RequisitiList } from '../TipologiaEspertoTab/Tables/Table_tipologieDiSistema';
 
 export type Table = {
     id:string | number;
-    title:string;
-    rowsRequisiti:{
-        id: string | number;
-        title: string;
-        sistema: boolean;
-        isNew:boolean;
-        
-    }[] | [];
+    sectionTitle:string;
+    requisitiList:RequisitiList
 }
 
 type Tables = Table[]
@@ -23,8 +18,8 @@ export const RequisitiTab = () => {
         //prima table
         {
             id: 'table1',
-            title:'Titolo Di Studio',
-            rowsRequisiti:[
+            sectionTitle:'Titolo Di Studio',
+            requisitiList:[
                 {
                     id:'id878-8787',
                     title:'Laurea vecchio ordinamento',
@@ -60,8 +55,8 @@ export const RequisitiTab = () => {
     const handleAddSection = (title:string) => {
        const newTable: Table ={
          id:`table-${title}`,
-         title: title,
-         rowsRequisiti:[]
+         sectionTitle: title,
+         requisitiList:[]
        }
        //Salvo la Tabella appena Creata nel DB
         //response:200 , ricevo id Table

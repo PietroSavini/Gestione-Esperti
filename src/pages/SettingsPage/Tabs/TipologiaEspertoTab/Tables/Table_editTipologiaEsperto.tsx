@@ -24,7 +24,7 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
     ) => void;
   }
   
-  //componente della toolbar che gestisce comporamento di Row in edit /show e funzionalità tasto aggiungi
+  //componente della toolbar che gestisce comporamento di Row in edit x nuova row e funzionalità tasto aggiungi row
   function EditToolbar(props: EditToolbarProps) {
     const { setRows, setRowModesModel } = props;
     //funzione al click pulsante aggiungi
@@ -100,21 +100,11 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
     setRowModesModel(newRowModesModel);
   };
   
-  // casella con messaggio di errore -------------------------------------------------------------------------------------------------
+  // Select nome requisito -------------------------------------------------------------------------------------------------
 
-  //componente tooltip MUI personalizzato per mostrare messaggio di errore 
-  const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: theme.palette.error.main,
-      color: theme.palette.error.contrastText,
-    },
-  }));
-
-  //componente select che dovrebbe prendere lista nome requisitio da lista requisiti
+  //componente select che prende nome requisito all interno della sezione requisitio (es. titolo di studio: requisiti[])
   function TitleEditSelectCell(props: GridRenderEditCellParams, key:any) {
-    const { error, id, value, api, field } = props;
+    const { id, value, api, field } = props;
 
     const handleChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value as string;
@@ -127,12 +117,12 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
             fullWidth
             value={value || ''}
             onChange={handleChange}
-            className={!!error ? 'table-input-error' : ''}
+            
         >
         {/* Opzioni della select, puoi popolare dinamicamente in base alle tue esigenze */}
-            <MenuItem value="opzione1">Opzione 1</MenuItem>
-            <MenuItem value="opzione2">Opzione 2</MenuItem>
-            <MenuItem value="opzione3">Opzione 3</MenuItem>
+            <MenuItem value="Laurea Vecchio ordinamento">Laurea Vecchio ordinamento</MenuItem>
+            <MenuItem value="Laurea Triennale">Laurea Triennale</MenuItem>
+            <MenuItem value="Laurea specialistica">Laurea specialistica</MenuItem>
       </Select>
     );
   }
@@ -171,8 +161,8 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
           ];
         }
         return [
-          <ActionButton key={id} sx={{marginRight:'5px'}} icon='edit' text='Modifica' color='warning' onClick={handleEditClick(id)}/>,
-          <ActionButton key={`${id}-1`} icon='delete' text='Elimina' onClick={handleDeleteClick(id)} color='error'/>,
+          <ActionButton key={id} sx={{marginRight:'5px'}} icon='edit'  color='warning' onClick={handleEditClick(id)}/>,
+          <ActionButton key={`${id}-1`} icon='delete'  onClick={handleDeleteClick(id)} color='error'/>,
         ];
       }
     }
@@ -202,7 +192,7 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
           autoHeight
           initialState={{           
             pagination: {    
-                paginationModel: { page: 0, pageSize: 10 },
+                paginationModel: { page: 0, pageSize: 5 },
             },
           }}
           pageSizeOptions={[5, 10, 20, 50]}

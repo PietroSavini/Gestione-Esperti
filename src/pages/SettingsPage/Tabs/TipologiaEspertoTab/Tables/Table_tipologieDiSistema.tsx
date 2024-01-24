@@ -14,6 +14,7 @@ type Props ={
     data: TipologiaEspertoRow[]
 }
 export type RequisitoTable = {
+    id:string|number;
     sectionTitle:string;
     requisitiList: RequisitiList;
 }[]|[]
@@ -22,6 +23,7 @@ export type RequisitiList = {
     id: string | number;
     title: string;
     punteggio?: string | number;
+    sistema?:boolean;
     isNew:boolean;
     
 }[]|[]

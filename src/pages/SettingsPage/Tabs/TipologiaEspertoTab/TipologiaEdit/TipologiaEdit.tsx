@@ -1,4 +1,4 @@
-import { Box, FormHelperText, Icon, InputBase, Typography } from '@mui/material'
+import { Box, FormHelperText, Grid, Icon, InputBase, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { selectTipologie } from '../../../../../app/store/Slices/TipologieSlice';
@@ -7,8 +7,7 @@ import { useForm } from 'react-hook-form';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
 import { RequisitoTable } from '../Tables/Table_tipologieDiSistema';
 import Table_editTipologiaEsperto from '../Tables/Table_editTipologiaEsperto';
-
-
+import { AddSectionButtonWithDialog } from '../../../../../components/partials/Buttons/AddSectionButtonWithDialog';
 
 
 export const TipologiaEdit = () => {
@@ -47,6 +46,24 @@ export const TipologiaEdit = () => {
     const submit = () => {
         console.log('hello')
     }
+
+    const handleAddSection = (sectionTitle:string) => {
+        const newTable ={
+          id:`table-${sectionTitle}-requisiti-${title}`, //sicuro va assegnato id diverso ma questo è provvisorio
+          sectionTitle: sectionTitle,
+          requisitiList:[]
+        }
+        //Salvo la Tabella appena Creata nel DB
+         //response:200 , ricevo id Table
+ 
+        setTables((prevTables) => [...prevTables, newTable] )
+        console.log(tables)
+    }
+
+    const updateValue= ({value, url }:{value:string, url?:string}) => {
+        setNewDescription(value)
+        //funzione con debounce per salvataggio dati su db
+    }
     
   return (
     <>
@@ -61,9 +78,9 @@ export const TipologiaEdit = () => {
         </Box>
 
         {/* form per modifica descrizioni */}
-        <Box sx={{marginBottom:'1rem'}} component={'form'} noValidate onSubmit={handleSubmit(submit)} display={'flex'}>
-            <Box width={'33%'} padding={'0 1rem'}>
-            <Typography  fontWeight={600} color={'#127aa3ff'}>Descrizione Breve</Typography>
+        <Grid container sx={{marginBottom:'1rem'}}  component={'form'} noValidate onSubmit={handleSubmit(submit)} >
+            <Grid item lg={6} xs={12} sx={{padding:'0 .5rem', marginBottom:'1rem'}} >
+                <Typography fontWeight={600} color={'#127aa3ff'}>Descrizione Breve</Typography>
                 <InputBase 
                     className={`ms_input ${errors.title ? 'error' : ''}`}
                     error = {!!errors.title}
@@ -76,8 +93,9 @@ export const TipologiaEdit = () => {
                 />
                 {errors.title && <FormHelperText sx={{paddingLeft:'.5rem'}} error>{errors.title?.message as string}</FormHelperText> }
 
-            </Box>
-            <Box width={'33%'} padding={'0 1rem'} >
+            </Grid>
+            <Grid item lg={6} xs={12} sx={{ padding:'0 .5rem'}} >
+
                 <Typography fontWeight={600} color={'#127aa3ff'}>Descrizione Lunga</Typography>
                 <InputBase 
                    sx={{padding:'0 .5rem'}}
@@ -88,23 +106,25 @@ export const TipologiaEdit = () => {
                     placeholder='Inserisci una descrizione lunga' 
                     {...register('description',{required:'La descrizione lunga è richiesta'})} 
                     value={newDescription} 
-                    onChange={(e) => setNewDescription(e.target.value)} 
+                    onChange={(e) => updateValue({value: e.target.value, url:'/ciao'}) } 
                     
                 />
                 {errors.description && <FormHelperText sx={{paddingLeft:'.5rem'}} error>{errors.description?.message as string}</FormHelperText> }
+            </Grid>
+           
                     
-            </Box>
+         
 
-            <Box width={'33%'} padding={'0 1rem'} justifyContent={'flex-end'} display={'flex'} alignItems={'center'}>
-                <ActionButton sx={{height:'40px'}} color='secondary' text='submit' type='submit' />
-            </Box>
-        </Box>
+        </Grid>
         {/* END form per modifica descrizioni */}
+        <Box sx={{marginBottom:'1rem'}}  display={'flex'} width={'100%'} justifyContent={'flex-start'}>
+            <AddSectionButtonWithDialog successFn={handleAddSection} />
+        </Box>
 
         {/* Rendering tabelle con map in base ad array: Tables */}
-        {tables && tables.map((table)=>(
+        {tables && tables.map((table, index)=>(
             <>
-                <Table_editTipologiaEsperto sectionTitle={table.sectionTitle} requisiti={table.requisitiList}/>
+                <Table_editTipologiaEsperto key={index} sectionTitle={table.sectionTitle} requisiti={table.requisitiList}/>
             </>
         ))}
             
