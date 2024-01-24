@@ -15,13 +15,16 @@ type Props ={
 }
 export type RequisitoTable = {
     sectionTitle:string;
-    requisitiList:{
-        id: string | number;
-        title: string;
-        punteggio?: string | number;
-        isNew:boolean;
-    }[]|[]
-}
+    requisitiList: RequisitiList;
+}[]|[]
+
+export type RequisitiList = {
+    id: string | number;
+    title: string;
+    punteggio?: string | number;
+    isNew:boolean;
+    
+}[]|[]
 
 export type TipologiaEspertoRow = {
     id:string;

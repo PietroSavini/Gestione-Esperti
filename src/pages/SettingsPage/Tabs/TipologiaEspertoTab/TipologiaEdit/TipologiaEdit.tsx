@@ -6,6 +6,7 @@ import { useAppSelector } from '../../../../../app/ReduxTSHooks';
 import { useForm } from 'react-hook-form';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
 import { RequisitoTable } from '../Tables/Table_tipologieDiSistema';
+import Table_editTipologiaEsperto from '../Tables/Table_editTipologiaEsperto';
 
 
 
@@ -13,7 +14,7 @@ import { RequisitoTable } from '../Tables/Table_tipologieDiSistema';
 export const TipologiaEdit = () => {
     const navigate = useNavigate()
     const { state } = useLocation();
-    const { title, id, description, visible, requisitiTables } = state
+    const { title, id, description, requisitiTables } = state
     //prelevo tipologie personalizzate dallo state redux per effettuare controllo al refresh della pagina
     const localState = useAppSelector(selectTipologie);
     const { tipologiePersonalizzate } = localState;
@@ -46,6 +47,7 @@ export const TipologiaEdit = () => {
     const submit = () => {
         console.log('hello')
     }
+    
   return (
     <>
         <Box marginBottom='1rem'>
@@ -96,10 +98,17 @@ export const TipologiaEdit = () => {
             <Box width={'33%'} padding={'0 1rem'} justifyContent={'flex-end'} display={'flex'} alignItems={'center'}>
                 <ActionButton sx={{height:'40px'}} color='secondary' text='submit' type='submit' />
             </Box>
-
-            
         </Box>
         {/* END form per modifica descrizioni */}
+
+        {/* Rendering tabelle con map in base ad array: Tables */}
+        {tables && tables.map((table)=>(
+            <>
+                <Table_editTipologiaEsperto sectionTitle={table.sectionTitle} requisiti={table.requisitiList}/>
+            </>
+        ))}
+            
+       
     </>
   )
 }
