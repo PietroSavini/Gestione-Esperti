@@ -15,6 +15,7 @@ import { SettingsPage } from './pages/SettingsPage/SettingsPage';
 import { ThemeProvider } from '@mui/material/styles';
 import { TipologiaEdit } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaEdit/TipologiaEdit';
 import {theme} from './ms_theme'
+import { BandiPage } from './pages/Bandi/BandiPage';
 
 function App() {  
   // tema personalizzato per 
@@ -68,6 +69,7 @@ function App() {
                 <Route index element={<Dashboard />}/>
                 <Route path='/impostazioni' element={<SettingsPage />}/>
                 <Route path='/impostazioni/modifica-tipologia' element={<TipologiaEdit/>}  />
+                <Route path='/Bandi' element={<BandiPage/>}/>
                 {/* Catch All */}
                 <Route path='*' element={<NotFound/>} />
             </Routes>

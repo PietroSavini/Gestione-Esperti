@@ -36,6 +36,7 @@ export const TipologiaEdit = () => {
     }, [])
     
     useEffect(() => {
+        //forse inutile, da constatare se va effettuata chiamata a DB per popolare pagina(probabilmente si)
         //elemento di controllo nell ipotesi venga effettuato un regresh della pagina o se per qualche motivo la row non è presente nella tabella
         if(!tipologiePersonalizzate.some((tipologia) => tipologia.id === id)){
             navigate('/impostazioni')
@@ -63,6 +64,8 @@ export const TipologiaEdit = () => {
     const updateValue= ({value, url }:{value:string, url?:string}) => {
         setNewDescription(value)
         //funzione con debounce per salvataggio dati su db
+        //se uno dei 2 values è vuoto, non eseguire chiamata nella funzione di debounce ma settare variabile formError su true e return
+
     }
     
   return (
@@ -111,9 +114,6 @@ export const TipologiaEdit = () => {
                 />
                 {errors.description && <FormHelperText sx={{paddingLeft:'.5rem'}} error>{errors.description?.message as string}</FormHelperText> }
             </Grid>
-           
-                    
-         
 
         </Grid>
         {/* END form per modifica descrizioni */}
