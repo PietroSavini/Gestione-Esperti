@@ -5,4 +5,73 @@
         border-top-left-radius: 10px;
         background-color: #fafbffff ;
     }
+    .creazione-bando-header{
+        display: flex;
+        padding:.5rem 1rem;
+    }
+    .creazione-bando-body{
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        @media screen and (min-width:800px){
+            flex-direction: row;
+        }
+        .stepper-container{
+            border: 1px solid #efefef;
+            .stepper{
+                display: none;
+                @media screen and (min-width:800px){
+                    display: block;
+                }
+            }
+            .mobile-stepper{
+                @media screen and (min-width: 800px){
+                    display: none;
+                }
+            }
+            .css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed {
+                color: #34bf54ff !important;
+            }
+            .css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-active {
+                color: #53a5cfff;
+            }
+        }
+
+        .form-container{
+            flex-grow: 1;
+            background-color: aliceblue;
+            form{
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                
+                .ms_form-group{
+                    flex-grow: 1;
+                    overflow-y: auto;
+                }
+                .mobile-navigation{
+                    @media screen and (min-width:800px){
+                        display: none;
+                    }
+                }
+                .navigation{
+                    display: none;
+                    
+                    @media screen and (min-width:800px){
+                        display: flex;
+                        
+                        padding:.5rem 1rem;
+                        border-top:1px solid #efefef;
+                        background-color:#fafbffff;
+                        gap: .5rem;
+                        .cancel-button{
+                            width: 50%;
+                        }
+                    }
+                    
+                }
+            }
+
+        }
+    }
 }

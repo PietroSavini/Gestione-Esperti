@@ -16,6 +16,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { TipologiaEdit } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaEdit/TipologiaEdit';
 import {theme} from './ms_theme'
 import { BandiPage } from './pages/Bandi/BandiPage';
+import { Login } from './pages/LoginPage/Login';
 
 function App() {  
   // tema personalizzato per 
@@ -58,20 +59,19 @@ function App() {
           <ResponsiveDrawer data={data}/>
           <main>
             <Routes>
-                {/* 
                   persistent login ed auth dovrebbero avvolegere tutte le routes ma a scopo di test e sviluppo ancora non possiamo farlo
                   <Route element={<PersistentLogin />}>
                     <Route element={<RequireAuth />}>
-                
+                      <Route index path='/Dashboard' element={<Dashboard />}/>
+                      <Route path='/impostazioni' element={<SettingsPage />}/>
+                      <Route path='/impostazioni/modifica-tipologia' element={<TipologiaEdit/>}  />
+                      <Route path='/Bandi' element={<BandiPage/>}/>
+                      {/* Catch All */}
+                      <Route path='*' element={<NotFound/>} /> 
                     </Route>
                   </Route>
-              */}
-                <Route index element={<Dashboard />}/>
-                <Route path='/impostazioni' element={<SettingsPage />}/>
-                <Route path='/impostazioni/modifica-tipologia' element={<TipologiaEdit/>}  />
-                <Route path='/Bandi' element={<BandiPage/>}/>
-                {/* Catch All */}
-                <Route path='*' element={<NotFound/>} />
+               
+    
             </Routes>
             <Loader/>
           </main>

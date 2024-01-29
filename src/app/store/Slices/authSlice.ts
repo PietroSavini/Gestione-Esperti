@@ -9,7 +9,7 @@ type AuthState = {
 //initialState
 const initialState: AuthState = {
     user: null,
-    token: null
+    token: null,
 }
 
 const authSlice = createSlice({

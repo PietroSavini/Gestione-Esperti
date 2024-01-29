@@ -5,6 +5,7 @@ import './index.scss'
 import { BrowserRouter,Routes,Route } from 'react-router-dom'
 import  { store }  from './app/store/store'
 import { Provider } from 'react-redux'
+import { Login } from './pages/LoginPage/Login.tsx'
 
 
 
@@ -17,10 +18,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       {/* rotte di reactRouter */}
       <BrowserRouter> 
         <Routes>
-          <Route path="/*" element={<App/>}/>
+          <Route path='/' element={<Login/>}>
+            <Route path='/*' element={<App />}/>
+          </Route>
         </Routes>
       </BrowserRouter>
-    
     </Provider>
   </React.StrictMode>,
 )
