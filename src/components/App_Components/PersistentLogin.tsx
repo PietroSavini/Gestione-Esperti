@@ -4,7 +4,6 @@ import { useAppDispatch} from "../../app/ReduxTSHooks";
 import { useSelector } from 'react-redux'
 import { selectToken, setCredentials } from "../../app/store/Slices/authSlice";
 import { AxiosHTTP } from "../../app/AXIOS_ENGINE/AxiosHTTP";
-import { openLoader } from "../../app/store/Slices/loaderSlice";
 import Loader from "../partials/Loader/Loader";
 
 export const PersistentLogin = () => {

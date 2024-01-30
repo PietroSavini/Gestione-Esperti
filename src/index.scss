@@ -126,6 +126,21 @@ body {
   
 }
 
+.ms_input-disabled{
+  background-color: rgb(225, 225, 225);
+}
+
+.ms_select{
+  
+  &:hover{
+    border: none;
+    outline: transparent !important;
+     
+  }
+  &.css-1ag27v5-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border: none;
+}
+}
 .ms_input{
   background-color: #fff;
   box-shadow: 0px 0px 3px grey ;

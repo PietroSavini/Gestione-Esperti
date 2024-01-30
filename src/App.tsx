@@ -70,8 +70,6 @@ function App() {
                       <Route path='*' element={<NotFound/>} /> 
                     </Route>
                   </Route>
-               
-    
             </Routes>
             <Loader/>
           </main>

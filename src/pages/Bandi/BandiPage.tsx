@@ -2,6 +2,8 @@ import  { useState } from 'react'
 import { ActionButton } from '../../components/partials/Buttons/ActionButton'
 import { Avatar, Box, Button, Dialog, Divider, Icon, MobileStepper, Step, StepLabel, Stepper, Typography } from '@mui/material'
 import './BandiPage.scss'
+import { FormStep1 } from './WizardCreazioneBando/FormStep1'
+import { useForm } from 'react-hook-form'
 
 
 export const BandiPage = () => {
@@ -11,9 +13,22 @@ export const BandiPage = () => {
     }
 
     //tutto da aggiungere nel modal creazione bando in componente separato
-
-    const [activeStep, setActiveStep] = useState(0);
-
+    interface FormData {
+        classeDocumentale: string;
+        titolario: string;
+        tipologiaEsperto: string;
+        annoRiferimento: string;
+        aoo: string;
+        archivioCollocazione: string;
+        classeAddizionale: string;
+        descrizioneEstesa: string;
+        tagDocumento: string;
+        
+    }
+    //react Hook Forms
+    const { register, handleSubmit, trigger, formState } = useForm<any>();
+    const { errors } = formState;
+    const [activeStep, setActiveStep] = useState(0);    
     const steps = [
         {
             label:'Dati Generali e metadati',
@@ -42,6 +57,38 @@ export const BandiPage = () => {
         },
     ]
 
+  
+
+    const ValidateAndGoNext = () => {
+        switch (activeStep){
+            case 0:
+                //valido primo form
+                
+                
+                
+                //se validazione passa (funzione trigger resituisce vero o falso)
+                //allora aggiorno lo stato del form
+            break;
+
+            case 1:
+
+            break;
+
+            case 2:
+
+            break;
+
+            case 3:
+
+            break;
+
+            case 4:
+                //triggero ultima validazione
+                //se passa submitto il form
+            break;
+        }
+    }
+
   return (
     <>
         <div>Pagina dei Bandi</div>
@@ -57,11 +104,14 @@ export const BandiPage = () => {
                 </Box>
                 <Divider/>
             </Box>
-            <Box  className={'creazione-bando-body'}  >
-                <Box className={'stepper-container'} sx={{padding:'0.5rem 1rem'}} >
+
+            <Box className={'creazione-bando-body'}  >
+                {/*---------------------------------------- STEPPER ------------------------------------------------*/}
+                <Box className={'stepper-container'} sx={{padding:'0.5rem .5rem'}} >
                     {/* MOBILE STEPPER XS+ */}
                     <Box className={'mobile-stepper'} display={'flex'} flexDirection={'column'} alignItems={'center'}>
                         <MobileStepper 
+                            sx={{margin:'0 1.5rem'}}
                             variant='dots'
                             steps={steps.length}
                             position='static'
@@ -74,7 +124,7 @@ export const BandiPage = () => {
 
                     {/* NORMAL STEPPER MD + */}
                     <Box className={'stepper'}>
-                        <Stepper activeStep={activeStep} orientation='vertical' >
+                        <Stepper sx={{margin:'0 1.5rem'}} activeStep={activeStep} orientation='vertical' >
                             {steps.map((step,index)=>(
                                 <Step key={index} >
                                     <StepLabel>
@@ -82,17 +132,18 @@ export const BandiPage = () => {
                                     </StepLabel>
                                 </Step>
                             ))}
-
                         </Stepper> 
-
                     </Box>
                 </Box>
-
+                {/*-----------------------------------------FINE STEPPER ------------------------------------------------*/}
+                {/*------------------------------------------------------------------------------------------------------*/}
+                {/*-------------------------------------FORM + NAVIGATION------------------------------------------------*/}
                 <Box className={'form-container'} >
+                    {/* form con logica per visualizzare i form */}
                     <Box component={'form'}>
                         <Box className={'ms_form-group'}>
                             {/* qui vanno renderizzati i vari form input in base agli steps */}
-
+                                {activeStep === 0 && <FormStep1 register={register} errors={errors}/>}
                         </Box>
 
                         {/* mobile navigation xs -> md */}
@@ -122,14 +173,9 @@ export const BandiPage = () => {
                             </Box>
                         </Box>
                         {/* End Navigation */}
-
-
-                            
-                        
-
-                        
                     </Box>
                 </Box>
+                {/*---------------------------------FINE FORM + NAVIGATION------------------------------------------------*/}    
             </Box>
             
         </Dialog>

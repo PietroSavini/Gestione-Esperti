@@ -40,6 +40,7 @@
         .form-container{
             flex-grow: 1;
             background-color: aliceblue;
+            
             form{
                 height: 100%;
                 display: flex;
@@ -48,6 +49,7 @@
                 .ms_form-group{
                     flex-grow: 1;
                     overflow-y: auto;
+                    padding: 1rem 2rem;
                 }
                 .mobile-navigation{
                     @media screen and (min-width:800px){

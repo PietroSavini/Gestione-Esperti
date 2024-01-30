@@ -23,8 +23,7 @@ export const Login = () => {
     const ref = useRef<HTMLFormElement>(null)
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const [genErr, setGenErr] = useState('')
-    const token = useSelector(selectToken);
+    const [genErr, setGenErr] = useState('');
     const [isCalling,setIsCalling] = useState(false)
     const onSubmit = useThrottled(
         

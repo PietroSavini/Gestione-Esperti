@@ -1,0 +1,59 @@
+import React from 'react';
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select, SelectProps } from "@mui/material";
+import { FieldError, UseFormRegisterReturn } from "react-hook-form";
+
+type Option = {
+    value: string | number;
+    label: string;
+};
+
+type Props = {
+    disabled?: boolean;
+    id?: string;
+    label: string;
+    error?: boolean;
+    errorMessage?: string;
+    options: Option[];
+    defaultValue?: string | number;
+} & SelectProps & { register?: UseFormRegisterReturn };
+
+export const Custom_Select = (props: Props) => {
+    const { disabled, label, id, error, errorMessage, options, defaultValue, register, ...rest } = props;
+
+    return (
+        <FormControl error={error} disabled={disabled} fullWidth sx={{ marginBottom:'.5rem', paddingTop:'2rem' }}>
+            <InputLabel
+                shrink
+                sx={{ top: '15px', left: '-15px', color: '#127aa3ff', fontWeight: 600, fontSize: '1.2rem' }}
+                htmlFor={id}
+            >
+                {label}
+            </InputLabel>
+
+            <Select 
+                
+                className={`${disabled ? 'ms_input-disabled' : ''} ms_select`}
+                sx={{ height:'48px', borderRadius: '15px', boxShadow: '0px 0px 3px grey' }}
+                label={label}
+                id={id}
+                aria-describedby={`my-helper-text-${register?.name ? register.name : label}`}
+                defaultValue={defaultValue}
+                {...rest}
+            >
+                {options.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                    </MenuItem>
+                ))}
+            </Select>
+
+            {error && (
+                <FormHelperText
+                    id={`my-helper-text-${register?.name ? register.name : label}`}
+                >
+                    {errorMessage}
+                </FormHelperText>
+            )}
+        </FormControl>
+    );
+};
