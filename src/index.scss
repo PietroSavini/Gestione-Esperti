@@ -129,7 +129,17 @@ body {
 }
 
 .ms_input-disabled{
-  background-color: rgb(225, 225, 225);
+  cursor: default;
+  label{
+    color: grey!important;
+  }
+  .MuiInputBase-root{
+    background-color: rgb(225, 225, 225);
+    input {
+      color: grey;
+      cursor: default;
+    }
+  }
 }
 
 .ms_select{

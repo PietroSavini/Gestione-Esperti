@@ -26,7 +26,7 @@ export const BandiPage = () => {
         
     }
     //react Hook Forms
-    const { register, handleSubmit, trigger, formState } = useForm<any>();
+    const { register, handleSubmit, trigger, formState, getValues } = useForm<any>();
     const { errors } = formState;
     const [activeStep, setActiveStep] = useState(0);    
     const steps = [
@@ -56,36 +56,42 @@ export const BandiPage = () => {
             isStepCompleted:false
         },
     ]
-
+    //funzione che gestisce validazione degli step e logica per prossimo step !**PULSANTE 'AVANTI', NON SUBMIT**!
     const handleNextStep = async (params:string[]) => {
         const result = await trigger(params)
         if(!result) return
         setActiveStep((prev) => prev +1)
     }
 
+    //funzione di submit
+    const submitWizard = (data:any) => {
+        setActiveStep(0)
+        console.log(data)
+    }
+    //se si vuole si possono inserire gli array di stringhe 
+    const formStep1Validation: string[] = ['titolario'];
+    const formStep2Validations: string[] = ['']
+
     const ValidateAndGoNext = () => {
         switch (activeStep){
             case 0:
-                //valido primo form
-                handleNextStep(['titolario'])
+                //stringhe messe manualmente o array di strighe preparati prima
+                handleNextStep(formStep1Validation)
             break;
 
             case 1:
-
+                setActiveStep((prev)=> prev + 1)
             break;
 
             case 2:
-
+                setActiveStep((prev)=> prev + 1)
             break;
 
             case 3:
-
+                setActiveStep((prev)=> prev + 1)
             break;
 
-            case 4:
-                //triggero ultima validazione
-                //se passa submitto il form
-            break;
+            
         }
     }
 
@@ -140,7 +146,7 @@ export const BandiPage = () => {
                 {/*-------------------------------------FORM + NAVIGATION------------------------------------------------*/}
                 <Box className={'form-container'} >
                     {/* form con logica per visualizzare i form */}
-                    <Box component={'form'}>
+                    <Box component={'form'} noValidate onSubmit={handleSubmit(submitWizard)}>
                         <Box className={'ms_form-group'}>
                             {/* qui vanno renderizzati i vari form input in base agli steps */}
                             <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors}/>
@@ -152,7 +158,7 @@ export const BandiPage = () => {
                             {activeStep === steps.length -1 &&                       
                                 <ActionButton type='submit' text='Crea Bando' color='secondary'>Submit</ActionButton>
                             }
-                            <Button disabled={activeStep === steps.length -1} onClick={() => setActiveStep((prev)=> prev +1)}><Icon>chevron_right</Icon></Button>
+                            <Button disabled={activeStep === steps.length -1} onClick={ValidateAndGoNext}><Icon>chevron_right</Icon></Button>
                         </Box>
                         {/* END Mobilie navigation */}
 

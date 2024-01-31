@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { FormControl, FormHelperText, InputLabel, MenuItem, Select, SelectProps } from "@mui/material";
-import { FieldError, UseFormRegisterReturn } from "react-hook-form";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 type Option = {
     value: string | number;
@@ -17,8 +17,8 @@ type Props = {
     defaultValue?: string | number;
 } & SelectProps & { register?: UseFormRegisterReturn };
 
-export const Custom_Select = (props: Props) => {
-    const { disabled, label, id, error, errorMessage, options, defaultValue, register, ...rest } = props;
+const Custom_Select = forwardRef((props: Props,ref) => {
+    const { disabled, label, id, error, errorMessage, options, register, ...rest } = props;
 
     return (
         <FormControl error={error} disabled={disabled} fullWidth sx={{ marginBottom:'.5rem', paddingTop:'2rem' }}>
@@ -31,13 +31,12 @@ export const Custom_Select = (props: Props) => {
             </InputLabel>
 
             <Select 
-                
+                ref={ref}
                 className={`${disabled ? 'ms_input-disabled' : ''} ms_select`}
                 sx={{ height:'48px', borderRadius: '15px', boxShadow: '0px 0px 3px grey' }}
                 label={label}
                 id={id}
                 aria-describedby={`my-helper-text-${register?.name ? register.name : label}`}
-                defaultValue={defaultValue}
                 {...rest}
             >
                 {options.map((option) => (
@@ -56,4 +55,6 @@ export const Custom_Select = (props: Props) => {
             )}
         </FormControl>
     );
-};
+});
+
+export default Custom_Select;

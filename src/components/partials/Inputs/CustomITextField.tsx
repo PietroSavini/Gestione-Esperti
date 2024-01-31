@@ -1,4 +1,5 @@
 import { FormControl, FormHelperText, InputBase, InputBaseProps, InputLabel } from "@mui/material";
+import { forwardRef, } from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 
 type Props = {
@@ -8,11 +9,14 @@ type Props = {
     errorMessage?:string;
 } & InputBaseProps & { register?: UseFormRegisterReturn };
 
-export const Custom_TextField = (props:Props)=> {
+export const Custom_TextField =  forwardRef<HTMLInputElement, Props>((props,ref)=> {
 
-    const {disabled,label,error,errorMessage, ...rest} = props;
+    const {disabled,label,error,errorMessage,value, readOnly ,...rest } = props;
+   
+
     return(  
-        <FormControl error={error} disabled={disabled} fullWidth sx={{marginBottom:'.5rem', paddingTop:'2rem'}}>
+
+        <FormControl  className={`${disabled || readOnly ? 'ms_input-disabled':''}`}  error={error} disabled={disabled} fullWidth sx={{marginBottom:'.5rem', paddingTop:'2rem'}}>
          <InputLabel 
             shrink 
             sx={{ top:'15px', left:'-15px', color:'#127aa3ff', fontWeight:600, fontSize:'1.2rem'}}  
@@ -21,10 +25,10 @@ export const Custom_TextField = (props:Props)=> {
             </InputLabel>
 
          <InputBase 
-            className={`${disabled ? 'ms_input-disabled':''}`} 
+            ref={ref}
+           
             sx={{ padding:'.5rem 1rem', borderRadius:'15px', boxShadow:'0px 0px 3px grey'}} 
             aria-describedby={`my-helper-text-${props.register ? props.register.name : label}`}
-            
             {...rest}
         />
 
@@ -38,4 +42,4 @@ export const Custom_TextField = (props:Props)=> {
 
         </FormControl>
     )
-}
+});
