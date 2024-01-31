@@ -57,17 +57,17 @@ export const BandiPage = () => {
         },
     ]
 
-  
+    const handleNextStep = async (params:string[]) => {
+        const result = await trigger(params)
+        if(!result) return
+        setActiveStep((prev) => prev +1)
+    }
 
     const ValidateAndGoNext = () => {
         switch (activeStep){
             case 0:
                 //valido primo form
-                
-                
-                
-                //se validazione passa (funzione trigger resituisce vero o falso)
-                //allora aggiorno lo stato del form
+                handleNextStep(['titolario'])
             break;
 
             case 1:
@@ -143,7 +143,7 @@ export const BandiPage = () => {
                     <Box component={'form'}>
                         <Box className={'ms_form-group'}>
                             {/* qui vanno renderizzati i vari form input in base agli steps */}
-                                {activeStep === 0 && <FormStep1 register={register} errors={errors}/>}
+                            <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors}/>
                         </Box>
 
                         {/* mobile navigation xs -> md */}
@@ -168,7 +168,7 @@ export const BandiPage = () => {
                                 }
 
                                 {activeStep !== steps.length -1 && 
-                                    <ActionButton onClick={() => setActiveStep((prev) => prev +1)} color='primary' text='avanti' icon='chevron_right'/>
+                                    <ActionButton onClick={ValidateAndGoNext} color='primary' text='avanti' icon='chevron_right'/>
                                 }
                             </Box>
                         </Box>
