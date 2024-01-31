@@ -56,6 +56,7 @@ export const BandiPage = () => {
     //funzione di submit
     const submitWizard = (data:any) => {
         setActiveStep(0)
+        closeModal()
         console.log(data)
     }
     //se si vuole si possono inserire gli array di stringhe 

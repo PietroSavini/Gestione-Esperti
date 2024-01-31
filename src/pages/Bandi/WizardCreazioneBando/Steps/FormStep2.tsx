@@ -145,7 +145,7 @@ export const FormStep2 = (props: FormStepProps) => {
                     <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                         <Custom_Select
                             label={'Da Protocollare ?'}
-                            options={firmaOptions.tipoFirma}
+                            options={ProtocollazioneOptions.daProtocollare}
                             defaultValue={'0'}
 
                         />
@@ -154,7 +154,7 @@ export const FormStep2 = (props: FormStepProps) => {
                     <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                         <Custom_Select
                             label={'Tipo Protocollo'}
-                            options={firmaOptions.gruppoFirmatario}
+                            options={ProtocollazioneOptions.tipoProtocollo}
                             defaultValue={'0'}
 
                         />
@@ -163,7 +163,7 @@ export const FormStep2 = (props: FormStepProps) => {
                     <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                         <Custom_Select
                             label={"Utente a cui assegnare l'attività"}
-                            options={firmaOptions.utenteFirmatario}
+                            options={ProtocollazioneOptions.utente}
                             defaultValue={'0'}
 
                         />
@@ -172,7 +172,7 @@ export const FormStep2 = (props: FormStepProps) => {
                     <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                         <Custom_Select
                             label={"Gruppo di utenti a cui assegnare l'attività"}
-                            options={firmaOptions.scadenza}
+                            options={ProtocollazioneOptions.gruppo}
                             defaultValue={'0'}
 
                         />
@@ -187,21 +187,21 @@ export const FormStep2 = (props: FormStepProps) => {
             <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem', }} elevation={2}>
                 <Box display={'flex'} justifyContent={'space-between'}>
                     <Typography sx={{}} component={'h6'} variant='h6'>Pubblica su albo on-line</Typography>
-                    <Switch />
+                    <Switch {...register('albo-on-line')}/>
                 </Box>
             </Paper>
 
             <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem', }} elevation={2}>
                 <Box display={'flex'} justifyContent={'space-between'}>
                     <Typography sx={{}} component={'h6'} variant='h6'>Amministrazione trasparente</Typography>
-                    <Switch />
+                    <Switch {...register('amministrazione-transparente')}/>
                 </Box>
             </Paper>
 
             <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem', }} elevation={2}>
                 <Box display={'flex'} justifyContent={'space-between'}>
                     <Typography sx={{}} component={'h6'} variant='h6'>Bacheche istituzionali</Typography>
-                    <Switch />
+                    <Switch {...register('Bacheche-istituzionali')} />
                 </Box>
             </Paper>
 
