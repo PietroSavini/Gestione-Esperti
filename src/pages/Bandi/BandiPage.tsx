@@ -2,8 +2,9 @@ import  { useState } from 'react'
 import { ActionButton } from '../../components/partials/Buttons/ActionButton'
 import { Avatar, Box, Button, Dialog, Divider, Icon, MobileStepper, Step, StepLabel, Stepper, Typography } from '@mui/material'
 import './BandiPage.scss'
-import { FormStep1 } from './WizardCreazioneBando/FormStep1'
+import { FormStep1 } from './WizardCreazioneBando/Steps/FormStep1'
 import { useForm } from 'react-hook-form'
+import { FormStep2 } from './WizardCreazioneBando/Steps/FormStep2'
 
 
 export const BandiPage = () => {
@@ -139,6 +140,7 @@ export const BandiPage = () => {
                         <Box className={'ms_form-group'}>
                             {/* qui vanno renderizzati i vari form input in base agli steps */}
                             <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors}/>
+                            <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors}/>
                         </Box>
 
                         {/* mobile navigation xs -> md */}

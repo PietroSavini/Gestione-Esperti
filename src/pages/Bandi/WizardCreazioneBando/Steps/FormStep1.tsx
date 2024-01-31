@@ -1,6 +1,6 @@
 import { Divider, Grid, Paper, Typography } from '@mui/material'
-import { Custom_TextField } from '../../../components/partials/Inputs/CustomITextField';
-import  Custom_Select  from '../../../components/partials/Inputs/Custom_Select';
+import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
+import  Custom_Select  from '../../../../components/partials/Inputs/Custom_Select';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 
 const options = {
@@ -20,13 +20,13 @@ const options = {
     ]
 }
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
-type Props = {
+export type FormStepProps = {
     register: UseFormRegister<any>;
     errors: FieldErrors<any>
     className: string;
 }
 
-export const FormStep1 = (props: Props) => {
+export const FormStep1 = (props: FormStepProps) => {
     const { register, errors, className } = props;
     //requisiti di validazione per campo
     const validations = {
@@ -45,7 +45,7 @@ export const FormStep1 = (props: Props) => {
                         <Custom_TextField
                             {...register('classe-documentale')}
                             label='Classe Documentale'
-                            defaultValue={'Bandi di Gara'}
+                            value='Bandi di Gara'
                             readOnly
                         />
                     </Grid>
