@@ -13,20 +13,9 @@ export const BandiPage = () => {
     }
 
     //tutto da aggiungere nel modal creazione bando in componente separato
-    interface FormData {
-        classeDocumentale: string;
-        titolario: string;
-        tipologiaEsperto: string;
-        annoRiferimento: string;
-        aoo: string;
-        archivioCollocazione: string;
-        classeAddizionale: string;
-        descrizioneEstesa: string;
-        tagDocumento: string;
-        
-    }
+  
     //react Hook Forms
-    const { register, handleSubmit, trigger, formState, getValues } = useForm<any>();
+    const { register, handleSubmit, trigger, formState } = useForm<any>();
     const { errors } = formState;
     const [activeStep, setActiveStep] = useState(0);    
     const steps = [
