@@ -127,14 +127,14 @@ async function refreshAccessToken(fn: Function, api: any, extraOptions: any) {
         const accessToken = (refreshResult.data as RefreshData).accessToken;
         //Salvo il nuovo Token nello state
         api.dispatch(setCredentials({ user, accessToken }));
-
         return true;
 
     } else if (refreshResult?.error.originalStatus === 401) {
         console.error('Refresh Token Scaduto');
         //eseguo il logOut
         api.dispatch(logOut());
-
         return false;
     };
 };
+
+

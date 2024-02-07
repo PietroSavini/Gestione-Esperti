@@ -2,6 +2,7 @@ import { Divider, Grid, Paper, Typography } from '@mui/material'
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 import  Custom_Select  from '../../../../components/partials/Inputs/Custom_Select';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
+import  SelectThree  from '../../../../components/partials/Inputs/SelectThree';
 
 const options = {
     select1: [
@@ -17,7 +18,63 @@ const options = {
     ],
     adc: [
         { value: '1', label: 'Archivio corrente' },
-    ]
+    ],
+    selectThree:[
+        {
+          "label": "Campo 1",
+          "children": [
+            { "label": "Opzione 1.1" },
+            { "label": "Opzione 1.2" }
+          ]
+        },
+        {
+          "label": "Campo 2",
+          "children": [
+            { "label": "Opzione 2.1" },
+            { "label": "Opzione 2.2" }
+          ]
+        },
+        {
+          "label": "Campo 3",
+          "children": [
+            { "label": "Opzione 3.1" },
+            { "label": "Opzione 3.2" }
+          ]
+        },
+        {
+          "label": "Campo 4",
+          "children": [
+            { "label": "Opzione 4.1" },
+            { "label": "Opzione 4.2" }
+          ]
+        },
+        {
+          "label": "Campo 5",
+          "children": [
+            { "label": "Opzione 5.1" },
+            { "label": "Opzione 5.2" }
+          ]
+        },
+        {
+          "label": "Campo 6",
+          "children": [
+            { 
+              "label": "Opzione 6.1",
+              "children": [
+                { "label": "Opzione 6.1.1" },
+                { "label": "Opzione 6.1.2" }
+              ]
+            },
+            { 
+              "label": "Opzione 6.2",
+              "children": [
+                { "label": "Opzione 6.2.1" },
+                { "label": "Opzione 6.2.2" }
+              ]
+            }
+          ]
+        }
+      ]
 }
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
 export type FormStepProps = {
@@ -35,6 +92,7 @@ export const FormStep1 = (props: FormStepProps) => {
         }
     }
 
+
     return (
         <>
             <Paper className={className} sx={{ padding: '1rem 1rem' }} elevation={2}>
@@ -51,14 +109,7 @@ export const FormStep1 = (props: FormStepProps) => {
                     </Grid>
 
                     <Grid padding={'0 1rem'} item xs={12} md={6}>
-                        <Custom_Select
-                            {...register('titolario', validations.titolario)}
-                            options={options.select1}
-                            label='Titolario' 
-                            defaultValue={''}
-                            error={!!errors.titolario}
-                            errorMessage={errors?.titolario?.message as string}
-                        />
+                        {/* da implementare select */}
                     </Grid>
 
                     <Grid padding={'0 1rem'} item xs={12}>

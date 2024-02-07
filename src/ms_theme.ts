@@ -1,4 +1,7 @@
+import { itIT as CoreLanguage } from "@mui/material/locale";
 import { createTheme } from "@mui/material/styles";
+import { itIT } from "@mui/x-data-grid";
+import { itIT as dateLanguage } from "@mui/x-date-pickers";
 
 export const theme = createTheme({
     components:{
@@ -39,5 +42,6 @@ export const theme = createTheme({
         }
       },
     
-    }
-  })
+    },
+    
+  }, CoreLanguage, dateLanguage, itIT)

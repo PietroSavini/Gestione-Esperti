@@ -5,6 +5,7 @@ import './BandiPage.scss'
 import { FormStep1 } from './WizardCreazioneBando/Steps/FormStep1'
 import { useForm } from 'react-hook-form'
 import { FormStep2 } from './WizardCreazioneBando/Steps/FormStep2'
+import { FormStep3 } from './WizardCreazioneBando/Steps/FormStep3'
 
 
 export const BandiPage = () => {
@@ -12,6 +13,8 @@ export const BandiPage = () => {
     const closeModal = () => {
         setOpenModal(false)
     }
+    //lista dei requisiti (sezioni e requisiti singoli) che andranno inseriti nel data nella funzione submit per poi andare a completare la creazione del bando
+    const [requisitiBando, setRequisitiBando] = useState({})
 
     //tutto da aggiungere nel modal creazione bando in componente separato
   
@@ -58,10 +61,13 @@ export const BandiPage = () => {
         setActiveStep(0)
         closeModal()
         console.log(data)
+        const newData = {...data, letItRain:'ciaoooooo'}
+        console.log(newData)
     }
     //se si vuole si possono inserire gli array di stringhe 
     const formStep1Validation: string[] = ['titolario'];
-    const formStep2Validations: string[] = ['']
+    const formStep2Validations: string[] = ['scadenza'];
+    const formStep3Validations: string[] = []
 
     const ValidateAndGoNext = () => {
         switch (activeStep){
@@ -71,15 +77,16 @@ export const BandiPage = () => {
             break;
 
             case 1:
-                setActiveStep((prev)=> prev + 1)
+                handleNextStep(formStep2Validations)
+                
             break;
 
             case 2:
-                setActiveStep((prev)=> prev + 1)
+                setActiveStep((prev) => prev + 1)
             break;
 
             case 3:
-                setActiveStep((prev)=> prev + 1)
+                setActiveStep((prev) => prev + 1)
             break;
 
             
@@ -142,6 +149,7 @@ export const BandiPage = () => {
                             {/* qui vanno renderizzati i vari form input in base agli steps */}
                             <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors}/>
                             <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors}/>
+                            <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors}/>
                         </Box>
 
                         {/* mobile navigation xs -> md */}

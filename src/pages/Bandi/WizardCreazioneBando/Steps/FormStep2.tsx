@@ -1,7 +1,10 @@
-import { Box, Divider, Grid, Paper, Switch, Typography } from '@mui/material'
+import { Box, Grid, Paper, Switch,Typography } from '@mui/material'
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import Custom_Select from '../../../../components/partials/Inputs/Custom_Select';
-
+import { LocalizationProvider, MobileDatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { itIT } from '@mui/x-date-pickers/locales';
+import 'dayjs/locale/it';
 const options = {
     select1: [
         { value: 'option1', label: 'Option 1' },
@@ -125,12 +128,14 @@ export const FormStep2 = (props: FormStepProps) => {
                     </Grid>
 
                     <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
-                        <Custom_Select
-                            label={'Scadenza'}
-                            options={firmaOptions.scadenza}
-                            defaultValue={'0'}
-
-                        />
+                        <LocalizationProvider adapterLocale='it' dateAdapter={AdapterDayjs} localeText={itIT.components.MuiLocalizationProvider.defaultProps.localeText}>
+                            {/* da provare con mobile datepicker, forse è più adatto */}
+                            <MobileDatePicker
+                                disablePast
+                                views={['day', 'month', 'year']}
+                                label='Scadenza'
+                            />
+                        </LocalizationProvider>
                     </Grid>
                 </Grid>
 

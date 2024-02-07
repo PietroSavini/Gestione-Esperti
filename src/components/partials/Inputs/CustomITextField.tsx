@@ -1,4 +1,4 @@
-import { Box, FormControl, FormHelperText, InputBase, InputBaseProps, InputLabel } from "@mui/material";
+import { Box, FormControl, FormHelperText, InputBase, InputBaseProps, InputLabel, TextFieldProps } from "@mui/material";
 import { forwardRef, } from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 
@@ -7,7 +7,7 @@ type Props = {
     label:string;
     error?:boolean
     errorMessage?:string;
-} & InputBaseProps & { register?: UseFormRegisterReturn };
+} & InputBaseProps & { register?: UseFormRegisterReturn } & TextFieldProps;
 
 export const Custom_TextField =  forwardRef<HTMLInputElement, Props>((props,ref)=> {
 
