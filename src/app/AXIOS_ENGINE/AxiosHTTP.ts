@@ -73,6 +73,7 @@ export const AxiosHTTP = (options: Options) => {
             break;
         };
 
+        console.log('CHIAMATA EFFETTUATA CON PARAMETRI:', newArgs)
         let result = await baseQuery(newArgs, api, extraOptions);
 
         //la funzione Decode è programmata per decifrare SOLO se la risposta è in base64, se no, restituisce il body della risposta base
@@ -87,7 +88,6 @@ export const AxiosHTTP = (options: Options) => {
                 alert('sessione scaduta, eseguire nuovamente il Login');
             };
         };
-
         return finalResult;
     };
 
@@ -107,7 +107,6 @@ export const AxiosHTTP = (options: Options) => {
     //eseguo la chiamata
     return baseQueryWithReauth(argsForQuery, apiForQuery, {});
 };
-
 
 //funzione per la chiamata all'endpoint di refresh.
 async function refreshAccessToken(fn: Function, api: any, extraOptions: any) {

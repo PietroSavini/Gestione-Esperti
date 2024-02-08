@@ -6,6 +6,7 @@ import { FormStep1 } from './WizardCreazioneBando/Steps/FormStep1'
 import { useForm } from 'react-hook-form'
 import { FormStep2 } from './WizardCreazioneBando/Steps/FormStep2'
 import { FormStep3 } from './WizardCreazioneBando/Steps/FormStep3'
+import AXIOS_HTTP from '../../app/AXIOS_ENGINE/AXIOS_HTTP'
 
 
 export const BandiPage = () => {
@@ -61,8 +62,11 @@ export const BandiPage = () => {
         setActiveStep(0)
         closeModal()
         console.log(data)
+       
         const newData = {...data, letItRain:'ciaoooooo'}
-        console.log(newData)
+        console.log('PROVA: mi consente di aggiungere cose al pacchetto di dati che viene inviato al server',newData)
+        console.log('PROVA DELLA CHIAMATA CON AXIOS_HTTP.Execute')
+        AXIOS_HTTP.Execute('/ciccio',data,'WRITE_BANDO')
     }
     //se si vuole si possono inserire gli array di stringhe 
     const formStep1Validation: string[] = ['titolario'];
