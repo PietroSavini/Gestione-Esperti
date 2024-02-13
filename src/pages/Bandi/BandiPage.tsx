@@ -20,7 +20,7 @@ export const BandiPage = () => {
     //tutto da aggiungere nel modal creazione bando in componente separato
   
     //react Hook Forms
-    const { register, handleSubmit, trigger, formState } = useForm<any>();
+    const { register, handleSubmit, trigger, formState, control } = useForm<any>();
     const { errors } = formState;
     const [activeStep, setActiveStep] = useState(0);    
     const steps = [
@@ -63,13 +63,13 @@ export const BandiPage = () => {
         closeModal()
         console.log(data)
        
-        const newData = {...data, letItRain:'ciaoooooo'}
-        console.log('PROVA: mi consente di aggiungere cose al pacchetto di dati che viene inviato al server',newData)
+        //const newData = {...data, letItRain:'ciaoooooo'}
+        //console.log('PROVA: mi consente di aggiungere cose al pacchetto di dati che viene inviato al server',newData)
         console.log('PROVA DELLA CHIAMATA CON AXIOS_HTTP.Execute')
-        AXIOS_HTTP.Execute('/ciccio',data,'WRITE_BANDO')
+        AXIOS_HTTP.Retrieve({url:'api/Retrieve/retrieve',sService:'GET_CLASSI_DOC', body:data, sModule:''})
     }
     //se si vuole si possono inserire gli array di stringhe 
-    const formStep1Validation: string[] = ['titolario'];
+    const formStep1Validation: string[] = ['ciaone'];
     const formStep2Validations: string[] = ['scadenza'];
     const formStep3Validations: string[] = []
 
@@ -151,7 +151,7 @@ export const BandiPage = () => {
                     <Box component={'form'} noValidate onSubmit={handleSubmit(submitWizard)}>
                         <Box className={'ms_form-group'}>
                             {/* qui vanno renderizzati i vari form input in base agli steps */}
-                            <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors}/>
+                            <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control}/>
                             <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors}/>
                             <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors}/>
                         </Box>

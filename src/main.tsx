@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       {/* rotte di reactRouter */}
       <BrowserRouter> 
         <Routes>
-          <Route path='/' element={<Login/>}>
+          <Route path='/' element={<Login />}>
             <Route path='/*' element={<App />}/>
           </Route>
         </Routes>

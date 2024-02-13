@@ -128,6 +128,16 @@ body {
   
 }
 
+.ms_react-select-readOnly{
+  label{
+    color: grey !important;
+    
+  }
+  .react-select__control{
+    background-color: #e0e0e0ff;
+  }
+}
+
 .ms_input-disabled{
   cursor: default;
   label{
@@ -140,6 +150,14 @@ body {
       cursor: default;
     }
   }
+}
+
+.ms_select-error div {
+  border-color: #e74c3c; 
+}
+
+.ms_select-error:hover div {
+  border-color: #e74c3c; 
 }
 
 .ms_select{

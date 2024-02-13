@@ -24,31 +24,26 @@ export const Login = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [genErr, setGenErr] = useState('');
-    const [isCalling,setIsCalling] = useState(false)
+    const token = useSelector(selectToken)
     const onSubmit = useThrottled(
         
         async (data: any) => {
             setGenErr('')
-            dispatch(openLoader());
             const user = getValues('username');
+            console.log('dati inviati',data)
             try {
-                setIsCalling(true)
-                const result = await AxiosHTTP({ url: '/api/Test/Login', auth: false, body: data });
-                if ('data' in result) {
-                    dispatch(closeLoader())
-                    const accessToken = result.data.accessToken;
+                const result = await AxiosHTTP({ url:'/api/Login/login', auth: false, body: data, isResponseEncoded:false, isAxiosJsonResponse:false });
+                if(result.accessToken){
+                    const accessToken = result.accessToken;
                     dispatch(setCredentials({ accessToken, user }));
                     console.log('user ed accessToken salvati nello state');
                     navigate('/Dashboard');
-                } else if ('error' in result) {
-                    dispatch(closeLoader())
-                    //da toglier una volta collegato a db
-                    dispatch(setCredentials({accessToken:'sdsdsdsd',user:user})) //hack per lavorare senza DB
-                    const err = result.error;
-                    if (!err?.originalStatus) {
-                        setGenErr('nessuna risposta dal server');
-                        navigate('/Dashboard')
-                    } else if (err.originalStatus === 403) {
+                } else{
+                    const err = result    
+                    if (err.originalStatus === 403) {
+                        // credenziali errate
+                        setGenErr(err.data);
+                    } else if (err.originalStatus === 401) {
                         setGenErr('non autorizzato');
                     } else {
                         setGenErr('logIn Fallito');
@@ -56,14 +51,14 @@ export const Login = () => {
                 }
             } catch (err: any) {
                 console.error('ERRORE: ', err);
-                dispatch(closeLoader())
+                
             }
         },
         1000
     );
 
     return (
-        !isCalling
+        !token
             ? <>
                 <Paper className='login-form-container' elevation={8} >
                     <Box component={'form'} onSubmit={handleSubmit(onSubmit)} ref={ref} noValidate>
@@ -103,9 +98,6 @@ export const Login = () => {
                     </Paper>
                 </> 
             : 
-            
             <PersistentLogin />
-        
-
     )
 }

@@ -21,7 +21,7 @@ export const Custom_TextField =  forwardRef<HTMLInputElement, Props>((props,ref)
             { disabled || readOnly && <Box position={'absolute'} sx={{ top:'25px',right:'-5px',left:'-5px',bottom:'-5px',zIndex:'2'}}></Box>}
          <InputLabel 
             shrink 
-            sx={{ top:'15px', left:'-15px', color:'#127aa3ff', fontWeight:600, fontSize:'1.2rem'}}  
+            sx={{ zIndex:0, top:'15px', left:'-15px', color:'#127aa3ff', fontWeight:600, fontSize:'1.2rem'}}  
             htmlFor="my-input">
                 {label}
             </InputLabel>

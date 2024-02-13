@@ -24,7 +24,7 @@ const Custom_Select = forwardRef((props: Props,ref) => {
         <FormControl error={error} disabled={disabled} fullWidth sx={{ marginBottom:'.5rem', paddingTop:'2rem' }}>
             <InputLabel
                 shrink
-                sx={{ top: '15px', left: '-15px', color: '#127aa3ff', fontWeight: 600, fontSize: '1.2rem' }}
+                sx={{ zIndex:0,top: '15px', left: '-15px', color: '#127aa3ff', fontWeight: 600, fontSize: '1.2rem' }}
                 htmlFor={id}
             >
                 {label}

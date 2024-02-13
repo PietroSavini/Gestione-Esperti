@@ -3,6 +3,15 @@ import { Custom_TextField } from '../../../../components/partials/Inputs/CustomI
 import  Custom_Select  from '../../../../components/partials/Inputs/Custom_Select';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import  SelectThree  from '../../../../components/partials/Inputs/SelectThree';
+import Select from 'react-select';
+import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
+
+const validations={
+
+  select2:{
+    required:'il campo è obbligatorio'
+  }
+}
 
 const options = {
     select1: [
@@ -81,17 +90,16 @@ export type FormStepProps = {
     register: UseFormRegister<any>;
     errors: FieldErrors<any>
     className: string;
+    control?:any
 }
 
 export const FormStep1 = (props: FormStepProps) => {
-    const { register, errors, className } = props;
+    const { register, errors, className, control } = props;
     //requisiti di validazione per campo
-    const validations = {
-        titolario: {
-            required: 'il titolario è obbligatorio'
-        }
-    }
-
+  
+const handleChange = (selectedOption:any) => {
+  console.log('handleChange',selectedOption);
+}
 
     return (
         <>
@@ -110,14 +118,18 @@ export const FormStep1 = (props: FormStepProps) => {
 
                     <Grid padding={'0 1rem'} item xs={12} md={6}>
                         {/* da implementare select */}
+
                     </Grid>
 
                     <Grid padding={'0 1rem'} item xs={12}>
-                        <Custom_Select
-                            {...register('tipologia-esperto')}
-                            options={options.select2}
-                            label='Tipologia Esperto'
-                            defaultValue={''}
+                        <Custom_Select2 
+                          placeholder='Seleziona Tipologia Esperto...' 
+                          defautValue={options.select2[0].value} 
+                          label='Tipologia Esperto' name={'ciaone'} 
+                          control={control} error={!!errors.ciaone} 
+                          errorMessage={errors.ciaone?.message as string} 
+                          options={options.select2} validations={validations.select2}
+                          
                         />
                     </Grid>
 
