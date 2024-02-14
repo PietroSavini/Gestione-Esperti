@@ -1,4 +1,4 @@
-import { Box, FormHelperText, FormLabel, InputLabel } from '@mui/material'
+import { Box, FormHelperText, FormLabel, Icon, InputLabel } from '@mui/material'
 import { Controller } from 'react-hook-form'
 import Select, { CSSObjectWithLabel } from 'react-select';
 
@@ -20,6 +20,7 @@ type Props = {
 type Option ={
     value:string;
     label:string;
+    icon?:string;
 }
 
 export const Custom_Select2 = (props:Props) => {
@@ -27,17 +28,19 @@ export const Custom_Select2 = (props:Props) => {
 
   return (
     <>
-        <Box position={'relative'} className={`${readOnly ? 'ms_react-select-readOnly':''}`}>
-            {readOnly && <Box sx={{position:'absolute', top:0, left:0, right:0,bottom:0, zIndex:3}} ></Box>}
-            <InputLabel sx={{fontWeight:600,fontSize:'.9rem', color:'#127aa3ff',marginBottom:'.5rem'}} id={`${name}-select-label`} error={error}>{label}</InputLabel>
+        <Box marginBottom={'1rem'} position={'relative'} className={`${readOnly || disabled ? 'ms_react-select-readOnly':'ms_react-select'}`}>
+            {readOnly || disabled && <Box sx={{position:'absolute', top:0, left:0, right:0,bottom:0, zIndex:3}} ></Box>}
+            <InputLabel sx={{fontWeight:600,fontSize:'.9rem', color:'#127aa3ff',marginBottom:'.3rem'}} id={`${name}-select-label`} error={error}>{label}</InputLabel>
             <Controller 
-                disabled={disabled}
                 control={control}
                 defaultValue={defautValue}
                 name={name}
                 rules={validations}
                 render={({field:{onChange,value,name,ref}, formState}) => (
                     <Select 
+                        className=''
+                        isDisabled={disabled}
+                        
                         isClearable
                         isSearchable
                         classNamePrefix='react-select'
@@ -64,6 +67,13 @@ export const Custom_Select2 = (props:Props) => {
                             })
 
                         }}
+                        //@ts-ignore
+                        getOptionLabel={e => (
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              {e.icon && <Icon fontSize='small' >{e.icon}</Icon> }
+                              <span style={{ marginLeft: 5 }}>{e.label}</span>
+                            </Box>
+                        )}
                     />
                 )}
             />

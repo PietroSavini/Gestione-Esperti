@@ -130,7 +130,7 @@ export const AxiosHTTP = (options: Options) => {
 
         //controllo per decodificare il Base64 se necessario
         if(newOptions.isResponseEncoded){
-            const decodedResult = AxiosUtils.Strings.Decode(finalResult)
+            const decodedResult = AxiosUtils.Strings.Decode(finalResult as string)
             finalResult = decodedResult
         }
 

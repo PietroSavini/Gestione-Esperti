@@ -1,9 +1,7 @@
 import { Divider, Grid, Paper, Typography } from '@mui/material'
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
-import  Custom_Select  from '../../../../components/partials/Inputs/Custom_Select';
+
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
-import  SelectThree  from '../../../../components/partials/Inputs/SelectThree';
-import Select from 'react-select';
 import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
 
 const validations={
@@ -14,13 +12,16 @@ const validations={
 }
 
 const options = {
-    select1: [
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' }
+    select1:[
+        {value:'0', label:'Bandi di Gara'}
     ],
     select2: [
-        { value: 'option1', label: 'Option 1' },
+        { value: 'option1', label: 'Option 1', icon:'home' },
         { value: 'option2', label: 'Option 2' }
+    ],
+    select3: [
+        { value: '0', label: '2024' },
+       
     ],
     aoo: [
         { value: '1', label: 'NUOVA AOO' },
@@ -28,62 +29,10 @@ const options = {
     adc: [
         { value: '1', label: 'Archivio corrente' },
     ],
-    selectThree:[
-        {
-          "label": "Campo 1",
-          "children": [
-            { "label": "Opzione 1.1" },
-            { "label": "Opzione 1.2" }
-          ]
-        },
-        {
-          "label": "Campo 2",
-          "children": [
-            { "label": "Opzione 2.1" },
-            { "label": "Opzione 2.2" }
-          ]
-        },
-        {
-          "label": "Campo 3",
-          "children": [
-            { "label": "Opzione 3.1" },
-            { "label": "Opzione 3.2" }
-          ]
-        },
-        {
-          "label": "Campo 4",
-          "children": [
-            { "label": "Opzione 4.1" },
-            { "label": "Opzione 4.2" }
-          ]
-        },
-        {
-          "label": "Campo 5",
-          "children": [
-            { "label": "Opzione 5.1" },
-            { "label": "Opzione 5.2" }
-          ]
-        },
-        {
-          "label": "Campo 6",
-          "children": [
-            { 
-              "label": "Opzione 6.1",
-              "children": [
-                { "label": "Opzione 6.1.1" },
-                { "label": "Opzione 6.1.2" }
-              ]
-            },
-            { 
-              "label": "Opzione 6.2",
-              "children": [
-                { "label": "Opzione 6.2.1" },
-                { "label": "Opzione 6.2.2" }
-              ]
-            }
-          ]
-        }
-      ]
+    ca: [
+      { value: '1', label: 'Archivio corrente' },
+  ],
+    
 }
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
 export type FormStepProps = {
@@ -106,13 +55,14 @@ const handleChange = (selectedOption:any) => {
             <Paper className={className} sx={{ padding: '1rem 1rem' }} elevation={2}>
                 <Typography sx={{ paddingBottom: '1rem' }} component={'h6'} variant='h6'>Nuovo Bando</Typography>
                 <Grid container sx={{ marginBottom: '1rem' }}>
-
                     <Grid padding={'0 1rem'} item xs={12} md={6}>
-                        <Custom_TextField
-                            {...register('classe-documentale')}
-                            label='Classe Documentale'
-                            value='Bandi di Gara'
-                            readOnly
+                        <Custom_Select2
+                          options={options.select1}
+                          disabled
+                          defautValue={options.select1[0].value}
+                          control={control}
+                          name='classe-documentale'
+                          label='Classe Documentale'
                         />
                     </Grid>
 
@@ -124,11 +74,13 @@ const handleChange = (selectedOption:any) => {
                     <Grid padding={'0 1rem'} item xs={12}>
                         <Custom_Select2 
                           placeholder='Seleziona Tipologia Esperto...' 
-                          defautValue={options.select2[0].value} 
-                          label='Tipologia Esperto' name={'ciaone'} 
-                          control={control} error={!!errors.ciaone} 
+                          label='Tipologia Esperto' 
+                          name={'ciaone'} 
+                          control={control} 
+                          error={!!errors.ciaone} 
                           errorMessage={errors.ciaone?.message as string} 
-                          options={options.select2} validations={validations.select2}
+                          options={options.select2}
+                          validations={validations.select2}
                           
                         />
                     </Grid>
@@ -141,39 +93,47 @@ const handleChange = (selectedOption:any) => {
                 <Grid container sx={{ marginBottom: '1rem' }}>
 
                     <Grid padding={'0 1rem'} item xs={12} md={3}>
-                        <Custom_TextField
-                            {...register('anno-di-riferimento')}
-                            label='Anno di Riferimento'
-                            defaultValue={'2024'}
-                            readOnly
-
+                    <Custom_Select2
+                          options={options.select3}
+                          disabled
+                          defautValue={options.select3[0].value}
+                          control={control}
+                          name='anno'
+                          label='Anno di riferimento'
                         />
+                     
                     </Grid>
 
                     <Grid padding={'0 1rem'} item xs={12} md={3}>
-                        <Custom_Select
-                            {...register('a-o-o')}
+                        <Custom_Select2
+                            placeholder='Seleziona A.O.O...'
+                            control={control}
+                            name='a-o-o'
                             options={options.aoo}
                             label='A.O.O'
-                            defaultValue={'1'}
+                            defautValue={options.aoo[0].value}
                         />
                     </Grid>
 
                     <Grid padding={'0 1rem'} item xs={12} md={3}>
-                        <Custom_Select
-                            {...register('archivio-di-collocazione')}
+                        <Custom_Select2
+                            placeholder='Seleziona Archivio di Collocazione...'
+                            control={control}
+                            name='archivio-di-collocazione'
                             options={options.adc}
                             label='Archivio di Collocazione'
-                            defaultValue={'1'}
+                            defautValue={options.adc[0].value}
                         />
                     </Grid>
 
                     <Grid padding={'0 1rem'} item xs={12} md={3}>
-                        <Custom_Select
-                            {...register('classe-addizionale')}
-                            options={options.select2}
-                            label='Classe addizionale'
-                            defaultValue={''}
+                        <Custom_Select2
+                            control={control}
+                            name='classe-addizionale'
+                            options={options.ca}
+                            label='Classe Addizionale'
+                            defautValue={options.adc[0].value}
+                            placeholder='Seleziona classe Addizionale...'
                         />
                     </Grid>
 

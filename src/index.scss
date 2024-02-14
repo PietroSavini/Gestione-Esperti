@@ -127,6 +127,11 @@ body {
   }
   
 }
+.ms_react-select{
+  .react-select__control{
+    cursor: pointer;
+  }
+}
 
 .ms_react-select-readOnly{
   label{
@@ -135,10 +140,13 @@ body {
   }
   .react-select__control{
     background-color: #e0e0e0ff;
+    
   }
 }
-
-.ms_input-disabled{
+div.MuiInputBase-root.ms_custom-input.Mui-focused{
+  border: 1px solid #2684ff;
+}
+.ms_input-disabled{ 
   cursor: default;
   label{
     color: grey!important;

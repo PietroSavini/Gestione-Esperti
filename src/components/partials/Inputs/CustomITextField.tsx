@@ -29,9 +29,11 @@ export const Custom_TextField =  forwardRef<HTMLInputElement, Props>((props,ref)
          <InputBase 
             ref={ref}
             value={value}
-            sx={{ padding:'.5rem 1rem', borderRadius:'15px', boxShadow:'0px 0px 3px grey'}} 
+            sx={{ padding:'.5rem 1rem', borderRadius:'15px', boxShadow:'0px 0px 2px grey', border:'1px solid #ccccccff'}} 
             aria-describedby={`my-helper-text-${props.register ? props.register.name : label}`}
+            className="ms_custom-input"
             {...rest}
+
         />
 
         {   error &&

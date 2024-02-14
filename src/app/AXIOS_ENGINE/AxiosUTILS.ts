@@ -19,14 +19,15 @@ class Utility {
     };
     static Strings = class {
 
-        static Decode(input: any) {
-          if (input.data === '' || typeof input.data !== 'string' || !Base64.isValid(input.data)) {
+        static Decode(input: string) {
+          if (input === '' || typeof input !== 'string' || !Base64.isValid(input)) {
+            console.log(typeof input)
             return input;
           } else {
             try {
-              const decodedString = Base64.decode(input.data);
+              const decodedString = Base64.decode(input);
               const decodedObject = JSON.parse(decodedString);
-              input.data = { ...decodedObject };
+              input = { ...decodedObject };
               return input;
             } catch (error) {
               console.error("Errore nella decodifica:", error);

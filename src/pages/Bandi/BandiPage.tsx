@@ -100,6 +100,10 @@ export const BandiPage = () => {
   return (
     <>
         <div>Pagina dei Bandi</div>
+        <Box>
+            <ActionButton color='secondary' text='retrieve' onClick={ () => AXIOS_HTTP.Retrieve({url:'/api/Retrieve/retrieve', sService:'GET_CLASSI_DOC',body:{}, sModule:''})}/>
+            <ActionButton color='warning' text='crea record su db' onClick={()=> AXIOS_HTTP.Execute({url:'/api/Execute/execute',sModule:'WRITE_BANDO',sService:'WRITE',body:{}})}/>
+        </Box>
         <ActionButton color='secondary' text='Crea nuovo Bando' onClick={() => setOpenModal(true)}  />
         <Dialog className='modello-creazione-bando' fullScreen onClose={closeModal} open={isOpen}>
             <Box className={'creazione-bando-header'}>
