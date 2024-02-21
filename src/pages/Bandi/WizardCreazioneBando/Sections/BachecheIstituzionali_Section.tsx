@@ -1,8 +1,9 @@
-import { Box, Grid, Paper, Switch, Typography } from '@mui/material';
+import { Box, Grid, Paper, Switch, Typography } from '@mui/material'
 import React from 'react'
-import { FieldErrors, UseFormUnregister } from 'react-hook-form';
-import { Custom_Select2} from '../../../../components/partials/Inputs/Custom_Select2';
+import { FieldErrors, UseFormUnregister, useForm } from 'react-hook-form';
+import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
+
 
 type Props = {
     isOpen: boolean;
@@ -12,16 +13,14 @@ type Props = {
     errors: FieldErrors<any>
     className?:string
 }
-
-export const AmministrazioneTrasparente_Section = (props : Props) => {
-
+export const BachecheIstituzionali_Section = (props: Props) => {
     const {isOpen, setIsOpen, className, control, errors} = props;
 
   return (
     <>
          <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem', }} elevation={2}>
                 <Box display={'flex'} justifyContent={'space-between'}>
-                    <Typography sx={{}} component={'h6'} variant='h6'>Amministrazione Trasparente</Typography>
+                    <Typography sx={{}} component={'h6'} variant='h6'>Bacheche Istituzionali</Typography>
                     <Switch onClick={() => setIsOpen(!isOpen)} value={isOpen}/>
                 </Box>
                 {isOpen && 
@@ -38,7 +37,7 @@ export const AmministrazioneTrasparente_Section = (props : Props) => {
                         </Box>
 
                         <Box marginBottom={'1rem'} padding={'0 1rem'} >
-                            <Custom_TextField multiline minRows={2} label='Annotazioni non visibili in pubblicazione' placeholder='Scrivi eventuali annotazioni...' />
+                            <Custom_TextField multiline minRows={2} label='Annotazioni visibili in pubblicazione' placeholder='Scrivi eventuali annotazioni...' />
                         </Box>
                         <Grid container marginBottom={'1.5rem'}>
 
