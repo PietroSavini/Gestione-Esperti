@@ -1,7 +1,7 @@
 import { Divider, Grid, Paper, Typography } from '@mui/material'
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 
-import { FieldErrors, UseFormRegister } from 'react-hook-form';
+import { FieldErrors, UseFormGetValues, UseFormRegister, UseFormUnregister } from 'react-hook-form';
 import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
 
 const validations={
@@ -40,6 +40,8 @@ export type FormStepProps = {
     errors: FieldErrors<any>
     className: string;
     control?:any
+    fn?:any
+    unregister?:UseFormUnregister<any>
 }
 
 export const FormStep1 = (props: FormStepProps) => {
@@ -59,7 +61,7 @@ const handleChange = (selectedOption:any) => {
                         <Custom_Select2
                           options={options.select1}
                           disabled
-                          defautValue={options.select1[0].value}
+                          defaultValue={options.select1[0]}
                           control={control}
                           name='classe-documentale'
                           label='Classe Documentale'
@@ -96,7 +98,7 @@ const handleChange = (selectedOption:any) => {
                     <Custom_Select2
                           options={options.select3}
                           disabled
-                          defautValue={options.select3[0].value}
+                          defaultValue={options.select3[0]}
                           control={control}
                           name='anno'
                           label='Anno di riferimento'
@@ -111,7 +113,8 @@ const handleChange = (selectedOption:any) => {
                             name='a-o-o'
                             options={options.aoo}
                             label='A.O.O'
-                            defautValue={options.aoo[0].value}
+                            defaultValue={options.aoo[0]}
+                            isClearable
                         />
                     </Grid>
 
@@ -122,7 +125,7 @@ const handleChange = (selectedOption:any) => {
                             name='archivio-di-collocazione'
                             options={options.adc}
                             label='Archivio di Collocazione'
-                            defautValue={options.adc[0].value}
+                            defaultValue={options.adc[0]}
                         />
                     </Grid>
 
@@ -132,7 +135,7 @@ const handleChange = (selectedOption:any) => {
                             name='classe-addizionale'
                             options={options.ca}
                             label='Classe Addizionale'
-                            defautValue={options.adc[0].value}
+                            defaultValue={options.adc[0]}
                             placeholder='Seleziona classe Addizionale...'
                         />
                     </Grid>

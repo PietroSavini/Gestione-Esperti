@@ -20,19 +20,24 @@ class Utility {
     static Strings = class {
 
         static Decode(input: string) {
+          let result;
           if (input === '' || typeof input !== 'string' || !Base64.isValid(input)) {
-            console.log(typeof input)
             return input;
           } else {
             try {
               const decodedString = Base64.decode(input);
-              const decodedObject = JSON.parse(decodedString);
-              input = { ...decodedObject };
-              return input;
+              try{
+                const decodedObject = JSON.parse(decodedString);
+                result = { ...decodedObject };
+                return result;
+              }catch(err){
+                result = decodedString;
+              }
             } catch (error) {
               console.error("Errore nella decodifica:", error);
               return null;
             };
+            return result;
           };
         };
       

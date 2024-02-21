@@ -52,7 +52,7 @@ export const AxiosHTTP = (options: Options) => {
 
     //merging dei parametri di base con quelli passati alla funzione AxiosHTTP
     const newOptions = { ...defaultOptions, ...options };
-    console.log(newOptions)
+    console.log('OPZIONI CHIAMATA',newOptions)
 
     //Impostazione chiamata di base -> poi utilizzata in baseQueryWithReauth (chiamata con refresh automatico del token)
     const baseQuery = fetchBaseQuery({
@@ -83,13 +83,14 @@ export const AxiosHTTP = (options: Options) => {
             case newOptions.encode:
                 //preparo il body request codificato per la chimata
                 newArgs = { ...args, body: AxiosUtils.Strings.Encode(args.body)};
+            
             break;
 
             default:
 
             break;
         };
-
+        console.log('BODY CODIFICATO: ',newArgs.body)
         const result = await baseQuery(newArgs, api, extraOptions);
         console.log('result: ',result)
         //controllo se la risposta contiene l'errore 401, se contiene l'errore l'accessToken è scaduto e va eseguito il refresh.
