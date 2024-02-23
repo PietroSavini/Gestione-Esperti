@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+ul li{
+  display: block !important;
+}
+
 :root {
   font-family: 'Roboto', sans-serif;
   line-height: 1.5;

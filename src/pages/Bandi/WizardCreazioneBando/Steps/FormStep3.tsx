@@ -59,26 +59,29 @@ export const FormStep3 = (props: FormStepProps) => {
     }
     
     //Componente che renderizza la struttura ad albero
-        const renderTreeItems = (nodes: Tview):JSX.Element => {
+        const renderTreeItems = (nodes: Tview, depth:number = 1):JSX.Element => {
+            const backgroundColor = `rgba(${ 180 - depth * 3}, ${160 + depth * 3}, ${180 + depth * 3}, ${0.1 + 0 * depth})`;
             const isSelected = selectedTreeViewItem?.value === nodes.value;
             if(nodes.children &&  Array.isArray(nodes.children) && nodes.children.length > 0){
                 return(
                     <TreeItem 
-                    key={nodes.value} 
-                    onClick={() => setSelectedTreeViewItem(nodes)} 
-                    nodeId={`element-${nodes.value}`} 
-                    label={ 
-                    <Typography variant="body1" style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
-                        {isSelected && <Icon style={{ marginLeft: '4px' }}>check</Icon>}
-                        {nodes.label}
-                    </Typography>
+                        sx={{position:'relative',zIndex:depth ,paddingBottom:'0px',width:'100%',borderLeft:'3px solid #426389', backgroundColor:backgroundColor, borderBottomRightRadius:'10px', borderTopRightRadius:'10px' }}
+                        key={nodes.value} 
+                        onClick={() => setSelectedTreeViewItem(nodes)} 
+                        nodeId={`element-${nodes.value}`} 
+                        label={ 
+                            <Typography variant="body1" style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+                                {isSelected && <Icon style={{ marginLeft: '4px' }}>check</Icon>}
+                                {nodes.label}
+                            </Typography>
                     }> 
-                        { nodes.children.map((node) => renderTreeItems(node))} 
+                        { nodes.children.map((node) => renderTreeItems(node, depth + 1))} 
                     </TreeItem>
                 )
             }else{
                 return(
                     <TreeItem  
+                        sx={{position:'relative',zIndex:depth ,paddingBottom:'0px',width:'100%',borderLeft:'3px solid #426389', backgroundColor:backgroundColor, borderBottomRightRadius:'10px', borderTopRightRadius:'10px' }}
                         onClick={()=>setSelectedTreeViewItem(nodes)} 
                         nodeId={`element-${nodes.value}`} 
                         label={
@@ -103,10 +106,10 @@ export const FormStep3 = (props: FormStepProps) => {
                 <Typography sx={{ paddingBottom: '1rem' }} component={'h6'} variant='h6'>Collega ad un archivio</Typography>
                 {/* da scorporare in componente esterno da fare dinamico ed a <Dialog/> */}
                 {/* treeView folders */}
-                <Box sx={{backgroundColor:'aliceblue', border:'1px solid black'}}>
-
+            
                     {data.map((item:Tview)=> (
                         <TreeView 
+                            sx={{marginBottom:'-px', width:'100%'}}
                             aria-labelledby='treeView-title'
                             defaultCollapseIcon={<Icon sx={{}}>expand_more</Icon>}
                             defaultExpandIcon={<Icon>chevron_right</Icon>}
@@ -114,7 +117,7 @@ export const FormStep3 = (props: FormStepProps) => {
                             {renderTreeItems(item)}
                         </TreeView>
                     ))}            
-                </Box>
+              
             </Paper>
         
             <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem' }} elevation={2}>
