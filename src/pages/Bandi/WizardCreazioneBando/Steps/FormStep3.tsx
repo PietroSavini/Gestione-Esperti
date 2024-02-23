@@ -1,97 +1,120 @@
-import { Box, Divider, Grid, Paper, Switch, Typography } from '@mui/material'
-import { FieldErrors, UseFormRegister } from 'react-hook-form';
-import Custom_Select from '../../../../components/partials/Inputs/Custom_Select';
+import { Box,  Grid, Icon, Paper, Typography } from '@mui/material'
+import { FormStepProps } from './FormStep1';
+import { TreeView } from '@mui/x-tree-view/TreeView';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
+import { useEffect, useState } from 'react';
+import { Rotate90DegreesCcw } from '@mui/icons-material';
 
-const options = {
-    select1: [
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' }
-    ],
-    select2: [
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' }
-    ],
-    aoo: [
-        { value: '1', label: 'NUOVA AOO' },
-    ],
-    adc: [
-        { value: '1', label: 'Archivio corrente' },
-    ]
+
+type Tview = {
+    value: string | number;
+    label: string;
+    children?: Tview[];
 }
-//passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
-export type FormStepProps = {
-    register: UseFormRegister<any>;
-    errors: FieldErrors<any>
-    className: string;
-}
+
+const data: Tview[] = [
+    {
+        value:'0',
+        label:'elemento 1',
+        children:[
+            {
+                value:'0.1',
+                label:'elemento 1.1',
+                
+            },
+
+            {
+                value:'0.2',
+                label:'elemento 1.2',
+                children:[
+                    {
+                        value:'0.2.1',
+                        label:'elemento 1.2.1',
+                        children:[
+                            {
+                                value:'0.2.1.1',
+                                label:'elemento 0.2.1.1'
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+
+    {
+        value:'1',
+        label:'elemento 2',
+    }
+]
+
+
 
 export const FormStep3 = (props: FormStepProps) => {
     const { register, errors, className } = props;
-    //requisiti di validazione per campo
-    const validations = {
-        titolario: {
-            required: 'il titolario è obbligatorio'
+    
+    const [selectedTreeViewItem, setSelectedTreeViewItem] = useState<Tview | null>(null)
+    const selctTreeViewItem = (selectedItem:any) => {
+        setSelectedTreeViewItem(selectedItem)
+    }
+    
+    //Componente che renderizza la struttura ad albero
+        const renderTreeItems = (nodes: Tview):JSX.Element => {
+            const isSelected = selectedTreeViewItem?.value === nodes.value;
+            if(nodes.children &&  Array.isArray(nodes.children) && nodes.children.length > 0){
+                return(
+                    <TreeItem 
+                    key={nodes.value} 
+                    onClick={() => setSelectedTreeViewItem(nodes)} 
+                    nodeId={`element-${nodes.value}`} 
+                    label={ 
+                    <Typography variant="body1" style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+                        {isSelected && <Icon style={{ marginLeft: '4px' }}>check</Icon>}
+                        {nodes.label}
+                    </Typography>
+                    }> 
+                        { nodes.children.map((node) => renderTreeItems(node))} 
+                    </TreeItem>
+                )
+            }else{
+                return(
+                    <TreeItem  
+                        onClick={()=>setSelectedTreeViewItem(nodes)} 
+                        nodeId={`element-${nodes.value}`} 
+                        label={
+                            <Typography variant="body1" style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+                                {isSelected && <Icon style={{ marginLeft: '4px' }}>check</Icon>}
+                                {nodes.label}
+                            </Typography>
+                    }>
+
+                    </TreeItem>       
+                )
+            }
         }
-    }
 
-    const firmaOptions = {
-        daFirmare: [
-            { value: '0', label: 'si' },
-            { value: '1', label: 'no' },
-
-        ],
-        tipoFirma: [
-            { value: '0', label: 'Firma Digitale Pades' },
-            { value: '1', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
-        ],
-        gruppoFirmatario: [
-            { value: '0', label: 'Seleziona Gruppo' },
-            { value: '1', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
-        ],
-        utenteFirmatario: [
-            { value: '0', label: 'Seleziona Utente' },
-            { value: '1', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
-        ],
-        scadenza: [
-            { value: '0', label: '12/01/2025' }
-        ]
-    }
-
-    const ProtocollazioneOptions = {
-        daProtocollare: [
-            { value: '0', label: 'si' },
-            { value: '1', label: 'no' },
-
-        ],
-        tipoProtocollo: [
-            { value: '0', label: 'In Entrata' },
-            { value: '1', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
-        ],
-        gruppo: [
-            { value: '0', label: 'Seleziona Gruppo' },
-            { value: '1', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
-        ],
-        utente: [
-            { value: '0', label: 'Seleziona Utente' },
-            { value: '1', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
-        ],
-    }
-
+    useEffect(() => {
+        console.log('elelemnto selezionato: ',selectedTreeViewItem)
+    },[selectedTreeViewItem]);
+    
     return (
         <>
             <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem' }} elevation={2}>
                 <Typography sx={{ paddingBottom: '1rem' }} component={'h6'} variant='h6'>Collega ad un archivio</Typography>
-                <Grid container>
-                    <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
-                
-                    </Grid>
-                </Grid>
+                {/* da scorporare in componente esterno da fare dinamico ed a <Dialog/> */}
+                {/* treeView folders */}
+                <Box sx={{backgroundColor:'aliceblue', border:'1px solid black'}}>
+
+                    {data.map((item:Tview)=> (
+                        <TreeView 
+                            aria-labelledby='treeView-title'
+                            defaultCollapseIcon={<Icon sx={{}}>expand_more</Icon>}
+                            defaultExpandIcon={<Icon>chevron_right</Icon>}
+                        >
+                            {renderTreeItems(item)}
+                        </TreeView>
+                    ))}            
+                </Box>
             </Paper>
         
             <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem' }} elevation={2}>
@@ -103,9 +126,6 @@ export const FormStep3 = (props: FormStepProps) => {
                     <Typography sx={{}} component={'h6'} variant='h6'>Collega altri documenti</Typography>
                 </Box>
             </Paper>
-
-            
-
         </>
     )
 }

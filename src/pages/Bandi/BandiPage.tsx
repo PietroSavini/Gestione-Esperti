@@ -19,7 +19,7 @@ export const BandiPage = () => {
         <Box marginBottom={'1rem'} display={'flex'} gap={2}>
 
             <ActionButton color='secondary' text=' tutta la datatable' onClick={ () => AXIOS_HTTP.Retrieve({url:'/api/Retrieve/retrieve', sService:'GET_ALL_CLASSI_DOC',body:{}, sModule:''})}/>
-            <ActionButton color='warning' text='crea NOME su db' onClick={()=> AXIOS_HTTP.Execute({url:'/api/Execute/execute',sModule:'WRITE_BANDO',sService:'WRITE',body:{Username:'SNTONIOROBERTO',Password:'123456789'}})}/>
+            <ActionButton color='warning' text='crea NOME su db' onClick={()=> AXIOS_HTTP.Execute({url:'/api/Execute/execute',sModule:'WRITE_BANDO',sService:'WRITE',body:{ Visibile:true, Descrizione:"aowudhioawhduaiwhdiawhd", CustomerId:1 , DescrizioneBreve:"ciao"}})}/>
             <ActionButton color='secondary' text='filtra per username ' onClick={()=> AXIOS_HTTP.Retrieve({url:'/api/Retrieve/retrieve',sModule:'',sService:'GET_CLASSI_DOC',body:{Username:'Gabriele'}})}/>
             <ActionButton color='warning' text='update passando ID e newUsername' onClick={()=> AXIOS_HTTP.Execute({url:'/api/Execute/execute',sModule:'UPDATE_BANDO',sService:'WRITE',body:{ID:81, newUsername:'VECCHIOBACUCCO'}})}/>
             <ActionButton color='error' text='elimina passando ID' onClick={()=> AXIOS_HTTP.Execute({url:'/api/Execute/execute',sModule:'DELETE_BANDO',sService:'WRITE',body:{ID:100}})}/>
@@ -30,5 +30,6 @@ export const BandiPage = () => {
         {/* MODAL CON WIZARD CREAZIONE DEL BANDO */}
         <WizardCreazioneBando close={closeModal} isOpen={isOpen}/>
     </>
+    
   )
 }
