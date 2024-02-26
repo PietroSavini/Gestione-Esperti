@@ -7,6 +7,12 @@
 ul li{
   display: block !important;
 }
+//proprietà per treeView selected item
+.css-1bcfi89-MuiTreeItem-content.Mui-selected {
+  background-color: inherit !important;
+}
+
+  
 
 :root {
   font-family: 'Roboto', sans-serif;
