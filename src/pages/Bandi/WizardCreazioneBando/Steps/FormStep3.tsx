@@ -20,12 +20,6 @@ const data: Tview[] = [
         label:'elemento 1',
         children:[
             {
-                value:'0.1',
-                label:'elemento 1.1',
-                
-            },
-
-            {
                 value:'0.2',
                 label:'elemento 1.2',
                 children:[
@@ -40,7 +34,13 @@ const data: Tview[] = [
                         ]
                     }
                 ]
-            }
+            },
+            {
+                value:'0.1',
+                label:'elemento 1.1',
+                
+            },
+
         ]
     },
 
@@ -56,13 +56,11 @@ export const FormStep3 = (props: FormStepProps) => {
     const { register, errors, className } = props;
     
     const [selectedTreeViewItem, setSelectedTreeViewItem] = useState<Tview | null>(null)
-    const selctTreeViewItem = (selectedItem:any) => {
-        setSelectedTreeViewItem(selectedItem)
-    }
+   
     //Icona cartella 
     function FolderIcon ( ) {
         return(
-            <Box sx={{marginLeft:'50px'}}>
+            <Box sx={{marginLeft:'23px'}}>
                 <OpenFolderSvg/>
             </Box>
         )
@@ -99,21 +97,20 @@ export const FormStep3 = (props: FormStepProps) => {
             if(nodes.children &&  Array.isArray(nodes.children) && nodes.children.length > 0){
                 return(
                     <TreeItem 
-                      
                         collapseIcon={<CollapseIcon/>}
                         expandIcon={<ExpandIcon/>}
                         className='treeItem'
-                        sx={{display:'flex',alignItems:'center',position:'relative',zIndex:depth ,width:'100%',borderLeft:border, backgroundColor:bgColor, borderBottomRightRadius:'10px', borderTopRightRadius:'10px',  }}
+                        sx={{display:'flex',alignItems:'center',position:'relative',zIndex:depth ,width:'100%',borderLeft:border, backgroundColor:bgColor  }}
                         key={nodes.label} 
                         onClick={() => setSelectedTreeViewItem(nodes)} 
                         nodeId={`element-${nodes.value}`} 
                         label={ 
-                            <Typography sx={{marginLeft:'60px'}} alignItems={'center'}  display={'flex'} height={'60px'} variant="body1"  >
-                                {isSelected && <Icon style={{ marginLeft: '4px' }}>check</Icon>}
+                            <Typography fontWeight={600} fontSize={'.9rem'} sx={{marginLeft:'0px'}} alignItems={'center'}  display={'flex'} height={'60px'} variant="body1"  >
+                                {isSelected ? <Icon sx={{ marginRight: '4px', color:'green' }}>check_circle_outline</Icon> : <Icon  sx={{ marginRight: '4px', color:'lightgrey' }}>radio_button_unchecked</Icon>}
                                 {nodes.label}
                             </Typography>
                     }> 
-                        { nodes.children.map((node) => renderTreeItems(node, depth + 1, `rgba(${ 180 - depth * 3}, ${160 + depth * 3}, ${255 + depth * 3}, ${0.1 + 0 * depth})`, '3px solid #426389'))} 
+                        { nodes.children.map((node) => renderTreeItems(node, depth + 1, `rgba(${ 100 - depth * 3}, ${160 + depth * 3}, ${240 + depth * 3}, ${0.1 + 0 * depth})`, '3px solid #426389'))} 
                     </TreeItem>
                 )
             }else{
@@ -122,16 +119,15 @@ export const FormStep3 = (props: FormStepProps) => {
                         icon={<FolderIcon/>}
                         key={nodes.label}
                         className='treeItem'
-                        sx={{display:'flex',alignItems:'center', position:'relative',zIndex:depth ,width:'100%',borderLeft:border, backgroundColor:bgColor, borderBottomRightRadius:'10px', borderTopRightRadius:'10px' }}
+                        sx={{display:'flex',alignItems:'center', position:'relative',zIndex:depth ,width:'100%',borderLeft:border, backgroundColor:bgColor }}
                         onClick={()=>setSelectedTreeViewItem(nodes)} 
                         nodeId={`element-${nodes.value}`} 
                         label={
-                            <Typography sx={{marginLeft:'40px'}} alignItems={'center'}  display={'flex'} height={'60px'} variant="body1" >
-                                {isSelected && <Icon style={{ marginLeft: '4px' }}>check</Icon>}
+                            <Typography fontWeight={600} fontSize={'.9rem'} sx={{marginLeft:'0px'}} alignItems={'center'}  display={'flex'} height={'60px'} variant="body1" >
+                                {isSelected ? <Icon sx={{ marginRight: '4px', color:'green' }}>check_circle_outline</Icon> : <Icon sx={{ marginRight: '4px', color:'lightgrey' }}>radio_button_unchecked</Icon>}
                                 {nodes.label}
                             </Typography>
                     }>
-
                     </TreeItem>       
                 )
             }

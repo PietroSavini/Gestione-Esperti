@@ -11,8 +11,14 @@ ul li{
 .css-1bcfi89-MuiTreeItem-content.Mui-selected {
   background-color: inherit !important;
 }
+.css-1bcfi89-MuiTreeItem-content.Mui-focused{
+  background-color: inherit !important;
+}
+.css-1bcfi89-MuiTreeItem-content .MuiTreeItem-iconContainer{
+  justify-content: flex-start;
+}
 
-  
+
 
 :root {
   font-family: 'Roboto', sans-serif;
