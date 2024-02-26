@@ -1,11 +1,12 @@
 import { Box,  Grid, Icon, Paper, SvgIcon, SvgIconProps, Typography } from '@mui/material'
 import { FormStepProps } from './FormStep1';
 import { TreeView } from '@mui/x-tree-view/TreeView';
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
+import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItem } from '@mui/x-tree-view/TreeItem';
 import { useEffect, useState } from 'react';
-import { Rotate90DegreesCcw } from '@mui/icons-material';
+import clsx from 'clsx';
 import { OpenFolderSvg } from '../../../../components/partials/svg/OpenFolderSvg';
 import { CloseFolderSvg } from '../../../../components/partials/svg/CloseFolderSvg';
+import React from 'react';
 
 
 type Tview = {
@@ -29,7 +30,7 @@ const data: Tview[] = [
                         children:[
                             {
                                 value:'0.2.1.1',
-                                label:'elemento 0.2.1.1'
+                                label:'elemento 1.2.1.1'
                             }
                         ]
                     }
@@ -54,8 +55,8 @@ const data: Tview[] = [
 
 export const FormStep3 = (props: FormStepProps) => {
     const { register, errors, className } = props;
-    
-    const [selectedTreeViewItem, setSelectedTreeViewItem] = useState<Tview | null>(null)
+  
+    const [selectedTreeViewItem, setSelectedTreeViewItem] = useState<string | null>(null)
    
     //Icona cartella 
     function FolderIcon ( ) {
@@ -90,45 +91,128 @@ export const FormStep3 = (props: FormStepProps) => {
             </Box>
         );
     }
+    // componente custom che renderizza il treeItem MUI con comportamento personalizzato
+    const CustomContent = React.forwardRef(function CustomContent(
+        props: TreeItemContentProps,
+        ref,
+      ) {
+        const {
+          classes,
+          className,
+          label,
+          nodeId,
+          icon: iconProp,
+          expansionIcon,
+          displayIcon,
+        } = props;
+      
+        const {
+          disabled,
+          expanded,
+          selected,
+          focused,
+          handleExpansion,
+          handleSelection,
+          preventSelection
+        } = useTreeItem(nodeId);
+      
+        const icon = iconProp || expansionIcon || displayIcon;
+      
+        const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            preventSelection(event);
+        };
+      
+        const handleExpansionClick = (
+          event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        ) => {
+          handleExpansion(event);
+        };
+      
+        const handleSelectionClick = (
+          event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        ) => {
+          handleSelection(event);
+        };
+      
+        return (
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+          <div
+            className={clsx(className, classes.root, {
+              [classes.expanded]: expanded,
+              [classes.selected]: selected,
+              [classes.focused]: focused,
+              [classes.disabled]: disabled,
+            })}
+            onMouseDown={handleMouseDown}
+            ref={ref as React.Ref<HTMLDivElement>}
+          >
+            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+            <div onClick={handleExpansionClick} className={classes.iconContainer}>
+              {icon}
+            </div>
+            <Typography
+              onClick={handleSelectionClick}
+              component="div"
+              className={classes.label}
+            >
+              {label}
+            </Typography>
+          </div>
+        );
+    });
 
-    //Componente che renderizza la struttura ad albero
+    const CustomTreeItem = React.forwardRef(function CustomTreeItem(
+    props: TreeItemProps,
+    ref: React.Ref<HTMLLIElement>,
+    ) {
+    return <TreeItem ContentComponent={CustomContent} {...props} ref={ref} />;
+    });
+      
+
+
+
+    //Componente che renderizza la struttura ad albero da cambiare con componente personalizzato per via del comportamento da applicare
         const renderTreeItems = (nodes: Tview, depth:number = 1, bgColor:string = '#ffff', border:string = 'none'):JSX.Element => {
-            const isSelected = selectedTreeViewItem?.value === nodes.value;
+            const nodeId =`${nodes.value}`
+
+            const isSelected = selectedTreeViewItem === nodes.value;
             if(nodes.children &&  Array.isArray(nodes.children) && nodes.children.length > 0){
                 return(
-                    <TreeItem 
-                        collapseIcon={<CollapseIcon/>}
-                        expandIcon={<ExpandIcon/>}
+                    <CustomTreeItem 
+
+                        collapseIcon={<CollapseIcon />}
+                        expandIcon={<ExpandIcon />}
                         className='treeItem'
                         sx={{display:'flex',alignItems:'center',position:'relative',zIndex:depth ,width:'100%',borderLeft:border, backgroundColor:bgColor  }}
                         key={nodes.label} 
-                        onClick={() => setSelectedTreeViewItem(nodes)} 
-                        nodeId={`element-${nodes.value}`} 
+                    
+                        nodeId={nodeId} 
                         label={ 
                             <Typography fontWeight={600} fontSize={'.9rem'} sx={{marginLeft:'0px'}} alignItems={'center'}  display={'flex'} height={'60px'} variant="body1"  >
-                                {isSelected ? <Icon sx={{ marginRight: '4px', color:'green' }}>check_circle_outline</Icon> : <Icon  sx={{ marginRight: '4px', color:'lightgrey' }}>radio_button_unchecked</Icon>}
+                                {isSelected ? <Icon sx={{ marginRight: '4px', color:'green' }}>check_circle_outline</Icon> : <Icon  sx={{ marginRight: '4px', color:'#a6a6a6ff' }}>radio_button_unchecked</Icon>}
                                 {nodes.label}
+                                 <Typography fontWeight={600} fontSize={'.9rem'} sx={{marginLeft:'5px'}}>({nodes.children.length})</Typography>
                             </Typography>
                     }> 
-                        { nodes.children.map((node) => renderTreeItems(node, depth + 1, `rgba(${ 100 - depth * 3}, ${160 + depth * 3}, ${240 + depth * 3}, ${0.1 + 0 * depth})`, '3px solid #426389'))} 
-                    </TreeItem>
+                        { nodes.children.map((node) => renderTreeItems(node, depth + 1, `rgba(${ 80 - depth * 3}, ${130 + depth * 3}, ${180 + depth * 3}, ${0.1 + 0 * depth})`, '3px solid #426389'))} 
+                    </CustomTreeItem>
                 )
             }else{
                 return(
-                    <TreeItem  
+                    <CustomTreeItem  
                         icon={<FolderIcon/>}
                         key={nodes.label}
                         className='treeItem'
                         sx={{display:'flex',alignItems:'center', position:'relative',zIndex:depth ,width:'100%',borderLeft:border, backgroundColor:bgColor }}
-                        onClick={()=>setSelectedTreeViewItem(nodes)} 
-                        nodeId={`element-${nodes.value}`} 
+                        
+                        nodeId={nodeId} 
                         label={
                             <Typography fontWeight={600} fontSize={'.9rem'} sx={{marginLeft:'0px'}} alignItems={'center'}  display={'flex'} height={'60px'} variant="body1" >
-                                {isSelected ? <Icon sx={{ marginRight: '4px', color:'green' }}>check_circle_outline</Icon> : <Icon sx={{ marginRight: '4px', color:'lightgrey' }}>radio_button_unchecked</Icon>}
+                                {isSelected ? <Icon sx={{ marginRight: '4px', color:'green' }}>check_circle_outline</Icon> : <Icon sx={{ marginRight: '4px', color:'#a6a6a6ff' }}>radio_button_unchecked</Icon>}
                                 {nodes.label}
-                            </Typography>
-                    }>
-                    </TreeItem>       
+                            </Typography>}
+                    >
+                    </CustomTreeItem>       
                 )
             }
         }
@@ -137,6 +221,7 @@ export const FormStep3 = (props: FormStepProps) => {
         console.log('elelemnto selezionato: ',selectedTreeViewItem)
     },[selectedTreeViewItem]);
     
+
     return (
         <>
             <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem' }} elevation={2}>
@@ -146,10 +231,9 @@ export const FormStep3 = (props: FormStepProps) => {
             
                     {data.map((item:Tview)=> (
                         <TreeView 
+                            onNodeSelect={(event, nodeIds)=>setSelectedTreeViewItem(nodeIds)}
                             sx={{marginBottom:'-px', width:'100%'}}
                             aria-labelledby='treeView-title'
-                
-                          
                         >
                             {renderTreeItems(item)}
                         </TreeView>
