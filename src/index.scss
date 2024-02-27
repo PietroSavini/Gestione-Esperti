@@ -7,18 +7,6 @@
 ul li{
   display: block !important;
 }
-//proprietà per treeView selected item
-
-.css-1bcfi89-MuiTreeItem-content.Mui-focused{
-  background-color: transparent !important;
-}
-.css-1bcfi89-MuiTreeItem-content .MuiTreeItem-iconContainer{
-  justify-content: flex-start !important;
-  width: 60px !important;
-}
-.css-1bcfi89-MuiTreeItem-content.Mui-selected{
-  background-color: transparent !important
-}
 
 
 
@@ -247,4 +235,33 @@ ul{
 
 .date-piker{
   background-color: red;
+}
+
+.collega-ad-un-archivio-modal{
+  width: 100%;
+  height: 100%;
+  .MuiDialog-paper{
+    padding:1rem 1.5rem;
+    @media screen and (min-width:500px){
+      border-radius: 20px;
+    }
+  }
+  .dialog-header{
+    flex-direction: column;
+    padding: 0 1rem;
+    @media screen and (min-width:500px ){
+      flex-direction: row;
+    }
+  }
+  @media screen and (min-width:500px){
+    width:95%;
+    height: 95%;
+    margin: auto auto;
+  }
+
+  @media screen and (min-width:800px){
+    width:80%;
+    height: 80%;
+    margin: auto auto;
+  }
 }

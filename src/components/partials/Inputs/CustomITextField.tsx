@@ -4,7 +4,7 @@ import { UseFormRegisterReturn } from "react-hook-form";
 
 type Props = {
     disabled?:boolean;
-    label:string;
+    label?:string;
     error?:boolean
     errorMessage?:string;
 } & InputBaseProps & { register?: UseFormRegisterReturn } & TextFieldProps;

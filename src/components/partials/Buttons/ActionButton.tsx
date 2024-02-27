@@ -6,12 +6,15 @@ type Props = ButtonProps & {
     text?:string;
     icon?:string;
     direction?:any;
-    onClick? : React.MouseEventHandler<HTMLButtonElement>
+    iconComponent?: React.ReactElement<any>;
+    onClick? : React.MouseEventHandler<HTMLButtonElement>;
  
 }
 
 export const ActionButton = (props:Props) => {
-    const {to,text,icon,direction,onClick,color, ...buttonProps} = props
+    const {to,text,icon,direction,onClick,color, ...buttonProps } = props
+    const IconComponent:React.ReactElement<any> | undefined = props.iconComponent
+
     const sx = buttonProps?.sx;
   return (
     <>
@@ -20,6 +23,7 @@ export const ActionButton = (props:Props) => {
           <Box  flexDirection={direction ? direction : 'row'} sx={{borderRadius:'10px', ...sx}} className={`ms_button ms_button-${color}`} display={'flex'} alignItems={'center'} justifyContent={'center'}>
             { text && <Typography  className='button-text' variant='caption'>{text}</Typography>}
             { icon &&  <Icon fontSize='small' className='button-icon'>{icon}</Icon>}
+            { IconComponent && IconComponent}
           </Box>
         </Link>
       ) : (
@@ -33,6 +37,7 @@ export const ActionButton = (props:Props) => {
         >
           { text && <Typography  className='button-text' variant='caption'>{text}</Typography>}
           { icon &&  <Icon fontSize='small' className='button-icon'>{icon}</Icon>}
+          { IconComponent && IconComponent}
         </Button>
       )}
   
