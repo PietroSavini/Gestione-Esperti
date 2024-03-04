@@ -144,13 +144,11 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
 
     //funzione che gestisce la logica completa dell' aggiunta dell'archivio
     const replaceFascicoloSelezionato = (newFascicolo: FascicoloElettronico) => {
-        console.log('fascicolo arrivato alla funzione di salvataggio: ', newFascicolo)
         const oldId = fascicoloNr;
         const data = fascicoliSelezionati
         // Verifica se il nuovo fascicolo non è già presente nell'array
         const isNewFascicoloUnique = !data.includes(newFascicolo.fascicolo_id);
         if (isNewFascicoloUnique) {
-            console.log('il fascicolo è unico')
             const index = data.indexOf(oldId);
             if (index !== -1) {
                 replaceFascicoloSelezionatoDisplay(newFascicolo)
@@ -174,17 +172,16 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
             setDisplayFascicoliSelezionati(newData);
         }
     }
-
+    // funzione di delete delle Rows
     const deleteFascicoloSelezionato = () => {  
         const fascicolo = item
-        console.log(item)
-        // Filtra l'array per rimuovere l'elemento corrente
+        // Filtro l'array per rimuovere l'elemento corrente
         const updatedFascicoliSelezionati = fascicoliSelezionati.filter(item => item !== fascicolo.fascicolo_id);
         setFascicoliSelezionati(updatedFascicoliSelezionati);
-    
-        // Rimuovi l'elemento dall'array di UI 
+        // Rimuovo l'elemento dall'array di UI 
         const updatedDisplayFascicoliSelezionati = displayFascicoliSelezionati.filter(item => item.fascicolo_id !== fascicolo.fascicolo_id);
         setDisplayFascicoliSelezionati(updatedDisplayFascicoliSelezionati);
+       
     }
 
     //funzione di salvataggio
@@ -204,6 +201,7 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
             return
         }
     }
+
     if (!editMode) {
         return (
             <>
@@ -287,7 +285,9 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
     //controllo l'array per pulire gli errori al cambio
     useEffect(() => {
       setErrorFascicolo(undefined)
+      console.log('fascicoli Selezionati: ',fascicoliSelezionati)
     }, [fascicoliSelezionati])
+
     
     //funzione avviata al tasto 'Salva' contenuto nel modal della treeView
     function saveArchivio(param: Tview | null) {
@@ -328,7 +328,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
     // funzione che gestisce logica di aggiunta del fascicolo selezionato, aggiunge fascicolo_id del fascicoloselezionato/sottoFascicoloSelezionato all'array fascicoliSelezionati[] 
     // e l'intero oggetto all' array displayFascicoliCollegati[] per il display in UI delle rows FascicoliSelezionatiRows
     const addToFascicoliSelezionati = () => {
-        //se
+   
         if (sottoFascicoloSelezionato === null && fascicoloSelezionato === null) {
             setErrorFascicolo('selezionare il fascicolo da collegare')
             return
@@ -338,6 +338,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                 setFascicoliSelezionati((prev) => [...prev, sottoFascicoloSelezionato.fascicolo_id]);
                 setDisplayFascicoliSelezionati((prev) => [...prev, sottoFascicoloSelezionato])
                 setErrorFascicolo(undefined)
+
                 return
             }else{
                 setErrorFascicolo('Fascicolo già Collegato')
@@ -402,7 +403,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                                 label='Fascicolo elettronico'
                                 onChange={onFascicoloChange}
                                 loadOptions={loadOptions}
-
+                                
                             />
                         </Grid>
                         <Grid paddingRight={'1rem'} item xs={12} md={5} >

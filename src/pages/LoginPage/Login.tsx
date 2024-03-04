@@ -31,7 +31,9 @@ export const Login = () => {
         async (data: any) => {
             setGenErr('')
             const user = getValues('username');
-            console.log('dati inviati',data)
+            console.log('dati inviati: ',data)
+            dispatch(setCredentials({ accessToken:'123', user }));
+            navigate('/dashboard')
             try {
                 const result = await AxiosHTTP({ url:'/api/Login/login', auth: false, body: data, isResponseEncoded:false, isAxiosJsonResponse:false });
                 console.log('risposta: ', result)
