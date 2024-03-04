@@ -365,7 +365,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                     <Typography component={'h6'} variant='h6'>Collega ad un archivio</Typography>
                     <ActionButton color='secondary' onClick={() => setIsOpen(true)} text='Collega Archivio' iconComponent={<Icon sx={{ marginLeft: '10px' }}>folder_copy</Icon>} />
                 </Box>
-                <Typography fontSize={'.8rem'}>{!archivioLabel ? 'Nessun archivio collegato' : displayArchivioLabel(archivioLabel)}</Typography>
+                {!archivioLabel ? <Typography marginTop={2} fontSize={'0.9rem'}>Nessun archivio collegato</Typography> : displayArchivioLabel(archivioLabel)}
 
                 {/* da scorporare in componente esterno da fare dinamico ed a <Dialog/> */}
                 {/* treeView component */}
