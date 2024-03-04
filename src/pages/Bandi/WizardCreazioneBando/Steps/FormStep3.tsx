@@ -328,7 +328,11 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
     // funzione che gestisce logica di aggiunta del fascicolo selezionato, aggiunge fascicolo_id del fascicoloselezionato/sottoFascicoloSelezionato all'array fascicoliSelezionati[] 
     // e l'intero oggetto all' array displayFascicoliCollegati[] per il display in UI delle rows FascicoliSelezionatiRows
     const addToFascicoliSelezionati = () => {
-        if (sottoFascicoloSelezionato === null && fascicoloSelezionato === null) return
+        //se
+        if (sottoFascicoloSelezionato === null && fascicoloSelezionato === null) {
+            setErrorFascicolo('selezionare il fascicolo da collegare')
+            return
+        }
         if (sottoFascicoloSelezionato !== null) {
             if (!fascicoliSelezionati.includes(sottoFascicoloSelezionato.fascicolo_id)) {
                 setFascicoliSelezionati((prev) => [...prev, sottoFascicoloSelezionato.fascicolo_id]);
@@ -337,6 +341,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                 return
             }else{
                 setErrorFascicolo('Fascicolo già Collegato')
+                return
             }
         }
         if (fascicoloSelezionato !== null) {
@@ -347,6 +352,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                 return
             }else{
                 setErrorFascicolo('Fascicolo già Collegato')
+                return
             }
         }
     }

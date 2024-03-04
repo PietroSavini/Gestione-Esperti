@@ -21,7 +21,7 @@ export const LoginForm = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [genErr, setGenErr] = useState('')
-
+    
     const onSubmit = useThrottled(
         
         async (data: any) => {
@@ -29,13 +29,13 @@ export const LoginForm = () => {
             dispatch(openLoader());
             const user = getValues('username');
             try {
-                const result = await AxiosHTTP({ url: '/api/Test/Login', auth: false, body: data });
+                const result = await AxiosHTTP({ url: '/api/Login/Login', auth: false, body: data });
+                console.log(result)
                 if ('data' in result) {
                     dispatch(closeLoader())
                     const accessToken = result.data.accessToken;
                     dispatch(setCredentials({ accessToken, user }));
                     console.log('user ed accessToken salvati nello state');
-                    navigate('/dashboard');
                 } else if ('error' in result) {
                     dispatch(closeLoader())
                     const err = result.error;
@@ -82,6 +82,15 @@ export const LoginForm = () => {
                         error={!!errors.password}
                         helperText={errors.password?.message as string}
                         {...register('password', { required: 'password obbligatoria' })}
+                    />
+                     <TextField
+                        id="cf"
+                        label="CF *"
+                        type="text"
+                        variant="outlined"
+                        error={!!errors.cf}
+                        helperText={errors.password?.message as string}
+                        {...register('cf', { required: 'codice fiscale obbligatorio' })}
                     />
                   
                     {/* //messaggio di errore generico */}

@@ -90,9 +90,8 @@ export const AxiosHTTP = (options: Options) => {
 
             break;
         };
-        console.log('BODY CODIFICATO: ',newArgs.body)
+        
         const result = await baseQuery(newArgs, api, extraOptions);
-        console.log('result: ',result)
         //controllo se la risposta contiene l'errore 401, se contiene l'errore l'accessToken è scaduto e va eseguito il refresh.
         if (result?.error?.status === 401) {
             console.log('accessToken scaduto, Tentativo di Refresh del token...')
@@ -126,7 +125,12 @@ export const AxiosHTTP = (options: Options) => {
             }
             finalResult = axiosResult.response;
         }else{
-            finalResult = result.data;
+            if('data' in result){
+                finalResult = result.data
+            }else{
+                finalResult = result.error
+                console.error('ERRORE NELLA CHIAMATA: ',result.error)
+            };
         }
 
         //controllo per decodificare il Base64 se necessario

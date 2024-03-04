@@ -13,6 +13,7 @@ import Serializer from '../../app/AXIOS_ENGINE/AxiosSERIALIZER';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { PersistentLogin } from '../../components/App_Components/PersistentLogin';
+import { Custom_TextField } from '../../components/partials/Inputs/CustomITextField';
 
 
 export const Login = () => {
@@ -33,17 +34,16 @@ export const Login = () => {
             console.log('dati inviati',data)
             try {
                 const result = await AxiosHTTP({ url:'/api/Login/login', auth: false, body: data, isResponseEncoded:false, isAxiosJsonResponse:false });
-                dispatch(setCredentials({accessToken:'123', user:user}))
+                console.log('risposta: ', result)
                 if( 'accessToken' in result){
                     const accessToken = result.accessToken;
                     dispatch(setCredentials({ accessToken, user }));
                     console.log('user ed accessToken salvati nello state');
-                    navigate('/Dashboard');
+                  
                 } else{
                     const err = result    
                     if (err.originalStatus === 403) {
                         // credenziali errate
-                        navigate('/dashboard')
                         setGenErr(err.data);
                     } else if (err.originalStatus === 401) {
                         setGenErr('non autorizzato');
@@ -62,31 +62,39 @@ export const Login = () => {
     return (
         !token
             ? <>
-                <Paper className='login-form-container' elevation={8} >
-                    <Box component={'form'} onSubmit={handleSubmit(onSubmit)} ref={ref} noValidate>
+                <Paper className='login-form-container' sx={{maxWidth:'500px'}} elevation={8} >
+                    <Box component={'form'} onSubmit={handleSubmit(onSubmit)} ref={ref} noValidate display={'flex'} alignItems={'center'} flexDirection={'column'}>
 
-                        <Chip sx={{ width: '150px', height: '60px' }} icon={<Icon>avatar</Icon>} label="Log In" variant="outlined" />
+                        <Chip sx={{ width: '150px', height: '60px' , marginBottom:'2rem'}} icon={<Icon sx={{color:'black'}}>face</Icon>} label="Log In" variant="outlined" />
                         {/* Log in form */}
-                        <Box className='login-form-group'>
+                        <Box className='login-form-group' display={'flex'} flexDirection={'column'} maxWidth={'200px'} gap={5}>
+                            <TextField
+                                id="fsCF"
+                                label="codice fiscale *"
+                                variant="standard"
+                                error={!!errors.fsCF}
+                                helperText={errors.fsCF?.message as string}
+                                {...register('fsCF', { required: 'username obbligatorio' })}
+                            />
                             {/* username */}
                             <TextField
-                                id="username"
-                                label="Username *"
-                                variant="outlined"
-                                error={!!errors.username}
-                                helperText={errors.username?.message as string}
-                                {...register('username', { required: 'username obbligatorio' })}
+                                id="fsUser"
+                                label="username *"
+                                variant="standard"
+                                error={!!errors.fsUser}
+                                helperText={errors.fsUser?.message as string}
+                                {...register('fsUser', { required: 'username obbligatorio' })}
                             />
                             
                             {/* password */}
                             <TextField
-                                id="password"
-                                label="Password *"
+                                id="fsPsw"
+                                label="password *"
                                 type="password"
-                                variant="outlined"
-                                error={!!errors.password}
-                                helperText={errors.password?.message as string}
-                                {...register('password', { required: 'password obbligatoria' })}
+                                variant="standard"
+                                error={!!errors.fsPsw}
+                                helperText={errors.fsPsw?.message as string}
+                                {...register('fsPsw', { required: 'password obbligatoria' })}
                             />
                         
                             {/* //messaggio di errore generico */}
