@@ -88,11 +88,13 @@ export default function RequisitiTable ({data}:{data:Table}) {
       //risposta negativa
         
   };
+  
   //delete
   const handleDeleteClick = (id: GridRowId) => () => {
     //chiamata ed attesa risposta server
     setRows(rows.filter((row) => row.id !== id));
   };
+
   //update
   const processRowUpdate = (newRow: GridRowModel) => {
     //chiamata ed attesa risposta server

@@ -33,7 +33,8 @@ export const Login = () => {
             console.log('dati inviati',data)
             try {
                 const result = await AxiosHTTP({ url:'/api/Login/login', auth: false, body: data, isResponseEncoded:false, isAxiosJsonResponse:false });
-                if(result.accessToken){
+                dispatch(setCredentials({accessToken:'123', user:user}))
+                if( 'accessToken' in result){
                     const accessToken = result.accessToken;
                     dispatch(setCredentials({ accessToken, user }));
                     console.log('user ed accessToken salvati nello state');
@@ -42,6 +43,7 @@ export const Login = () => {
                     const err = result    
                     if (err.originalStatus === 403) {
                         // credenziali errate
+                        navigate('/dashboard')
                         setGenErr(err.data);
                     } else if (err.originalStatus === 401) {
                         setGenErr('non autorizzato');

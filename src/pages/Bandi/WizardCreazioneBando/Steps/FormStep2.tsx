@@ -28,7 +28,7 @@ const options = {
 export const FormStep2 = (props: FormStepProps) => {
     const { register, errors, className, control, fn , unregister} = props;
     const [isFirmaExpanded, setFirmaExpanded] = useState(false)
-    const[isProtocolloExpanded, setProtocolloExpanded] = useState(false)
+    const [isProtocolloExpanded, setProtocolloExpanded] = useState(false)
     const [isPubblicaAlboSelected, setIsPubblicaAlboSelected] = useState<boolean>(false)
     const [isAmministrazioneTrasparenteSelected, setIsAmministrazioneTrasparenteSelected] = useState<boolean>(false)
     const [isBachecheIstituzionaliSelected, setIsBachecheIstituzionaliSelected] = useState<boolean>(false)

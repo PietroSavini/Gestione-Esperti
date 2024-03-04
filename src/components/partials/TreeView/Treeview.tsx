@@ -7,15 +7,15 @@ import clsx from 'clsx';
 import { TreeView } from '@mui/x-tree-view/TreeView';
 import './treeView.scss'
 export type Tview = {
-    value: string | number;
+    value: string ;
     label: string;
     children?: Tview[];
 }
 
 type Props = {
     data:Tview[];
-    setTreeItem:React.Dispatch<React.SetStateAction<string | null>>;
-    selectedTreeItem:string | null;
+    setTreeItem:React.Dispatch<React.SetStateAction<Tview| null>>;
+    selectedTreeItem:Tview | null;
 }
 
 export const CustomTreeview = (props:Props) => {
@@ -131,14 +131,29 @@ export const CustomTreeview = (props:Props) => {
     return <TreeItem ContentComponent={CustomContent} {...props} ref={ref} />;
     });
       
+    //funzione ricorsiva che restituisce l'oggetto Tview alla selezione del treeItem
+    function findNodeById(nodes: Tview[], id: string | number): Tview | null {
+        let foundNode: Tview | null = null;
+    
+        nodes.forEach(node => {
+            if (node.value === id) {
+                foundNode = node; // Se l'ID corrisponde, assegna il nodo trovato
+            } else if (node.children) {
+                const childNode = findNodeById(node.children, id); // Cerca ricorsivamente nei figli
+                if (childNode) {
+                    foundNode = childNode; // Se trovato nei figli, assegna il nodo trovato
+                }
+            }
+        });
 
-
-
+        return foundNode;
+    }
+    
     //Componente che renderizza la struttura ad albero da cambiare con componente personalizzato per via del comportamento da applicare
         const renderTreeItems = (nodes: Tview, depth:number = 1, bgColor:string = '#ffff', border:string = 'none'):JSX.Element => {
-            const nodeId =`${nodes.value}`
+            const nodeId = nodes.value
 
-            const isSelected = selectedTreeItem === nodes.value;
+            const isSelected = selectedTreeItem? selectedTreeItem.value === nodes.value : null;
             if(nodes.children &&  Array.isArray(nodes.children) && nodes.children.length > 0){
                 return(
                     <CustomTreeItem 
@@ -148,7 +163,6 @@ export const CustomTreeview = (props:Props) => {
                         className='treeItem'
                         sx={{display:'flex',alignItems:'center',position:'relative',zIndex:depth ,width:'100%',borderLeft:border, backgroundColor:bgColor  }}
                         key={nodes.label} 
-                    
                         nodeId={nodeId} 
                         label={ 
                             <Typography fontWeight={600} fontSize={'.9rem'} sx={{marginLeft:'0px'}} alignItems={'center'}  display={'flex'} height={'60px'} variant="body1"  >
@@ -183,7 +197,11 @@ export const CustomTreeview = (props:Props) => {
             <>
                 {data.map((item:Tview)=> (
                     <TreeView 
-                        onNodeSelect={(event, nodeIds)=>setTreeItem(nodeIds)}
+                        onNodeSelect={(event, nodeIds)=> {
+                            const selectedNode = findNodeById(data, nodeIds);
+                            setTreeItem(selectedNode);
+                           
+                        }}
                         sx={{marginBottom:'-px', width:'100%'}}
                         aria-labelledby='treeView-title'
                     >

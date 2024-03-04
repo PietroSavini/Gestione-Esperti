@@ -44,11 +44,11 @@ export const SettingsPage = () => {
         <Typography variant='h4' fontWeight={600}>Impostazioni Gestione esperti</Typography>
         <Box display={'flex'} alignItems={'flex-end'} position={'absolute'} sx={{left:'0' , right:'0',  height:'50px', marginBottom:'1.5rem'}}>
           <Divider absolute sx={{bottom:'0', backgroundColor:'#52A5CF', height:'2px'}}/>
-          <Stack flexDirection={'row'} sx={{padding:'0 1.5rem'}} className='tab-lables-container'>
+          <Stack flexDirection={'row'} sx={{padding:'0 1.5rem'}} className='tab-labels-container'>
             {tabs && tabs.map((tab,index)=> (
                 <Box 
                   key={index}
-                  className={`tab-lable ${tab.active ? 'active' : ''}`}
+                  className={`tab-label ${tab.active ? 'active' : ''}`}
                   onClick={()=>handleTabClick(tab.text)} >
                   <Typography variant='body2' fontWeight={600}>{tab.text}</Typography>
                 </Box>

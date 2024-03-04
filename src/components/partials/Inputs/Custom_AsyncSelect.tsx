@@ -4,9 +4,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Box, FormHelperText, Icon, InputLabel, Typography } from '@mui/material';
 import { Controller } from 'react-hook-form';
-import Select, { ActionMeta, CSSObjectWithLabel, SingleValue } from 'react-select';
+import  { ActionMeta, CSSObjectWithLabel,  GroupBase,  OptionsOrGroups, SingleValue } from 'react-select';
 
-type Props = {
+import AsyncSelect from 'react-select/async';
+
+
+type SelectProps = {
     id?:string;
     name?:string;
     control?:any;
@@ -16,16 +19,14 @@ type Props = {
     defaultValue?: Option
     readOnly?:boolean;
     disabled?:boolean;
-    options:Option[] | [];
     placeholder?:string;
     validations?:Object;
     isMulti?:boolean;
     isClearable?:boolean;
     isRequired?:boolean
     onChange?: ((newValue: SingleValue<Option>, actionMeta: ActionMeta<Option>) => void) | undefined
-    value?:any
-}
-
+    loadOptions:(inputValue: string, callback: (options: OptionsOrGroups<Option, GroupBase<Option>>) => void) => void | Promise<OptionsOrGroups<Option, GroupBase<any>>>
+} 
 export type Option ={
     value: string;
     label: string;
@@ -34,8 +35,8 @@ export type Option ={
 }
 
 
-export const Custom_Select2 = (props:Props) => {
-    const {id, name, control, label, error, errorMessage,  defaultValue, readOnly, disabled, options, placeholder, validations, isMulti, isClearable, onChange, isRequired, value} = props
+export const Custom_AsyncSelect = (props:SelectProps) => {
+    const {id, name, control, label, error, errorMessage,  defaultValue, readOnly, disabled,  placeholder, validations, isMulti, isClearable, onChange, isRequired, loadOptions} = props
     const rndId = uuidv4()
   return (
     <>
@@ -70,9 +71,9 @@ export const Custom_Select2 = (props:Props) => {
                     name={name ? name : ''}
                     rules={validations}
                     render={({field:{onChange,value,name,ref}, formState}) => (
-                        <Select 
+                        <AsyncSelect 
                             //implementare isMulti
-                            
+                            loadOptions={loadOptions}
                             components={{NoOptionsMessage:()=><Typography marginLeft={'1rem'} component={'span'} fontSize={'.8rem'} textAlign={'center'}>Nessun elemento trovato</Typography>}}
                             defaultValue={defaultValue}
                             isDisabled={disabled}
@@ -80,7 +81,6 @@ export const Custom_Select2 = (props:Props) => {
                             isSearchable
                             classNamePrefix='react-select'
                             ref={ref}
-                            options={options}
                             onChange={ (selectedOption) => {
                                 if (selectedOption) {
                                     onChange(selectedOption.value);
@@ -88,7 +88,7 @@ export const Custom_Select2 = (props:Props) => {
                                     onChange(null); // Imposta il valore a null quando l'opzione "clear" viene selezionata
                                 }
                             } }
-                            value={options.find(c => c.value === value)}
+                            
                             name={name}
                             placeholder={placeholder ? placeholder : 'Seleziona...'}
                             id={id? id : rndId}
@@ -121,16 +121,16 @@ export const Custom_Select2 = (props:Props) => {
             */
             }
             {!control && 
-                <Select 
+                <AsyncSelect 
                     //implementare isMulti
-                    value={value? value : undefined}
+                    loadingMessage={()=>'Ricerca in corso...'}
                     components={{NoOptionsMessage:()=><Typography marginLeft={'1rem'} component={'span'} fontSize={'.8rem'} textAlign={'center'}>Nessun elemento trovato</Typography>}}
                     isDisabled={disabled}
                     isClearable={isClearable}
                     isSearchable
+                    loadOptions={loadOptions}
                     onChange={onChange}
                     classNamePrefix='react-select'
-                    options={options}
                     defaultValue={defaultValue}
                     name={name}
                     placeholder={placeholder}

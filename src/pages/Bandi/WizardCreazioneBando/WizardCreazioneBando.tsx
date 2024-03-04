@@ -16,7 +16,8 @@ export const WizardCreazioneBando = (params:Params) => {
     const {close, isOpen} = params
     //lista dei requisiti (sezioni e requisiti singoli) che andranno inseriti nel data nella funzione submit per poi andare a completare la creazione del bando
     const [requisitiBando, setRequisitiBando] = useState({})
-    
+    //variabile di State per sezione "archivio collegato"
+    const [archivioCollegato, setArchivioCollegato] = useState<string|null>(null)
 
     //tutto da aggiungere nel modal creazione bando in componente separato
   
@@ -158,7 +159,7 @@ export const WizardCreazioneBando = (params:Params) => {
                             {/* qui vanno renderizzati i vari form input in base agli steps */}
                             <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control} />
                             <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors} control={control} fn={watch} unregister={unregister}/>
-                            <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors}/>
+                            <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors} setArchivio={setArchivioCollegato}/>
                         </Box>
 
                         {/* mobile navigation xs -> md */}
