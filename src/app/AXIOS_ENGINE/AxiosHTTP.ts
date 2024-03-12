@@ -1,12 +1,10 @@
 //Libreria di gestione chiamate
-import { FetchBaseQueryError, FetchBaseQueryMeta, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { setCredentials, logOut } from '../store/Slices/authSlice';
 import AxiosUtils from './AxiosUTILS';
 import { store } from '../store/store';
-import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 
-
-export type Options = {
+type Options = {
     baseUrl?: string;
     url: string;
     method?: string;
@@ -31,7 +29,6 @@ type AxiosResponse = {
     response : string | Object;
 }
 
-
 //FUNZIONE PRINCIPALE => wrapper di baseQuerywithReauth() 
 export const AxiosHTTP = (options: Options) => {
 
@@ -51,10 +48,22 @@ export const AxiosHTTP = (options: Options) => {
         contentType:'application/json; charset=UTF-8',
         responseType:'text',
     };  
-    
 
     //merging dei parametri di base con quelli passati alla funzione AxiosHTTP
     const newOptions = { ...defaultOptions, ...options };
+
+     //argomenti ripreparati che verrano passati alla baseQueryWithReauth per eseguire le chiamate
+     const argsForQuery = {
+        url: newOptions.url,
+        method: newOptions.method,
+        body: newOptions.body
+    }
+
+    // oggetto che comprende le azioni redux con accesso diretto allo store
+    const apiForQuery = {
+        dispatch: store.dispatch,
+        getState: store.getState
+    }
 
     //Impostazione chiamata di base -> poi utilizzata in baseQueryWithReauth (chiamata con refresh automatico del token)
     const baseQuery = fetchBaseQuery({
@@ -72,7 +81,6 @@ export const AxiosHTTP = (options: Options) => {
                     headers.set('Authorization', `Bearer ${token}`);
                 };
             };
-
             return headers;
         }
     });
@@ -102,47 +110,27 @@ export const AxiosHTTP = (options: Options) => {
         //controllo se la risposta contiene l'errore 401 ( oppure qualsiasi errore decidiamo), se contiene l'errore l'accessToken è scaduto e va eseguito il refresh.
         if (result?.error?.status === 401) {
             console.log('accessToken scaduto, Tentativo di Refresh del token...')
-            //eseguo processo di refresh del token
-
-            //se la fn refreshAccessToken() ritorna true 
+            //se la fn refreshAccessToken() ritorna true (nuovo accessToken salvato con successo)
             if (await refreshAccessToken(baseQuery, api, extraOptions)) {
-
                 //eseguo nuovamente la chiamata precedente con il nuovo accesstoken
                 const result = await baseQuery(newArgs, api, extraOptions);
                 finalResult = processResponse(newOptions.isAxiosJsonResponse, result)
-                // la refreshAccessToken ha ritornato false => REFRESHTOKEN SCADUTO
-            } else {
+            } else {// la refreshAccessToken ha ritornato false => REFRESHTOKEN SCADUTO
                 alert('sessione scaduta, eseguire nuovamente il Login');
             };
             // ---------------------------------------------------- FINE BLOCCO CASISTICA DI REFRESH DEL TOKEN ----------------------------------------------------------------- //
-        }else{
-            //caso in cui l'accessToken è ancora valido (procedimento normale) 
+        }else{//caso in cui l'accessToken è ancora valido (procedimento normale) 
             finalResult = processResponse(newOptions.isAxiosJsonResponse, result)
         }
-        
         //controllo per decodificare il result codificato in Base64 (se necessario)
         if(newOptions.isResponseEncoded){
             const decodedResult = AxiosUtils.Strings.Decode(finalResult as string)
             finalResult = decodedResult
         }
-
         //esporto risultato finale
         console.log('result: ',finalResult)
         return finalResult;
     };
-
-    //argomenti ripreparati che verrano passati alla baseQueryWithReauth per eseguire le chiamate
-    const argsForQuery = {
-        url: newOptions.url,
-        method: newOptions.method,
-        body: newOptions.body
-    }
-
-    // oggetto che comprende le azioni redux con accesso diretto allo store
-    const apiForQuery = {
-        dispatch: store.dispatch,
-        getState: store.getState
-    }
 
     //eseguo la chiamata
     return baseQueryWithReauth(argsForQuery, apiForQuery, {});
@@ -227,5 +215,3 @@ async function refreshAccessToken(fn: Function, api: any, extraOptions: any) {
         api.dispatch(logOut()); 
     };
 };
-
-
