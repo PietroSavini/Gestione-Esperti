@@ -13,7 +13,7 @@ export const PersistentLogin = () => {
     const isAuth = ( token !== null);
     const verifyRefreshToken = async () => {
        try{
-        const result = await AxiosHTTP({url:'/api/Test/Refresh', auth:true})
+        const result: any = await AxiosHTTP({url:'/api/Test/Refresh', auth:true})
         const newCredentials = result.data;
         dispatch(setCredentials(newCredentials))
        }catch(err){

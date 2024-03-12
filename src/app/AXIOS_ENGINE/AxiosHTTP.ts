@@ -1,8 +1,9 @@
 //Libreria di gestione chiamate
-import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { FetchBaseQueryError, FetchBaseQueryMeta, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { setCredentials, logOut } from '../store/Slices/authSlice';
 import AxiosUtils from './AxiosUTILS';
 import { store } from '../store/store';
+import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 
 
 export type Options = {
@@ -30,6 +31,8 @@ type AxiosResponse = {
     response : string | Object;
 }
 
+
+//FUNZIONE PRINCIPALE => wrapper di baseQuerywithReauth() 
 export const AxiosHTTP = (options: Options) => {
 
     //impostazione di base della chiamata
@@ -45,14 +48,13 @@ export const AxiosHTTP = (options: Options) => {
         handleRes: undefined,
         isAxiosJsonResponse:true,
         isResponseEncoded:true,
-        contentType:'text/plain; charset=UTF-8',
-        responseType:'json',
+        contentType:'application/json; charset=UTF-8',
+        responseType:'text',
     };  
     
 
     //merging dei parametri di base con quelli passati alla funzione AxiosHTTP
     const newOptions = { ...defaultOptions, ...options };
-    console.log('OPZIONI CHIAMATA',newOptions)
 
     //Impostazione chiamata di base -> poi utilizzata in baseQueryWithReauth (chiamata con refresh automatico del token)
     const baseQuery = fetchBaseQuery({
@@ -75,75 +77,61 @@ export const AxiosHTTP = (options: Options) => {
         }
     });
 
-    //funzione wrapper che controlla se la chiamata ha bisogno di encoding in Base64 e che automatizza il processo di refresh dell' Access Token nel caso in cui esso sia scaduto
+    //funzione wrapper di baseQuery => controlla se la chiamata ha bisogno di encoding in Base64 e che automatizza il processo di refresh dell' Access Token nel caso in cui esso sia scaduto
     const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
         let finalResult ; 
         let newArgs;
+
+        //switch che controlla se la chiamata deve essere codificata o no, e prepara la struttura dati di conseguenza.
         switch (true) {
             case newOptions.encode:
                 //preparo il body request codificato per la chimata
-                newArgs = { ...args, body: AxiosUtils.Strings.Encode(args.body)};
-            
+                newArgs = { ...args, body:{"JsonRequest":AxiosUtils.Strings.Encode(JSON.stringify(args.body))}};
             break;
 
             default:
-
+              newArgs = { ...args, body: args.body }
             break;
         };
-        
+        console.log('CHIAMATA EFFETTUATA CON PARAMETRI: ', newArgs)
+
+        //eseguo la chiamata ed associo il risultato a result
         const result = await baseQuery(newArgs, api, extraOptions);
-        //controllo se la risposta contiene l'errore 401, se contiene l'errore l'accessToken è scaduto e va eseguito il refresh.
+
+        // -------------------------------------------------------BLOCCO DI CASISTICA DI REFRESH DEL TOKEN ----------------------------------------------------------------- //
+        //controllo se la risposta contiene l'errore 401 ( oppure qualsiasi errore decidiamo), se contiene l'errore l'accessToken è scaduto e va eseguito il refresh.
         if (result?.error?.status === 401) {
             console.log('accessToken scaduto, Tentativo di Refresh del token...')
+            //eseguo processo di refresh del token
+
+            //se la fn refreshAccessToken() ritorna true 
             if (await refreshAccessToken(baseQuery, api, extraOptions)) {
-                //eseguo chiamata dopo successo di refresh del token
+
+                //eseguo nuovamente la chiamata precedente con il nuovo accesstoken
                 const result = await baseQuery(newArgs, api, extraOptions);
-                //controllo se la risposta avviene dal nostro webService
-                if(newOptions.isAxiosJsonResponse){
-                    const axiosResult = result.data as AxiosResponse;
-                    //se cè l'errore lo faccio vedere in console
-                    if(axiosResult.errorCode !== 0){
-                        console.error('AXIOS WEB SERVICE: ',axiosResult.errorMessage);
-                        finalResult= undefined;
-                    }
-                    finalResult = axiosResult.response;
-                }else{
-                    finalResult = result.data;
-                }
-                
+                finalResult = processResponse(newOptions.isAxiosJsonResponse, result)
+                // la refreshAccessToken ha ritornato false => REFRESHTOKEN SCADUTO
             } else {
                 alert('sessione scaduta, eseguire nuovamente il Login');
             };
-        };
-
-        //caso in cui non cè errore 401 ma la chiamata va liscia
-        if(newOptions.isAxiosJsonResponse){
-            const axiosResult = result.data as AxiosResponse;
-            if(axiosResult.errorCode !== 0){
-                console.error('AXIOS WEB SERVICE: ',axiosResult.errorMessage);
-                finalResult= undefined;
-            }
-            finalResult = axiosResult.response;
+            // ---------------------------------------------------- FINE BLOCCO CASISTICA DI REFRESH DEL TOKEN ----------------------------------------------------------------- //
         }else{
-            if('data' in result){
-                finalResult = result.data
-            }else{
-                finalResult = result.error
-                console.error('ERRORE NELLA CHIAMATA: ',result.error)
-            };
+            //caso in cui l'accessToken è ancora valido (procedimento normale) 
+            finalResult = processResponse(newOptions.isAxiosJsonResponse, result)
         }
-
-        //controllo per decodificare il Base64 se necessario
+        
+        //controllo per decodificare il result codificato in Base64 (se necessario)
         if(newOptions.isResponseEncoded){
             const decodedResult = AxiosUtils.Strings.Decode(finalResult as string)
             finalResult = decodedResult
         }
 
         //esporto risultato finale
+        console.log('result: ',finalResult)
         return finalResult;
     };
 
-    //argomenti ripreparati che verrano passati alla query per eseguire le chiamate
+    //argomenti ripreparati che verrano passati alla baseQueryWithReauth per eseguire le chiamate
     const argsForQuery = {
         url: newOptions.url,
         method: newOptions.method,
@@ -160,17 +148,64 @@ export const AxiosHTTP = (options: Options) => {
     return baseQueryWithReauth(argsForQuery, apiForQuery, {});
 };
 
-//funzione per la chiamata all'endpoint di refresh.
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------/
+/                                                                                                                                                             /
+/                                                                                                                                                             /
+/                                                                                                                                                             /
+/                                                                                                                                                             /                                                                                                                                                  /
+//-------------------------------------------------------------FUNZIONI UTILIZZATE---------------------------------------------------------------------------*/
+
+/*FUNZIONE CHE PROCESSA IL RISULTATO DELLA CHIAMATA (in base ai parametri di newOptions)
+/param => isAxiosJsonResponse => bool
+/ param queryResult => any *oggetto result della chiamata con RTKQuery*
+/ return => risultato esatto della chiamata
+*/
+function processResponse (isAxiosJsonResponse:boolean | undefined, queryResult:any){
+    //controllo se la risposta ha il formato del nostro webService
+    if(isAxiosJsonResponse){
+        //se la chiamata è andata a buon fine 
+        if('data' in queryResult){
+            const axiosResult = queryResult.data as AxiosResponse;
+            //se la chiamamta è andata a buon fine ma cè l'errore dal webService lo faccio vedere in console e ritrono il Json di risposta axios
+            if(axiosResult.errorCode !== 0){
+                console.error('AXIOS WEB SERVICE ERROR: ',axiosResult.errorMessage);
+                return axiosResult;
+            }
+            return axiosResult.response
+        }else{
+            console.error('AXIOS_HTTP ERROR: ', queryResult.error)
+            return queryResult.error
+        }
+    }
+    // se la risposta non viene dal nostro webService ed ha un formato diverso, prendo i dati direttamente da result.data
+    //se la chiamata è andata a buon fine 
+    if('data' in queryResult){
+        return queryResult.data
+    }else{
+        console.error('AXIOS_HTTP ERROR: ', queryResult.error)
+        return queryResult.error
+    }
+}
+
+
+/*FUNZIONE DI REFRESH DELL ACCESTOKEN
+/ fn : baseQueryFn di RTKQuery
+/ api: oggetto comprendente le funzioni per interagire con lo store redux
+/ extraOptions : oggetto comprendente opzioni extra
+/ return => bool => true | false
+*/
 async function refreshAccessToken(fn: Function, api: any, extraOptions: any) {
     type RefreshData = {
         accessToken: string;
     };
 
+    //faccio la chiamata all'endpoint di refresh
     const refreshResult = await fn({
         url: '/api/Test/Refresh',
         method: 'POST',
     }, api, extraOptions);
 
+    //chiamata all'endpoint di refresh andata a buon fine
     if (refreshResult?.data) {
         //prendo lo user dallo state in qunato è già presente
         const user = api.getState().auth.user;
@@ -179,15 +214,17 @@ async function refreshAccessToken(fn: Function, api: any, extraOptions: any) {
         //Salvo il nuovo Token nello state
         api.dispatch(setCredentials({ user, accessToken }));
         return true;
-
+        
+    //se risponde con 401 il refreshtoken è scaduto
     } else if (refreshResult?.error.originalStatus === 401) {
         console.error('Refresh Token Scaduto');
         api.dispatch(logOut())
         return false;
 
+    //se avviene qualsiasi errore non ritorna nulla, viene eseguito il LogOut e stampato in console il messaggio di errore
     } else if(refreshResult?.error) {
-        console.error('ERRORE: ', refreshResult.error)
-        api.dispatch(logOut())
+        console.error('ERRORE NEL PROCESSO DI REFRESH: ', refreshResult.error)
+        api.dispatch(logOut()); 
     };
 };
 

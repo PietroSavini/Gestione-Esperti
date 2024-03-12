@@ -1,31 +1,27 @@
-import { useState } from 'react'
-import { Table } from '../RequisitiTab'
+import { useEffect, useState } from 'react'
+import { RequisitiTable_list, Requisito_RequisitoTab, Requisito_Table } from '../RequisitiTab'
 import { Box, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from '@mui/material';
 import {v4 as uuidv4} from 'uuid'
 import { DataGrid,  GridColDef, GridEditInputCell, GridEventListener, GridPreProcessEditCellProps, GridRenderEditCellParams, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer } from '@mui/x-data-grid';
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
-import { RequisitiList } from '../../TipologiaEspertoTab/Tables/Table_tipologieDiSistema';
-
-
-type Rows = Row[] | [];
-
-type Row = {
-  id: string | number;
-  title: string;
-  sistema: boolean;
-  isNew:boolean;
-}
-
+import { Requisito } from '../../TipologiaEspertoTab/Tables/Table_tipologieDiSistema';
 
 //dataTable -------------------------------------------------------------------------------------------------------------------------
 
-export default function RequisitiTable ({data}:{data:Table}) {
-  const [rows, setRows] = useState<RequisitiList>(data.requisitiList);
+export default function RequisitiTable ({data}:{data:Requisito_Table}) {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [hasError, setHasError] = useState<boolean>(true)
-  const {sectionTitle} = data
+  const [editingRows, setEditingRows] = useState<GridRowId[]>([]);
+  const {descrizione_breve} = data
+  const [rows, setRows] = useState<RequisitiTable_list>(
+    data.requisiti_list.map((row, index) => ({ ...row, id: index.toString() }))
+  );
+
+  useEffect(() => {
+    console.log(rows)
+  }, [rows])
   
   //custom toolBar -------------------------------------------------------------------------------------------------------------------
   interface EditToolbarProps {
@@ -37,23 +33,28 @@ export default function RequisitiTable ({data}:{data:Table}) {
   
   function EditToolbar(props: EditToolbarProps) {
     const { setRows, setRowModesModel } = props;
-    
+   
     const handleClick = () => {
       //booleano che controlla se una riga è in edit mode
-      const isAnyRowInEdit = Object.values(rowModesModel).some((row) => row.mode === GridRowModes.Edit);
+      const isAnyRowInEdit = editingRows.length > 0 ? true : false
       //se si, non faccio nulla evitando la creazione di altre righe
+      console.log(isAnyRowInEdit)
       if (isAnyRowInEdit) return 
-      const id = uuidv4();
-      setRows((oldRows) => [{ id, title: '', sistema: false, isNew: true }, ...oldRows ]);
+      const id: GridRowId = uuidv4();
+      // creo la nuova row nell'array di display
+      setRows((oldRows) => [{ id:id, fi_ee_req_id:'', fs_ee_req_desc:'',fi_ee_req_customerid:1 }, ...oldRows ]);
+      // aggiungo la row in editMode in rowsModel 
       setRowModesModel((oldModel) => ({
-        [id]: { mode: GridRowModes.Edit, fieldToFocus: 'title', },
+        [id] : { mode: GridRowModes.Edit, fieldToFocus: 'fs_ee_req_desc', },
         ...oldModel
       }));
+      // aggiungo la row all'array di id delle rows che sono in editing
+      
     };
   
     return (
       <GridToolbarContainer className='requisiti-section-title' sx={{backgroundColor:'#ebeeffff',padding:'.5rem .5rem 0rem .5rem', justifyContent:'space-between'}}>
-        <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{sectionTitle}</Typography>
+        <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{descrizione_breve}</Typography>
         <ActionButton direction={'row-reverse'} text='Aggiungi Requisito' icon='add' color="secondary" onClick={handleClick} />
       </GridToolbarContainer>
     );
@@ -64,24 +65,29 @@ export default function RequisitiTable ({data}:{data:Table}) {
   //edit mode della row
   const handleEditClick = (id: GridRowId) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+    setEditingRows((prevEditingRows) => [...prevEditingRows, id])
   };
   //cancella creazione nuova row
   const handleCancelClick = (id: GridRowId) => () => {
+    console.log(id)
     setHasError(true)
+    //tolgo la row da modalità editing 
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
+    //rimuovo la row dal' array editingRows
+    setEditingRows((prev) => prev.filter((rowId)=> rowId !== id))
     
-    const editedRow = rows.find((row) => row.id === id);
-    if (editedRow!.isNew) {
-      setRows(rows.filter((row) => row.id !== id));
-    }
+    
   };
   //create
   const handleSaveClick = (id: GridRowId) => () => {
     //chiamata ed attesa risposta server
+    
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+    setEditingRows((prevEditingRows) => prevEditingRows.filter((rowId) => rowId !== id));
+
     // invio dati a DB
       //risposta 200
         //aggiungo dati a store redux
@@ -91,14 +97,17 @@ export default function RequisitiTable ({data}:{data:Table}) {
   
   //delete
   const handleDeleteClick = (id: GridRowId) => () => {
+    //rimuovo la row dall'array che serve per il display delle rows
+    setRows(rows.filter((row) => row.fi_ee_req_id !== id));
+    //rimuovo la row dall'elenco delle row in editing 
+
     //chiamata ed attesa risposta server
-    setRows(rows.filter((row) => row.id !== id));
   };
 
   //update
   const processRowUpdate = (newRow: GridRowModel) => {
     //chiamata ed attesa risposta server
-    setRows((prevRows) => prevRows.map((row) => (row.id === newRow.id ? { ...row, ...newRow, isNew: false } : row)));
+    setRows((prevRows) => prevRows.map((row) => (row.fi_ee_req_id === newRow.id ? { ...row, ...newRow } : row)));
     return newRow;
   };
   
@@ -113,7 +122,6 @@ export default function RequisitiTable ({data}:{data:Table}) {
   };
   
   // casella con messaggio di errore -------------------------------------------------------------------------------------------------
-
   //componente tooltip MUI personalizzato per mostrare messaggio di errore 
   const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip {...props} classes={{ popper: className }} />
@@ -125,14 +133,15 @@ export default function RequisitiTable ({data}:{data:Table}) {
   }));
 
   //componente casella editabile con messaggio di errore
-  function TitleEditInputCell(props: GridRenderEditCellParams, key:any) {
+  function DescriptionInputCell(props: GridRenderEditCellParams, key:any) {
     const { error } = props;
     return (
       <StyledTooltip key={key} open={!!error} title={error}>
-        <GridEditInputCell key={key} placeholder={!!error ? null : 'Aggiungi Titolo Requisito'} className={!!error ? 'table-input-error' : ''} {...props} />
+        <GridEditInputCell  placeholder={!!error ? null : 'Aggiungi Titolo Requisito'} className={!!error ? 'table-input-error' : ''} {...props} />
       </StyledTooltip>
     );
   }
+  
   //funzione da passare a oggetto colums di Datagrid
   const preProcessEditCellProps = async (params: GridPreProcessEditCellProps) => {
     const errorMessage = await validateTitle(params.props.value!.toString());
@@ -151,36 +160,35 @@ export default function RequisitiTable ({data}:{data:Table}) {
     })
   }
   //componente che gestisce il rendering "si"/"no" della colonna "sistema"
-  const Sistema = ({params}:{params:Row}) => {
-    if(params.sistema) return(<>Si</>)
+  const Sistema = ({params}:{params:Requisito_RequisitoTab}) => {
+    if(params.fi_ee_req_customerid === null) return(<>Si</>)
     return (<>No</>)
   }
 
   //impostazione delle colonne DataGrid MUI
   const columns: GridColDef[] = [
-    {field: 'title', flex:0.4, minWidth:220, headerName: 'requisito' , preProcessEditCellProps, headerClassName:'customHeader', editable:true, renderEditCell:(params) => (<TitleEditInputCell key={params.id} {...params}/>) },
-    {field: 'sistema',flex:0.3,minWidth:80, headerName: 'sistema', renderCell:(params:any) =>( <Sistema params={params.row} />), headerClassName:'customHeader' },
-    {field: 'actions' , type:'actions',minWidth: 200, align:'right', headerName:'', flex:.3, width: 200,sortable:false, filterable:false, headerClassName:'customHeader',
+    {field: 'fs_ee_req_desc', flex:0.4, minWidth:220, headerName: 'requisito' , preProcessEditCellProps, headerClassName:'customHeader', renderEditCell:(params) => (<DescriptionInputCell key={params.id} {...params}/>) },
+    {field: 'fi_ee_req_customerid', flex:0.3,minWidth:80, headerName: 'sistema', renderCell:(params:any) =>( <Sistema params={params.row} />), headerClassName:'customHeader' },
+    {field: 'actions', type:'actions',minWidth: 200, align:'right', headerName:'', flex:.3, width: 200,sortable:false, filterable:false, headerClassName:'customHeader',
       renderCell: (params:any) => {
-        const {id} = params;
-        const {sistema} = params.row;
+        const requisito:Requisito_RequisitoTab = params.row
+        const {fi_ee_req_id, fi_ee_req_customerid} = requisito
         let error = hasError;
-        const row = params.row 
         //se sono di sistema non permetto modifica
-        if(sistema){
+        if(fi_ee_req_customerid === null){
           return <></>
         }
 
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-        if (isInEditMode) {
+        const isInEditMode = editingRows.includes(fi_ee_req_id);
+        if (isInEditMode){
           return [   
-            <ActionButton key={id} sx={{marginRight:'5px'}} icon='save' disabled={error} color='primary' onClick={handleSaveClick(id)} />,
-            <ActionButton key={`${id}-1`} icon='cancel'color='error' onClick={handleCancelClick(id)} />,
+            <ActionButton key={fi_ee_req_id} sx={{marginRight:'5px'}} icon='save' disabled={error} color='primary' onClick={handleSaveClick(fi_ee_req_id)} />,
+            <ActionButton key={`${fi_ee_req_id}-1`} icon='cancel'color='error' onClick={handleCancelClick(fi_ee_req_id)} />,
           ];
         }
         return [
-          <ActionButton key={id} sx={{marginRight:'5px'}} icon='edit' color='warning' onClick={handleEditClick(id)}/>,
-          <ActionButton key={`${id}-1`} icon='delete' onClick={handleDeleteClick(id)} color='error'/>,
+          <ActionButton key={fi_ee_req_id} sx={{marginRight:'5px'}} icon='edit' color='warning' onClick={handleEditClick(fi_ee_req_id)}/>,
+          <ActionButton key={`${fi_ee_req_id}-1`} icon='delete' onClick={handleDeleteClick(fi_ee_req_id)} color='error'/>,
         ];
       }
     }

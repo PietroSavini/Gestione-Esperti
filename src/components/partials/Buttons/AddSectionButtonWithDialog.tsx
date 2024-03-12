@@ -17,6 +17,7 @@ export const AddSectionButtonWithDialog = ({successFn}:{successFn :Function}) =>
     const ref = useRef<HTMLFormElement>(null)
     const submit = () => {
         setOpen(false)
+        
         successFn(title);
     }
 

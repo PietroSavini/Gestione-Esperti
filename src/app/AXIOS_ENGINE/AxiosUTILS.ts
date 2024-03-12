@@ -26,13 +26,7 @@ class Utility {
           } else {
             try {
               const decodedString = Base64.decode(input);
-              try{
-                const decodedObject = JSON.parse(decodedString);
-                result = { ...decodedObject };
-                return result;
-              }catch(err){
-                result = decodedString;
-              }
+              result = decodedString
             } catch (error) {
               console.error("Errore nella decodifica:", error);
               return null;
@@ -42,9 +36,8 @@ class Utility {
         };
       
         static Encode(param: any) {
-          const bodyString = JSON.stringify(param);
-          const newBodyBase64 = Base64.encode(bodyString);
-          return newBodyBase64;
+          const result = Base64.encode(param);
+          return result;
         };
     };
 

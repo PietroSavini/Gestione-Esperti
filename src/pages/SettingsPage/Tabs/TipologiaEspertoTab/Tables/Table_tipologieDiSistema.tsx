@@ -19,14 +19,16 @@ export type RequisitoTable = {
     requisitiList: RequisitiList;
 }[]|[]
 
-export type RequisitiList = {
+export type RequisitiList = Requisito[]|[]
+
+export type Requisito = {
     id: string | number;
-    title: string;
+    label: string;
+    value:string;
     punteggio?: string | number;
     sistema?:boolean;
     isNew:boolean;
-    
-}[]|[]
+}
 
 export type TipologiaEspertoRow = {
     id:string;

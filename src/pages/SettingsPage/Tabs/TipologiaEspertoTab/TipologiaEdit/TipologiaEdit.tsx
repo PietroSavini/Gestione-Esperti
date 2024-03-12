@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { selectTipologie } from '../../../../../app/store/Slices/TipologieSlice';
 import { useAppSelector } from '../../../../../app/ReduxTSHooks';
 import { useForm } from 'react-hook-form';
-import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
 import { RequisitoTable } from '../Tables/Table_tipologieDiSistema';
 import Table_editTipologiaEsperto from '../Tables/Table_editTipologiaEsperto';
 import { AddSectionButtonWithDialog } from '../../../../../components/partials/Buttons/AddSectionButtonWithDialog';
@@ -36,8 +35,8 @@ export const TipologiaEdit = () => {
     }, [])
     
     useEffect(() => {
-        //forse inutile, da constatare se va effettuata chiamata a DB per popolare pagina(probabilmente si)
-        //elemento di controllo nell ipotesi venga effettuato un regresh della pagina o se per qualche motivo la row non è presente nella tabella
+        //codice sotto forse inutile, da constatare se va effettuata chiamata a DB per popolare pagina(probabilmente si)
+        //elemento di controllo nell ipotesi venga effettuato un refresh della pagina o se per qualche motivo la row non è presente nella tabella
         if(!tipologiePersonalizzate.some((tipologia) => tipologia.id === id)){
             navigate('/impostazioni')
         }

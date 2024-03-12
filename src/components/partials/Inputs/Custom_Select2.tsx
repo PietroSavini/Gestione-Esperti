@@ -24,6 +24,8 @@ type Props = {
     isRequired?:boolean
     onChange?: ((newValue: SingleValue<Option>, actionMeta: ActionMeta<Option>) => void) | undefined
     value?:any
+  
+    
 }
 
 export type Option ={
@@ -122,6 +124,7 @@ export const Custom_Select2 = (props:Props) => {
             }
             {!control && 
                 <Select 
+                    
                     //implementare isMulti
                     value={value? value : undefined}
                     components={{NoOptionsMessage:()=><Typography marginLeft={'1rem'} component={'span'} fontSize={'.8rem'} textAlign={'center'}>Nessun elemento trovato</Typography>}}

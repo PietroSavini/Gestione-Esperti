@@ -26,6 +26,7 @@ type SelectProps = {
     isRequired?:boolean
     onChange?: ((newValue: SingleValue<Option>, actionMeta: ActionMeta<Option>) => void) | undefined
     loadOptions:(inputValue: string, callback: (options: OptionsOrGroups<Option, GroupBase<Option>>) => void) => void | Promise<OptionsOrGroups<Option, GroupBase<any>>>
+   
 } 
 export type Option ={
     value: string;
@@ -72,6 +73,7 @@ export const Custom_AsyncSelect = (props:SelectProps) => {
                     rules={validations}
                     render={({field:{onChange,value,name,ref}, formState}) => (
                         <AsyncSelect 
+                            
                             //implementare isMulti
                             loadOptions={loadOptions}
                             components={{NoOptionsMessage:()=><Typography marginLeft={'1rem'} component={'span'} fontSize={'.8rem'} textAlign={'center'}>Nessun elemento trovato</Typography>}}
@@ -122,6 +124,7 @@ export const Custom_AsyncSelect = (props:SelectProps) => {
             }
             {!control && 
                 <AsyncSelect 
+                  
                     //implementare isMulti
                     loadingMessage={()=>'Ricerca in corso...'}
                     components={{NoOptionsMessage:()=><Typography marginLeft={'1rem'} component={'span'} fontSize={'.8rem'} textAlign={'center'}>Nessun elemento trovato</Typography>}}

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Box, MenuItem, Select, SelectChangeEvent, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from '@mui/material';
+import { useEffect, useState } from 'react'
+import { Box, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import {v4 as uuidv4} from 'uuid'
 import { DataGrid,  GridColDef,  GridEventListener, GridPreProcessEditCellProps, GridRenderEditCellParams, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer } from '@mui/x-data-grid';
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination';
@@ -15,8 +15,13 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [hasError, setHasError] = useState<boolean>(true)
+
+  useEffect(() => {
+    console.log(rows)
+  }, [rows])
   
-  //custom toolBar -------------------------------------------------------------------------------------------------------------------
+  
+  //custom toolBar  con logica e tasto di aggiunta requisito-------------------------------------------------------------------------------------------------------------------
   interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
     setRowModesModel: (
@@ -33,8 +38,11 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
       const isAnyRowInEdit = Object.values(rowModesModel).some((row) => row.mode === GridRowModes.Edit);
       //se si, non faccio nulla evitando la creazione di altre righe
       if (isAnyRowInEdit) return 
+      //creo id provvisorio (da sostituire con quello di BackEnd)
       const id = uuidv4();
-      setRows((oldRows) => [{ id, title: '', sistema: false, isNew: true }, ...oldRows ]);
+      //aggiunga la row appena creata in cima all' array di righe
+      setRows((oldRows) => [{ id, title: '', sistema: false, isNew: true, punteggio:'1' }, ...oldRows ]);
+      // metto la row appena creata in editMode
       setRowModesModel((oldModel) => ({
         [id]: { mode: GridRowModes.Edit, fieldToFocus: 'title', },
         ...oldModel
@@ -71,6 +79,7 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
   //create
   const handleSaveClick = (id: GridRowId) => () => {
     //chiamata ed attesa risposta server
+    // setto la row in viewMode
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     // invio dati a DB
       //risposta 200
@@ -82,7 +91,9 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
   const handleDeleteClick = (id: GridRowId) => () => {
     //chiamata ed attesa risposta server
     setRows(rows?.filter((row) => row.id !== id));
+    //in realtà sarebbe da richiamare il server con la lista agiornata e rifare il display
   };
+
   //update
   const processRowUpdate = (newRow: GridRowModel) => {
     //chiamata ed attesa risposta server
@@ -91,6 +102,8 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
   };
   
   //-----------------------------------------------------------------------------------------------------------------------------------
+  //funzioni per gestire comportamento di base delle row in editMode
+  //standard di MUI
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
@@ -100,8 +113,7 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
     setRowModesModel(newRowModesModel);
   };
   
-  // Select nome requisito -------------------------------------------------------------------------------------------------
-
+  // Select nome requisito ------------------------------------------------------------------------------------------------------------
   //componente select che prende nome requisito all interno della sezione requisitio (es. titolo di studio: requisiti[])
   function TitleEditSelectCell(props: GridRenderEditCellParams, key:any) {
     const { id, value, api, field } = props;
@@ -111,19 +123,21 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
         api.setEditCellValue({ id, field, value: newValue });
     };
 
+    //select MUI
     return (
         <Select
-            key={key}
-            fullWidth
-            value={value || ''}
-            onChange={handleChange}
-            
+          key={key}
+          fullWidth
+          value={value || ''}
+          onChange={handleChange}
+          defaultValue='1'
+          
         >
-        {/* Opzioni della select, puoi popolare dinamicamente in base alle tue esigenze */}
+            {/* Opzioni della select, da gestire con un map() su dati presi da db*/}
             <MenuItem value="Laurea Vecchio ordinamento">Laurea Vecchio ordinamento</MenuItem>
-            <MenuItem value="Laurea Triennale">Laurea Triennale</MenuItem>
-            <MenuItem value="Laurea specialistica">Laurea specialistica</MenuItem>
-      </Select>
+            <MenuItem value="2">Laurea Triennale</MenuItem>
+            <MenuItem value="3">Laurea specialistica</MenuItem>
+        </Select>
     );
   }
 
@@ -146,8 +160,12 @@ export default function Table_editTipologiaEsperto ({sectionTitle, requisiti}:{s
 
   //impostazione delle colonne DataGrid MUI
   const columns: GridColDef[] = [
+    //colonna titolo
     {field: 'title', type:'select', flex:0.4, minWidth:220, headerName: 'requisito' , preProcessEditCellProps, headerClassName:'customHeader', editable:true, renderEditCell:(params) => (<TitleEditSelectCell key={params.id} {...params}/>) },
-    {field: 'punteggio',type:'select',flex:0.3,minWidth:80, headerName: 'Punteggio', editable:true, headerClassName:'customHeader' },
+    //colonna punteggio
+    {field: 'punteggio',type:'number', flex:0.3, minWidth:80, headerName: 'Punteggio', editable:true, headerClassName:'customHeader' },
+
+    //colonna azioni
     {field: 'actions' , type:'actions',minWidth: 200, align:'right', headerName:'', flex:.3, width: 200,sortable:false, filterable:false, headerClassName:'customHeader',
     //renderCell che renderizza le azioni in base a stato row ( editmode / view mode ) 
       renderCell: (params:any) => {

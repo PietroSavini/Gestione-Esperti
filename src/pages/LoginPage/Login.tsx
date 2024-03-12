@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Box, Button, Chip, Icon, Paper, TextField } from '@mui/material'
 import { useForm } from 'react-hook-form'
 
@@ -10,10 +10,11 @@ import { useAppDispatch } from '../../app/ReduxTSHooks';
 import { AxiosHTTP } from '../../app/AXIOS_ENGINE/AxiosHTTP';
 import { selectToken, setCredentials } from '../../app/store/Slices/authSlice';
 import Serializer from '../../app/AXIOS_ENGINE/AxiosSERIALIZER';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { PersistentLogin } from '../../components/App_Components/PersistentLogin';
 import { Custom_TextField } from '../../components/partials/Inputs/CustomITextField';
+import AxiosUTILS from '../../app/AXIOS_ENGINE/AxiosUTILS';
 
 
 export const Login = () => {
@@ -26,22 +27,60 @@ export const Login = () => {
     const dispatch = useAppDispatch();
     const [genErr, setGenErr] = useState('');
     const token = useSelector(selectToken)
+
+    const object = { 
+        fsCF:'00000000001',
+        fsUser:'0001',
+        fsPsw:'3D1234axios',
+        iLoginMethod:'0'
+    }
+
+    const string = '{\"fsCF\":\"00000000001\",\"fsUser\":\"0001\",\"fsPsw\":\"3D1234axios\",\"iLoginMethod\":0}'
+    const string1 = `{"fsCF":"00000000001","fsUser":"0001","fsPsw":"3D1234axios","iLoginMethod":0}`
+
+    const fetchData = async () => {
+        const fetchApi  = await fetch('https://provaoauth.axioscloud.it/api/oauth2/authorize', {
+            method: 'POST',
+            body:string,
+            headers: {
+                'Content-type': 'apllication/json;',
+            }
+        })
+        const result = await fetchApi.json()
+        console.log(result)
+        return result
+     
+    }
+    
+    useEffect(() =>{
+       // fetchData()
+        
+    }, [])
+
+     
+        
+    
+
     const onSubmit = useThrottled(
+
+
+        
         
         async (data: any) => {
+
             setGenErr('')
             const user = getValues('username');
-            console.log('dati inviati: ',data)
-            dispatch(setCredentials({ accessToken:'123', user }));
-            navigate('/dashboard')
+
+            //ogetto con IloginMethod
+            const newDataStructure = { ...data, iLoginMethod:0 }
+            //body completo del JSON ma fatto stringified
             try {
-                const result = await AxiosHTTP({ url:'/api/Login/login', auth: false, body: data, isResponseEncoded:false, isAxiosJsonResponse:false });
-                console.log('risposta: ', result)
-                if( 'accessToken' in result){
-                    const accessToken = result.accessToken;
+                const result: any = await AxiosHTTP({ url:'/api/oauth2/authorize', auth: false, body:newDataStructure ,contentType:'application/json', isResponseEncoded:false, isAxiosJsonResponse:false, encode:false, responseType:'json'}) ;
+                if( 'token' in result){
+                    const accessToken = result.token;
                     dispatch(setCredentials({ accessToken, user }));
                     console.log('user ed accessToken salvati nello state');
-                  
+                    navigate('/dashboard')
                 } else{
                     const err = result    
                     if (err.originalStatus === 403) {
@@ -71,6 +110,7 @@ export const Login = () => {
                         {/* Log in form */}
                         <Box className='login-form-group' display={'flex'} flexDirection={'column'} maxWidth={'200px'} gap={5}>
                             <TextField
+                              
                                 id="fsCF"
                                 label="codice fiscale *"
                                 variant="standard"
@@ -101,6 +141,7 @@ export const Login = () => {
                         
                             {/* //messaggio di errore generico */}
                             {genErr && <div className='gen-error'>{genErr}</div>}
+                            
                         </Box>
                         {/*  END log in form */}
                         <Button type='submit' onClick={() => Serializer.serialize('.login-form-group', 0)}  sx={{ marginTop: '20px' }} color='primary' variant='contained'>accedi</Button>

@@ -2,47 +2,45 @@ import { Box } from '@mui/material';
 import { useEffect, useState } from 'react'
 import { AddSectionButtonWithDialog } from '../../../../components/partials/Buttons/AddSectionButtonWithDialog';
 import  RequisitiTable  from './Tables/RequisitiTable';
-import { RequisitiList } from '../TipologiaEspertoTab/Tables/Table_tipologieDiSistema';
+import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 
-export type Table = {
-    id:string | number;
-    sectionTitle:string;
-    requisitiList:RequisitiList
+export type Requisito_Table = {
+    fi_ee_req_id: string | number;
+    descrizione_breve: string;
+    requisiti_list: RequisitiTable_list
 }
 
-type Tables = Table[]
+export type RequisitiTable_list = Requisito_RequisitoTab[] | []
+
+export type Requisito_RequisitoTab = {
+    fi_ee_req_id:number | string // id requisito
+    fs_ee_req_desc: string   //descrizione del requisito
+    fi_ee_req_customerid: null | number  // true if null
+}
+
+
 
 export const RequisitiTab = () => {
     //simulazione dati in ingresso
     const data = [
-        //prima table
+        //Ogni ogetto è un Requisito Master
         {
-            id: 'table1',
-            sectionTitle:'Titolo Di Studio',
-            requisitiList:[
+            
+            fi_ee_req_id: 1,
+            descrizione_breve:'Titolo Di Studio',
+            //array di ogetti sottorequisito del req master
+            requisiti_list:[ 
+                //ogni Ogetto è un sottorequisito
                 {
-                    id:'id878-8787',
-                    title:'Laurea vecchio ordinamento',
-                    sistema:true,
-                    isNew:false,
+                    fi_ee_req_id: 2,
+                    fs_ee_req_desc:'Laurea triennale',
+                    fi_ee_req_customerid:null // null se sono di sistema 
                 },
-                {
-                    id:'id878-8786',
-                    title:'Laurea triennale',
-                    sistema:true,
-                    isNew:false,
-                },
-                {
-                    id:'id878-8785',
-                    title:'Laurea specialistica',
-                    sistema:true,
-                    isNew:false,    
-                }
+             
             ]
         },
-        //...altre table
+       
     ];
-
 
     //al rendering del componente chiamo il webService per generare le Tabelle
     useEffect(() => {
@@ -50,19 +48,28 @@ export const RequisitiTab = () => {
     }, [])
 
     //genero la variabile di stato 'tables', mi servirà per pushare eventuali table create dal pulsante 'Aggiungi Nuova Sezione'. la variabile è inizializzata con i dati in ingresso.
-    const [tables , setTables] = useState<Tables>(data);
+    const [tables , setTables] = useState<Requisito_Table[]| []>(data);
 
-    const handleAddSection = (title:string) => {
-       const newTable: Table ={
-         id:`table-${title}`,
-         sectionTitle: title,
-         requisitiList:[]
-       }
-       //Salvo la Tabella appena Creata nel DB
-        //response:200 , ricevo id Table
+    const GET_ALL_REQQUISITI = () => {
+        AXIOS_HTTP.Retrieve({url:'/api/Retrieve/retrieve', body:null, sService:'READ_REQUISITI', sModule:'GET_ALL_REQUISITI'})
+    }
 
-       setTables((prevTables) => [...prevTables, newTable] )
-       console.log(tables)
+    const handleAddSection = async (title:string) => {
+        const newMasterReq = {
+            descrizione: title,
+        };
+        const createRequisito = await AXIOS_HTTP.Execute({sService:'WRITE_REQUISITO', sModule:'INSERT_REQUISITO', body:newMasterReq, url:'/api/Execute/execute'})
+
+
+    //    const newTable: Table ={
+    //      id:`table-${title}`,
+    //      sectionTitle: title,
+    //      requisitiList:[]
+    //    }
+    //    //Salvo la Tabella appena Creata nel DB
+    //     //response:200 , ricevo id Table
+    //    setTables((prevTables) => [...prevTables, newTable] )
+    //    console.log(tables)
     }
     
     
@@ -72,9 +79,12 @@ export const RequisitiTab = () => {
             <AddSectionButtonWithDialog successFn={handleAddSection} />
         </Box>
         <Box component='section' className='requisiti-section'>
-            {tables?.map((table,index) => (
+            
+            {tables && tables.map((table,index) => (
                 <RequisitiTable key={index} data={table}/>
             ))}
+
+            {tables.length === 0 && <Box>nessun requisito da mostrare </Box>}
         </Box>
 
     </>

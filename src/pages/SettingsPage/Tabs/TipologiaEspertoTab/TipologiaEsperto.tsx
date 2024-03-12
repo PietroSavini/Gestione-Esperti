@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Icon, Typography } from '@mui/material'
-import{ Table_tipologieDiSistema, Row }from './Tables/Table_tipologieDiSistema'
+import{ Table_tipologieDiSistema, TipologiaEspertoRow }from './Tables/Table_tipologieDiSistema'
 import { useEffect, useState } from 'react'
 import { Table_tipologiePersonalizzate } from './Tables/Table_tipologiePersonalizzate'
 import { useAppDispatch } from '../../../../app/ReduxTSHooks'
@@ -12,8 +12,8 @@ import { ActionButton } from '../../../../components/partials/Buttons/ActionButt
 
 
 type Data = {
-  tipologieDiSistema: Row[],
-  tipologiePersonalizzate:Row[]
+  tipologieDiSistema: TipologiaEspertoRow[],
+  tipologiePersonalizzate:TipologiaEspertoRow[]
 }
 
 

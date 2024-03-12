@@ -1,6 +1,6 @@
 import { Box, Dialog, Grid, Icon, Paper, Typography } from '@mui/material'
 import { FormStepProps } from './FormStep1';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CustomTreeview, Tview } from '../../../../components/partials/TreeView/Treeview';
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
@@ -281,6 +281,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
     const [fascicoliSelezionati, setFascicoliSelezionati] = useState<string[]>([])
     const [displayFascicoliSelezionati, setDisplayFascicoliSelezionati] = useState<FascicoloElettronico[]>([]);
     const [errorFascicolo, setErrorFascicolo] = useState<string | undefined>(undefined);
+    
 
     //controllo l'array per pulire gli errori al cambio
     useEffect(() => {
@@ -288,7 +289,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
       console.log('fascicoli Selezionati: ',fascicoliSelezionati)
     }, [fascicoliSelezionati])
 
-    
+  
     //funzione avviata al tasto 'Salva' contenuto nel modal della treeView
     function saveArchivio(param: Tview | null) {
         setArchivio(() => param ? param.value : null);
@@ -367,7 +368,6 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                 </Box>
                 {!archivioLabel ? <Typography marginTop={2} fontSize={'0.9rem'}>Nessun archivio collegato</Typography> : displayArchivioLabel(archivioLabel)}
 
-                {/* da scorporare in componente esterno da fare dinamico ed a <Dialog/> */}
                 {/* treeView component */}
                 <Dialog open={isOpen} fullScreen className='collega-ad-un-archivio-modal' onClose={() => setIsOpen(false)}  >
                     <Paper elevation={0} sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', paddingTop: '1rem' }}>
@@ -409,6 +409,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                         <Grid paddingRight={'1rem'} item xs={12} md={5} >
                             {fascicoloSelezionato !== null && fascicoloSelezionato.fascicoliInterni ? (
                                 <Custom_Select2
+                                 
                                     isClearable
                                     label='sottofascicolo/inserto'
                                     placeholder='Seleziona un sottofascicolo'
