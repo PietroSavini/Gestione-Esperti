@@ -1,46 +1,63 @@
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react'
 import { AddSectionButtonWithDialog } from '../../../../components/partials/Buttons/AddSectionButtonWithDialog';
-import  RequisitiTable  from './Tables/RequisitiTable';
+import  Requisiti_Table  from './Tables/Table_requisiti';
 import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 
 export type Requisito_Table = {
-    fi_ee_req_id: string | number;
+    fi_ee_req_id: number;
     descrizione_breve: string;
-    requisiti_list: RequisitiTable_list
+    requisiti_list: RequisitoType_RequisitoTab[] | []
 }
 
-export type RequisitiTable_list = Requisito_RequisitoTab[] | []
-
-export type Requisito_RequisitoTab = {
+export type RequisitoType_RequisitoTab = {
     fi_ee_req_id:number | string // id requisito
     fs_ee_req_desc: string   //descrizione del requisito
-    fi_ee_req_customerid: null | number  // true if null
+    fi_ee_req_customerid?: number    //sistema => true if null
+    fi_ee_req_punteggio?: number;
 }
 
 
+//simulazione dati in ingresso
+const data:Requisito_Table[] = [
+    //Ogni ogetto è un Requisito Master
+    {
+        
+        fi_ee_req_id: 1,
+        descrizione_breve:'Titolo Di Studio',
+        //array di ogetti sottorequisito del req master
+        requisiti_list:[ 
+            //ogni Ogetto è un sottorequisito
+            {
+                fi_ee_req_id: 2,
+                fs_ee_req_desc: 'Laurea triennale',
+                fi_ee_req_customerid: 1, // 1 se sono di sistema 
+                fi_ee_req_punteggio: undefined,
+            },
+            {
+                fi_ee_req_id: 3,
+                fs_ee_req_desc: 'Laurea Specialistica',
+                fi_ee_req_customerid: 1, // 1 se sono di sistema 
+                fi_ee_req_punteggio: undefined,
+            },
+            {
+                fi_ee_req_id: 4,
+                fs_ee_req_desc: 'Diploma Scuola Superiore',
+                fi_ee_req_customerid: 0, // 1 se sono di sistema 
+                fi_ee_req_punteggio: undefined,
+            },
+            {
+                fi_ee_req_id: 5,
+                fs_ee_req_desc: 'Diploma di terza media',
+                fi_ee_req_customerid: 0, // 1 se sono di sistema 
+                fi_ee_req_punteggio: undefined,
+            },
+        ]
+    },
+   
+];
 
 export const RequisitiTab = () => {
-    //simulazione dati in ingresso
-    const data = [
-        //Ogni ogetto è un Requisito Master
-        {
-            
-            fi_ee_req_id: 1,
-            descrizione_breve:'Titolo Di Studio',
-            //array di ogetti sottorequisito del req master
-            requisiti_list:[ 
-                //ogni Ogetto è un sottorequisito
-                {
-                    fi_ee_req_id: 2,
-                    fs_ee_req_desc:'Laurea triennale',
-                    fi_ee_req_customerid:null // null se sono di sistema 
-                },
-             
-            ]
-        },
-       
-    ];
 
     //al rendering del componente chiamo il webService per generare le Tabelle
     useEffect(() => {
@@ -81,7 +98,7 @@ export const RequisitiTab = () => {
         <Box component='section' className='requisiti-section'>
             
             {tables && tables.map((table,index) => (
-                <RequisitiTable key={index} data={table}/>
+                <Requisiti_Table key={index} data={table}/>
             ))}
 
             {tables.length === 0 && <Box>nessun requisito da mostrare </Box>}
