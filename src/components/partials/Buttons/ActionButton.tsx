@@ -23,7 +23,7 @@ export const ActionButton = (props:Props) => {
           <Box  flexDirection={direction ? direction : 'row'} sx={{borderRadius:'10px', ...sx}} className={`ms_button ms_button-${color}`} display={'flex'} alignItems={'center'} justifyContent={'center'}>
             { text && <Typography  className='button-text' variant='caption'>{text}</Typography>}
             { icon &&  <Icon fontSize='small' className='button-icon'>{icon}</Icon>}
-            { IconComponent && IconComponent}
+            { IconComponent && IconComponent }
           </Box>
         </Link>
       ) : (
@@ -32,12 +32,13 @@ export const ActionButton = (props:Props) => {
           {...buttonProps}
           //@ts-ignore
           sx={{ ...buttonProps?.sx, flexDirection:`${direction}`}} 
-          onClick={onClick} color={color}  
+          onClick={onClick} 
+          color={color}  
           className={`ms_button ms_button-${color} ${buttonProps.disabled && 'ms_button-disabled'}`}
         >
           { text && <Typography  className='button-text' variant='caption'>{text}</Typography>}
           { icon &&  <Icon fontSize='small' className='button-icon'>{icon}</Icon>}
-          { IconComponent && IconComponent}
+          { IconComponent && IconComponent }
         </Button>
       )}
   

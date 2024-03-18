@@ -10,6 +10,7 @@ import './Table_requisiti.scss'
 //dataTable -------------------------------------------------------------------------------------------------------------------------
 export default function Requisiti_table ({data}:{data:Requisito_Table}) {
   const requisiti = data.requisiti_list;
+  //variabili del requisito master
   const masterRequisitoTitle = data.descrizione_breve;
   const masterRequisitoId = data.fi_ee_req_id;
 
@@ -18,7 +19,7 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [rowsInError, setRowsInError] = useState<string[]>([])
 
-  //custom toolBar  con logica e tasto di aggiunta requisito-------------------------------------------------------------------------------------------------------------------
+  //custom toolBar con logica del pulsante "+ Aggiungi requisito"-------------------------------------------------------------------------------------------------------------------
   interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
     setRowModesModel: (
@@ -26,16 +27,17 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
     ) => void;
   }
   
-  //componente della toolbar che gestisce la logica del click "aggiungi requisito"
+  //componente personalizzato toolbar che gestisce la logica del click "aggiungi requisito"
   function EditToolbar(props: EditToolbarProps) {
     const { setRows, setRowModesModel } = props;
     //funzione click pulsante aggiungi requisito
     //si occupa di aggiungere una riga vuota alle rows, non del salvataggio della row in DB
     const handleClick = () => {
-      //booleano che controlla se qualsiasi riga è in editMode
-      const isAnyRowInEdit = Object.values(rowModesModel).some((row) => row.mode === GridRowModes.Edit);
+      //booleani che controllano la logica di aggiuntaa di una nuova Row
+      
+      const isAnyNewRowInEditing = rows.some((row)=> row.fi_ee_req_id === 'newRow')
       //se si, non faccio nulla evitando la creazione di altre righe (comportamento scelto)
-      if (isAnyRowInEdit) return 
+      if ( isAnyNewRowInEditing) return 
       //creo id provvisorio (per evitare errori da DataGridMUI in quanto ogni riga vuole il suo id)
       const id = 'newRow';
       //aggiunga la riga vergine in cima all' array di righe
@@ -54,16 +56,15 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
       </GridToolbarContainer>
     );
   }
-  //----------------------------------------------------------------------------------------------------------------------------------
   
   //Funzioni per pulsanti CRUD -----------------------------------------------------------------------------------------------------
-  //edit mode della row
+  //edit mode della row, cambia solo lo stato della row interessata da "view ad Edit"
   const handleEditClick = (id: GridRowId) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
   };
-  //cancella creazione nuova row
+
+  //cancella Modifica row
   const handleCancelClick = (id: GridRowId) => () => {
-    
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
@@ -78,14 +79,18 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
   //--------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------CREATE/UPDATE-------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------
+  //---ATTENZIONE---
   //Questa funzione è triggerata dalla dataGrid (grazie al prop parametro "processRowUpdate") quando la row passa da edit a view e NON viceversa, di fatto gestisce l'update in UI ed il salvataggio
   const handleRowSave = (rowToSave:RequisitoType_RequisitoTab) => {
-    console.log('row da creare o da modificare: ',rowToSave);
+    const previousRow: RequisitoType_RequisitoTab[] = rows.filter((row)=> row.fi_ee_req_id === rowToSave.fi_ee_req_id)
+    console.log('row prima della modifica: ', previousRow[0]);
+
     //oggetto Row che verrà introdotto al posto della row in ingresso (rowtoSave) con il parametro id modificato nel caso in cui sia una newRow
     let outputRow: RequisitoType_RequisitoTab | undefined = undefined;
     // se l'id è "newRow" vuoldire che la row da salvare va creata 
     if(rowToSave.fi_ee_req_id === 'newRow'){
       //CREATE
+      console.log('row da creare: ',rowToSave);
       const newId = uuidv4(); // probabilmente verrà da backend come risposta alla Execute(rowCreate)
       //assegno a newRow l' oggeto Row con un id aggiornato ed univoco (l'id proverrà dal backend probabilmente)
       outputRow = {
@@ -95,13 +100,18 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
         fi_ee_req_punteggio:rowToSave.fi_ee_req_punteggio
       };
       console.log('ROW CREATE => Row creata: ', outputRow)
-    }else{
+    }else{// ELSE => ROW UPDATE
+      console.log('row da modificare: ',rowToSave);
+      //se la row è solo da aggiornare, controllo se è stata effettivamente modificata, se si la salvo se no ignoro l'update.
+      const rowNeedUpdate:boolean = rowToSave.fs_ee_req_desc.trim() !== previousRow[0].fs_ee_req_desc.trim() || previousRow[0].fi_ee_req_punteggio !== rowToSave.fi_ee_req_punteggio;
+      if(!rowNeedUpdate){
+        //non eseguo il processo di salvataggio
+        console.log('La row non ha bisogno di aggiornamenti... non eseguo chiamata verso update al WS')
+        return outputRow = rowToSave
+      }
       outputRow = rowToSave;
       console.log('ROW UPDATE => Row aggiornata: ', outputRow)
     };
-    // ELSE => ROW UPDATE
-    
-
     //---------Logica di aggiornamento UI------------
     //da Aggiornare solo se esito CREATE/UPDATE
     //da rivedere questa logica in qunato l'id della nuova Row andrà aggiornato con risposta di id backend
@@ -138,7 +148,7 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
   };
   
 
-  //onChange del campo di input
+  //onChange del campo di input + validazione
   const preProcessRequisitoEditCellProps = async (params: GridPreProcessEditCellProps) => {
     
     const row:RequisitoType_RequisitoTab = params.row;
@@ -150,21 +160,24 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
     }
     return { ...params.props, error: isValid }
 
-    // const errorMessage = await validateTitle(params.props.value!.toString());
-    
-    // return { ...params.props, error: errorMessage };
   };
 
   // funzione che valida la cella della colonna "requisito" aggiunge l'id della row all'array di stringhe "rowsInError" se parametro descrizione è vuoto
   function validateRequisitoField (description: string, rowId:string){
     let result = false;
     const isRowAlradyInError = rowsInError.includes(rowId as string);
+    //validazione per descrizione requisito 
     if(description.trim() === ''){
       result = true;
+      //se è già in errore ritornoo true e basta
       if(isRowAlradyInError) return result;
-      //aggiungo l'id row all'array delle rows in errore
+      //se non è presente nell'array delle rows in errore la aggiungo.
       setRowsInError((prev)=> [...prev, rowId]);
-    }else if(isRowAlradyInError && result === false){
+    }
+      
+    // logica che gestisce la correzzione della row
+    const rowHasBeenCorrected:boolean = isRowAlradyInError && result === false;
+    if(rowHasBeenCorrected){
       setRowsInError((prev) => prev.filter((id) => id !== rowId));
     }
     return result;
@@ -196,25 +209,6 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
         </Select>
     );
   }
-
-  // function CustomInputCell_text (props: GridRenderEditCellParams, key:any){
-  //   const { id, api, field, value} = props;
-  //   const handleChange = (event: any) => {
-  //     const newValue = event.target.value as string;
-  //     api.setEditCellValue({ id, field, value: newValue });
-  //   };
-
-  //   return(
-  //       <Custom_TextField
-  //         sx={{paddingLeft:'.5rem', marginTop:'-1.5rem', fontSize:'14px'}}
-  //         key={key}
-  //         fullWidth
-  //         placeholder='Aggiungi titolo Requisito'
-  //         onChange={handleChange}
-  //         value={value}
-  //       />
-  //   )
-  // }
 
 
   //impostazione delle colonne DataGrid MUI
@@ -269,7 +263,7 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
         }
         if (isInEditMode) {
           return [   
-            <ActionButton key={rowId} sx={{marginRight:'5px'}} icon='save' disabled={rowError} color='primary' onClick={()=>switchRowMode(rowId)} />,
+            <ActionButton  key={rowId} sx={{marginRight:'5px'}} icon='save' disabled={rowError} color='primary' onClick={()=>switchRowMode(rowId)} />,
             <ActionButton key={`${rowId}-1`} icon='cancel'color='error' onClick={handleCancelClick(rowId)} />,
           ];
         }
