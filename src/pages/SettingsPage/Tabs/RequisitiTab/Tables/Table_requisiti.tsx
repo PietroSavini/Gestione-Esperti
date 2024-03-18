@@ -75,16 +75,15 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
       setRows(rows?.filter((row) => row.fi_ee_req_id !== id));
     }
   };
-  //-------------------------------------------||--------CRUD-------||--------------------------------------------------------------
-  //--------------------------------------------------------------------------------------------------------------------------------
-  //------------------------------------------------CREATE/UPDATE-------------------------------------------------------------------
-  //--------------------------------------------------------------------------------------------------------------------------------
+  //----------------------------------------||--------LOGICA BOTTONI-------||--------------------------------------------------------------
+  //---------------------------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------CREATE/UPDATE--------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------------------------------------------------------------
   //---ATTENZIONE---
-  //Questa funzione è triggerata dalla dataGrid (grazie al prop parametro "processRowUpdate") quando la row passa da edit a view e NON viceversa, di fatto gestisce l'update in UI ed il salvataggio
+  //Questa funzione è triggerata dalla dataGrid (grazie al parametro "processRowUpdate") quando la row passa da edit a view (e NON viceversa), di fatto gestisce l'update in UI ed il salvataggio sul WS
   const handleRowSave = (rowToSave:RequisitoType_RequisitoTab) => {
     const previousRow: RequisitoType_RequisitoTab[] = rows.filter((row)=> row.fi_ee_req_id === rowToSave.fi_ee_req_id)
     console.log('row prima della modifica: ', previousRow[0]);
-
     //oggetto Row che verrà introdotto al posto della row in ingresso (rowtoSave) con il parametro id modificato nel caso in cui sia una newRow
     let outputRow: RequisitoType_RequisitoTab | undefined = undefined;
     // se l'id è "newRow" vuoldire che la row da salvare va creata 
@@ -115,7 +114,7 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
     //---------Logica di aggiornamento UI------------
     //da Aggiornare solo se esito CREATE/UPDATE
     //da rivedere questa logica in qunato l'id della nuova Row andrà aggiornato con risposta di id backend
-     //sostituisce la vecchia Row cercandola per id con la Row che esce da questa funzione (se la trova, se no lascia la vecchia row)
+    //sostituisce la vecchia Row cercandola per id con la Row che esce da questa funzione (se la trova, se no lascia la vecchia row)
     setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === rowToSave.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
     return outputRow;
   };
@@ -134,6 +133,8 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
   //standard di MUI
   
   const switchRowMode = (id: GridRowId) => {
+    //controllo in cui un utente malintenzionato sorpassa il disabled del bottone 
+    if(rowsInError.some((rowId) => id === rowId)) return;
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
@@ -146,7 +147,6 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
-  
 
   //onChange del campo di input + validazione
   const preProcessRequisitoEditCellProps = async (params: GridPreProcessEditCellProps) => {
@@ -164,18 +164,26 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}) {
 
   // funzione che valida la cella della colonna "requisito" aggiunge l'id della row all'array di stringhe "rowsInError" se parametro descrizione è vuoto
   function validateRequisitoField (description: string, rowId:string){
+    
     let result = false;
     const isRowAlradyInError = rowsInError.includes(rowId as string);
-    //validazione per descrizione requisito 
+    //validazione campo descrizione requisito 
     if(description.trim() === ''){
       result = true;
-      //se è già in errore ritornoo true e basta
+      //se è già in errore ritorno true e basta
       if(isRowAlradyInError) return result;
       //se non è presente nell'array delle rows in errore la aggiungo.
       setRowsInError((prev)=> [...prev, rowId]);
     }
-      
-    // logica che gestisce la correzzione della row
+    //validazione per non inserire doppioni tra i sottorequisiti
+    if(rows.some((row)=> description.trim().toLowerCase() === row.fs_ee_req_desc.toLowerCase())){
+      result = true
+      //se è già in errore ritorno true e basta
+      if(isRowAlradyInError) return result;
+      //se non è presente nell'array delle rows in errore la aggiungo.
+      setRowsInError((prev)=> [...prev, rowId]);
+    }
+    // logica che gestisce la correzzione della row;
     const rowHasBeenCorrected:boolean = isRowAlradyInError && result === false;
     if(rowHasBeenCorrected){
       setRowsInError((prev) => prev.filter((id) => id !== rowId));
