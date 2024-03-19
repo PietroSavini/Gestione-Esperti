@@ -7,7 +7,7 @@ class AXIOS_HTTP {
         //genero il nuovo JSON
         const newJson = this.generateJSON(sService, sModule, body);
         //faccio la chiamata al WebService con il nuovo body
-        const result = await AxiosHTTP({url:url, body:newJson});
+        const result = await AxiosHTTP({url:url, body:newJson, encode:false});
         console.log('Risposta dal server: ',result)
         return result;
     };

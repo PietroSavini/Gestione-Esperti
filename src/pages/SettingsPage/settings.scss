@@ -77,6 +77,16 @@
     border-top-left-radius: 10px;
     border-bottom: none;
     margin-bottom: -20px;
+    .req-master-actions{
+        padding-left: 1rem;
+        transition: 100ms;
+        opacity:0
+    }
+    &:hover{
+        .req-master-actions{
+            opacity:1
+        }
+    }
 
 }
 

@@ -6,7 +6,7 @@ import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 
 export type Requisito_Table = {
     fi_ee_req_id: number;
-    descrizione_breve: string;
+    fs_ee_req_desc: string;
     requisiti_list: RequisitoType_RequisitoTab[] | []
 }
 
@@ -19,12 +19,12 @@ export type RequisitoType_RequisitoTab = {
 
 
 //simulazione dati in ingresso
-const data:Requisito_Table[] = [
+const staticData:Requisito_Table[] = [
     //Ogni ogetto è un Requisito Master
     {
         
         fi_ee_req_id: 1,
-        descrizione_breve:'Titolo Di Studio',
+        fs_ee_req_desc:'Titolo Di Studio',
         //array di ogetti sottorequisito del req master
         requisiti_list:[ 
             //ogni Ogetto è un sottorequisito
@@ -65,7 +65,7 @@ export const RequisitiTab = () => {
     }, [])
 
     //genero la variabile di stato 'tables', mi servirà per pushare eventuali table create dal pulsante 'Aggiungi Nuova Sezione'. la variabile è inizializzata con i dati in ingresso.
-    const [tables , setTables] = useState<Requisito_Table[]| []>(data);
+    const [tables , setTables] = useState<Requisito_Table[] | []>(staticData);
 
     const GET_ALL_REQQUISITI = () => {
         AXIOS_HTTP.Retrieve({url:'/api/Retrieve/retrieve', body:null, sService:'READ_REQUISITI', sModule:'GET_ALL_REQUISITI'})
@@ -75,8 +75,14 @@ export const RequisitiTab = () => {
         const newMasterReq = {
             descrizione: title,
         };
-        const createRequisito = await AXIOS_HTTP.Execute({sService:'WRITE_REQUISITO', sModule:'INSERT_REQUISITO', body:newMasterReq, url:'/api/Execute/execute'})
 
+        const request = await AXIOS_HTTP.Execute({sService:'WRITE_REQUISITI', sModule:'INSERT_REQUISITO', body:newMasterReq, url:'/api/launch/execute'})
+        if(request.errorCode === 1){
+            return
+        }
+        const newRequisitoMaster = request;
+        setTables((prev) => [...prev, newRequisitoMaster])
+ 
 
     //    const newTable: Table ={
     //      id:`table-${title}`,

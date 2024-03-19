@@ -46,7 +46,7 @@ export const AxiosHTTP = (options: Options) => {
         isAxiosJsonResponse:true,
         isResponseEncoded:true,
         contentType:'application/json; charset=UTF-8',
-        responseType:'text',
+        responseType:'json',
     };  
 
     //merging dei parametri di base con quelli passati alla funzione AxiosHTTP
