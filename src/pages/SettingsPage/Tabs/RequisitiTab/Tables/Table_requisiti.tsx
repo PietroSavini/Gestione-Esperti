@@ -77,6 +77,9 @@ export default function Requisiti_table ({data}:{data:Requisito_Table}){
 
   //cancella Modifica row
   const handleCancelClick = (id: GridRowId) => () => {
+    if(rowsInError.includes(id as string)){
+      setRowsInError((prev)=> prev.filter((idError)=> idError !== id))
+    }
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
