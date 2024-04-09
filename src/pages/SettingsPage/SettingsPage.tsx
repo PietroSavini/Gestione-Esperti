@@ -6,13 +6,6 @@ import { RequisitiTab } from './Tabs/RequisitiTab/RequisitiTab'
 
 export const SettingsPage = () => {
     useEffect(() => {
-      //la simulazione dei dati in ingresso si trova su: tipologieSlice.ts nello store redux, nel progetto reale la settingsPage chiamerà il DB ad ogni rendering per aggiornare i dati e di conseguenza lo store.
-     
-      // faccio chiamata per il fetching dei dati,
-      // salvo i dati nello state di redux
-
-      //dati TipologieEsperto
-      //dati requisiti
       
     }, [])
 

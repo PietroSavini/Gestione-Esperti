@@ -1,20 +1,24 @@
 import { useState } from "react"
 import { ActionButton } from "./ActionButton"
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material"
+import { TipologiaEspertoRow } from "../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/Tables/Table_tipologieDiSistema";
 
 
 
-export const DeleteButtonWithDialog = ({row ,successFn, message} : {row:any, successFn:Function, message?: string}) => {
-    let innerText : string = "Cliccando su Si cancellerai definitivamente lelemento dalla lista.";
+export const DeleteButtonWithDialog = ({row ,successFn, message} : {row:TipologiaEspertoRow, successFn: any, message?: string}) => {
+    let innerText : string = "Cliccando su Si cancellerai definitivamente l'elemento dalla lista.";
     const [ open, setOpen ] = useState<boolean>(false);
-    const { title, id } = row 
-    const handleSuccess = (id:string | number) => {
+    const title = row.TEspBr
+    const id = row.TEspId 
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleDelete = () => {
         successFn(id);
-    }
-
-  
-
-    
+        setOpen(false);
+    };
 
     return (
         <>
@@ -22,7 +26,7 @@ export const DeleteButtonWithDialog = ({row ,successFn, message} : {row:any, suc
             <Dialog
                 open={open} 
                 keepMounted
-                onClose={handleSuccess}
+                onClose={handleClose}
                 aria-describedby="alert-dialog-slide-description"
                 
             >
@@ -34,7 +38,7 @@ export const DeleteButtonWithDialog = ({row ,successFn, message} : {row:any, suc
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={()=> setOpen(false)}>Annulla</Button>
-                    <Button onClick={()=>handleSuccess(id)}>Si</Button>
+                    <Button onClick={ handleDelete }>Si</Button>
                 </DialogActions>
             </Dialog>
         </>

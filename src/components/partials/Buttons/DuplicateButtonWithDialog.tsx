@@ -1,17 +1,18 @@
 import { useRef, useState } from "react"
 import { ActionButton } from "./ActionButton"
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField } from "@mui/material"
-import { Row } from "../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/Tables/Table_tipologieDiSistema"
+
 import { useForm } from "react-hook-form"
+import { TipologiaEspertoRow } from "../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/Tables/Table_tipologieDiSistema"
 
 
-export const DuplicateButtonWithDialog = ({row ,successFn} : {row:Row, successFn:Function}) => {
+export const DuplicateButtonWithDialog = ({row ,successFn} : {row:TipologiaEspertoRow, successFn:any}) => {
         
-    const { title, description } = row as Row;
+    const { TEspBr, TEspDesc } = row ;
     const [ open, setOpen ] = useState<boolean>(false);
-    const newTitleString = `${title} (Copia)`;
+    const newTitleString = `${TEspBr}-(Copia)`;
     const [newTitle, setNewTitle] = useState<string>(newTitleString)
-    const [newDescription, setNewDescription] = useState<string>(description)
+    const [newDescription, setNewDescription] = useState<string>(TEspDesc)
     
     //react-hook-form
     const form = useForm<any>();
@@ -35,7 +36,7 @@ export const DuplicateButtonWithDialog = ({row ,successFn} : {row:Row, successFn
                 aria-describedby="alert-dialog-slide-description"
                 
             >
-                <DialogTitle>{`Vuoi duplicare il modello: "${title}"?` }</DialogTitle>
+                <DialogTitle>{`Vuoi duplicare il modello: "${TEspBr}"?` }</DialogTitle>
                 <form ref={ref} onSubmit={handleSubmit(submit)} noValidate>
                     <DialogContent>
                         <DialogContentText sx={{marginBottom:'1rem'}} id="alert-dialog-slide-description">

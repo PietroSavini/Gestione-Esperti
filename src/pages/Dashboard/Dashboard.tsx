@@ -1,26 +1,24 @@
-import { Box, Grid, Paper, Typography } from '@mui/material'
+import { Box, Grid } from '@mui/material'
 import './Dashboard.scss'
 import { useAppDispatch } from '../../app/ReduxTSHooks'
-import { openLoader } from '../../app/store/Slices/loaderSlice';
 import { useEffect } from 'react';
 import { Widget } from '../../components/Widget/Widget';
 import { DashboardSection } from '../../components/DashboardSection/DashboardSection';
-import { RowBando } from '../../components/SectionRows/Bandi/RowBando';
 import { data, otherData } from '../../components/SectionRows/data';
+import { openLoader, closeLoader } from '../../app/store/Slices/loaderSlice';
+import AXIOS_HTTP from '../../app/AXIOS_ENGINE/AXIOS_HTTP';
+import { Requisito_Table, convertData } from '../SettingsPage/Tabs/RequisitiTab/RequisitiTab';
+
+
 
 export const Dashboard = () => {
-    const dispatch = useAppDispatch();
-
+  
+  const dispatch = useAppDispatch();
+  
+  
+   
     useEffect(() => {
-      //controllo se i dati che devo fetchare non sono nello state
-      //se ci sono non faccio nulla
-
-      //se non ci sono =>
-      //apro il loader
-      //fetching dei dati per sidebar e dati per componente dashboard
-      //salvo i dati nello state Di redux 
-      //chiudo il loader
-
+      //fetching dei dati che servono allo stato dell applicazione
     }, [])
     
   

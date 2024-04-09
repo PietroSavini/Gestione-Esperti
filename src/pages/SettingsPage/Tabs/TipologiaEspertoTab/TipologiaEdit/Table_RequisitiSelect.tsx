@@ -2,32 +2,66 @@ import { Box, Icon, IconButton,  MenuItem, Select, SelectChangeEvent, Tooltip, T
 import { DataGrid,   GridColDef,  GridEditInputCell,  GridEventListener, GridPreProcessEditCellProps, GridRenderEditCellParams, GridRowEditStopReasons, GridRowId,  GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer, GridTreeNodeWithRender, useGridApiContext  } from '@mui/x-data-grid';
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
-import { RequisitoType_RequisitoTab, Requisito_Table } from '../RequisitiTab';
 import { useEffect, useState } from 'react';
-
-import './Table_requisiti.scss';
 import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
+import { RequisitoType_RequisitoTab, Requisito_Table } from '../../RequisitiTab/RequisitiTab';
+import '../../RequisitiTab/Tables/Table_requisiti.scss';
+import { InboundSelectData } from './TipologiaEdit';
 
 type Error = { 
   id:string | number;
   errorMessage: string | null;
 }
+
+type SelectOption = {
+  value:string,
+  label: string,
+  id: string | number
+}
+
 //dataTable -------------------------------------------------------------------------------------------------------------------------
-export default function Requisiti_table ({data, setData}:{data:Requisito_Table, setData:React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>}){
+export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Requisito_Table, setData:React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>, tespId: string | number}){
   const requisiti = data.requisiti_list;
   
   // variabili del requisito master
   const masterRequisitoTitle = data.fs_ee_req_desc;
   const masterRequisitoId = data.fi_ee_req_id;
+  const masterPunteggio = data.fi_ee_punt_id;
+  
   // variabili di stato per la tabella
   const [rows, setRows] = useState<RequisitoType_RequisitoTab[]>(requisiti);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rowsInError, setRowsInError] = useState<Error[] | []>([]);
   const [newRowValue, setNewRowValue] = useState<string>('')
+  const [selectValues, setSelectValues] = useState<SelectOption[] | []>([])
+  //appena renderizza la table esegue la chiamata per popolare i campi della select
   useEffect(() => {
+    GET_SELECTABLE_ITEMS()
     console.log(rows)
-  }, [rows])
+  }, [])
+
+  async function GET_SELECTABLE_ITEMS () {
+    await AXIOS_HTTP.Retrieve({body:{masterId:masterRequisitoId}, url:'/api/launch/retrieve', sModule:'IMPOSTAZIONI_GET_SOTTOREQUISITI', sService:'READ_REQUISITI'})
+      .then((resp)=> {
+        console.log('SOTTOREQUISITI DEL MASTER',masterRequisitoTitle, ':',resp)
+        const rawArr: InboundSelectData = resp.response;
+        const outputArr:any= []
+        rawArr.forEach(element => {
+          const newObject = {
+            value: element.fs_ee_req_desc,
+            label: element.fs_ee_req_desc,
+            id: element.fi_ee_req_id
+          }
+          outputArr.push(newObject)
+        });
+
+        setSelectValues(outputArr)
+
+      })
+      .catch(err => console.log(err))
+  }
+  
   
   //custom toolBar con logica del pulsante "+ Aggiungi requisito"-------------------------------------------------------------------------------------------------------------------
   interface EditToolbarProps {
@@ -60,17 +94,17 @@ export default function Requisiti_table ({data, setData}:{data:Requisito_Table, 
       
     };
 
-    const deleteMasterReq = (masterId: string | number) => {
-      AXIOS_HTTP.Execute({sService:'WRITE_REQUISITI', sModule:'IMPOSTAZIONI_DELETE_REQUISITO', body:{id:masterId}, url:'/api/launch/execute'})
+    const deleteMasterPunteggio = (masterId: string | number, punteggioId: number | undefined) => {
+      AXIOS_HTTP.Execute({sService:'WRITE_PUNTEGGI', sModule:'IMPOSTAZIONI_DELETE_PUNTEGGIO', body:{puntId:punteggioId}, url:'/api/launch/execute'})
         .then((response)=>{
           if(response.errorCode !==  0){
-            console.log('errore durante la cancellazione del requisito master',masterRequisitoId,':',response);
+            console.error(response);
             return
           };
-          console.log('requisito Master Cancellato con successo')
+          console.log('PUNTEGGIO Cancellato con successo')
           setData((prevData) => prevData.filter((data)=> data.fi_ee_req_id !== masterId))
         })
-        .catch((err)=> console.log('errore durante la cancellazione del requisito master', masterRequisitoId,':',err))
+        .catch((err)=> console.log('errore durante la cancellazione del PUNTEGGIO', masterRequisitoId,':',err))
     }
   
     return (
@@ -79,7 +113,7 @@ export default function Requisiti_table ({data, setData}:{data:Requisito_Table, 
           <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{masterRequisitoTitle}</Typography>
           <Box className='req-master-actions'>
             <IconButton><Icon sx={{fontSize:'20px'}} color='warning'>edit</Icon></IconButton>
-            <IconButton onClick={()=> deleteMasterReq(masterRequisitoId)}><Icon color='error' sx={{fontSize:'20px'}}>delete</Icon></IconButton>
+            <IconButton onClick={()=> deleteMasterPunteggio(masterRequisitoId, masterPunteggio)}><Icon color='error' sx={{fontSize:'20px'}}>delete</Icon></IconButton>
           </Box>
         </Box>
         <Box display={'flex'} justifyContent={'flex-end'} flexGrow={1} >
@@ -120,96 +154,67 @@ export default function Requisiti_table ({data, setData}:{data:Requisito_Table, 
   const handleRowSave = async ( oldRow:RequisitoType_RequisitoTab ,newRow:RequisitoType_RequisitoTab) => {
     
     console.log('handleRowSave')
+    console.log('VECCHIA ROW: ', oldRow)
     setIsLoading(true)
-    const previousRow: RequisitoType_RequisitoTab = oldRow
     let outputRow = {};
-    if(newRow.fi_ee_req_id === 'newRow'){
-      //CREATE
-      
-     await AXIOS_HTTP.Execute({sService:'WRITE_REQUISITI', sModule:'IMPOSTAZIONI_INSERT_REQUISITO', body:{masterId:masterRequisitoId, descrizione:newRow.fs_ee_req_desc}, url:'/api/launch/execute'})
-        .then((response)=>{
-          if(response.errorCode && response.errorCode !== 1){
-            console.log('errore durante l inserimento del requisito: ',response.errorMessage)
-            setIsLoading(false)
-            setRows(prevRows => prevRows.filter((row)=> row.fi_ee_req_id !== oldRow.fi_ee_req_id));
-            return undefined
-          }
-          const newId = response.response.fi_ee_req_id;
-          outputRow = {
-            fi_ee_req_id: newId, 
-            fs_ee_req_desc: newRow.fs_ee_req_desc, 
-            fi_ee_req_customerid: newRow.fi_ee_req_customerid, 
-            fi_ee_req_punteggio: newRow.fi_ee_req_punteggio
-          };
-         
-          setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
-          console.log('ROW CREATE => Row creata: ', outputRow);
-          setIsLoading(false)
-       
-        })
-        .catch((error)=> { 
-          outputRow = oldRow
-          console.log(error)
-          setIsLoading(false)
-        })
-      //assegno a newRow l' oggeto Row con un id aggiornato ed univoco (l'id proverrà dal backend probabilmente)
-    }else{// ELSE => ROW UPDATE
-      console.log('row da modificare: ',previousRow);
-      //se la row è solo da aggiornare, controllo se è stata effettivamente modificata, se si la salvo se no ignoro l'update.
-      const rowNeedUpdate:boolean = newRow.fs_ee_req_desc.trim() !== previousRow.fs_ee_req_desc.trim() || previousRow.fi_ee_req_punteggio !== newRow.fi_ee_req_punteggio;
-      if(!rowNeedUpdate){
-        //non eseguo il processo di salvataggio
-        console.log('La row non ha bisogno di aggiornamenti... non eseguo chiamata verso update al WS');
-        outputRow = oldRow;
-        setIsLoading(false)
-        return outputRow
-      };
+    const reqId = selectValues.find((req) => newRow.fs_ee_req_desc === req.label)!.id;
+    const punteggio = newRow.fi_ee_req_punteggio;
 
-      await AXIOS_HTTP.Execute({sService:'WRITE_REQUISITI', sModule:'IMPOSTAZIONI_UPDATE_REQUISITO', body:{id:newRow.fi_ee_req_id, descrizione:newRow.fs_ee_req_desc}, url:'/api/launch/execute'})
-        .then((response) => {
-
+     //INSERT PUNTEGGIO
+    if(oldRow.fi_ee_req_id === 'newRow'){
+      await AXIOS_HTTP.Execute({sService:'WRITE_PUNTEGGI', sModule:'IMPOSTAZIONI_INSERT_PUNTEGGIO', body:{tespId: tespId, reqId:reqId, punt:punteggio}, url:'/api/launch/execute'})
+        .then((resp) => {
+          console.log('CREAZIONE PUNTEGGIO')
+          const newPuntId = resp.response.fi_ee_punt_id;
           outputRow = {
-            fi_ee_req_id: newRow.fi_ee_req_id, 
-            fs_ee_req_desc: response.response.fs_ee_req_desc, 
-            fi_ee_req_customerid: newRow.fi_ee_req_customerid, 
+            fi_ee_req_id: reqId,
+            fs_ee_req_desc: newRow.fs_ee_req_desc,
+            fi_ee_punt_id: newPuntId, 
             fi_ee_req_punteggio: newRow.fi_ee_req_punteggio
-          };
-          console.log('ROW UPDATE => Row aggiornata: ', outputRow);
-  
+          } 
+          
+          
         })
-        .catch((error) => {
-          console.log('errore nell update del requisito', error)
+     //UPDATE PUNTEGGIO
+    }else { 
+      const puntId = newRow.fi_ee_punt_id;
+      await AXIOS_HTTP.Execute({sService:'WRITE_PUNTEGGI', sModule:'IMPOSTAZIONI_UPDATE_PUNTEGGIO', body:{tespId: tespId, reqId:reqId, punt:punteggio, puntId:puntId}, url:'/api/launch/execute'})
+        .then((resp) => {
+            console.log('UPDATE DEL PUNTEGGIO')
+            console.log(resp)
+            outputRow = {
+              fi_ee_req_id: reqId,
+              fs_ee_req_desc: newRow.fs_ee_req_desc,
+              fi_ee_punt_id: puntId, 
+              fi_ee_req_punteggio: newRow.fi_ee_req_punteggio
+            } 
         })
-    };
-    setIsLoading(false)
+        .catch((err) => console.log(err))
+    }
+
+    //asseggna nuovo punteggio alla tipologia
+   
+    setIsLoading(false);
+    console.log('OUTPUTROW: ', outputRow);
     setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
     return outputRow
-    
-    //---------Logica di aggiornamento UI------------
-    //da Aggiornare solo se esito CREATE/UPDATE positivo
-    
-    //sostituisce la -row precedente con la nuova, (se la trova, se no lascia la vecchia row)
-   
-   
   };
   
   //--------------------------------------------------------------------------------------------------------------------------------
-  //----------------------------------------------------DELETE----------------------------------------------------------------------
+  //----------------------------------------------------DELETE PUNTEGGIO------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------
-  const handleDeleteClick = (id: GridRowId) => () => {
+  const handleDeletePunteggio = (id: GridRowId, puntId: number | undefined) => () => {
     console.log('handleDeleteCLick')
-    AXIOS_HTTP.Execute({sService:'WRITE_REQUISITI', sModule:'IMPOSTAZIONI_DELETE_REQUISITO', body:{id:id}, url:'/api/launch/execute'})
+    AXIOS_HTTP.Execute({sService:'WRITE_PUNTEGGI', sModule:'IMPOSTAZIONI_DELETE_PUNTEGGIO', body:{puntId:puntId}, url:'/api/launch/execute'})
       .then((response)=>{
-        console.log(id,'requisito cancellato')
+        console.log(id,'PUNTEGGIO del sottorequisito cancellato')
         setRows(rows?.filter((row) => row.fi_ee_req_id !== id));
 
       })
       .catch((error) => {
-        console.log('errore nella cancellazione del requisito', error)
+        console.log('errore nella cancellazione del PUNTEGGIO del sottorequisito', error)
       })
 
-    //chiamata ed attesa risposta server
-    //in realtà sarebbe da richiamare il server con la lista agiornata e rifare il display
   };
   //-----------------------------------------------------------------------------------------------------------------------------------
   //funzioni per gestire comportamenti delle rows
@@ -218,7 +223,6 @@ export default function Requisiti_table ({data, setData}:{data:Requisito_Table, 
     console.log('switchRowMode')
     //controllo in cui un utente malintenzionato sorpassa il disabled del bottone 
     if(rowsInError.some((rowInError) => rowInError.id === id)) return;
-    //faccio chiamata a DB
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View }});
   };
 
@@ -283,7 +287,7 @@ export default function Requisiti_table ({data, setData}:{data:Requisito_Table, 
   // funzione che valida la cella della colonna "requisito" aggiunge l'id della row all'array di stringhe "rowsInError" in base alla logica di validazione
   function isRequisitoFieldValid (description: string, rowId:string){
     let result = false;
-    const isRowAlradyInError = rowsInError.some((rowInError)=> rowInError.id === rowId);
+    const isRowAlradyInError = rowsInError.some((rowInError) => rowInError.id === rowId);
     //validazione campo descrizione requisito 
     if(description.trim() === ''){
       console.log(rowId, 'in errore perchè descrizione vuota')
@@ -317,9 +321,9 @@ export default function Requisiti_table ({data, setData}:{data:Requisito_Table, 
   }
   // campi di input------------------------------------------------------------------------------------------------------------
   //componente select che prende nome requisito all interno della sezione requisitio (es. titolo di studio: requisiti[])
-  function requisitoSelectEditCell(props: GridRenderEditCellParams, key:any) {
+  function RequisitoSelectEditCell({props, key}:{props: GridRenderEditCellParams, key:any }) {
     const { id, value, api, field } = props;
-
+    const options = selectValues
     const handleChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value as string;
         api.setEditCellValue({ id, field, value: newValue });
@@ -332,13 +336,10 @@ export default function Requisiti_table ({data, setData}:{data:Requisito_Table, 
           fullWidth
           value={value || ''}
           onChange={handleChange}
-          defaultValue='1'
-          
+          defaultValue={''}
         >
-            {/* Opzioni della select, da gestire con un map() su dati presi da db*/}
-            <MenuItem value="Laurea Vecchio ordinamento">Laurea Vecchio ordinamento</MenuItem>
-            <MenuItem value="2">Laurea Triennale</MenuItem>
-            <MenuItem value="3">Laurea specialistica</MenuItem>
+            {options && options.map((option) => <MenuItem value={option.value}>{option.label}</MenuItem>)}
+            
         </Select>
     );
   }
@@ -351,27 +352,6 @@ export default function Requisiti_table ({data, setData}:{data:Requisito_Table, 
       color: theme.palette.error.contrastText,
     },
   }));
-
- 
-  //componente custom per la cella in editMode con input text
-  function CustomEditCell(props: GridRenderEditCellParams) {
-    const { error, id } = props;
-    
-    let errorMessage: any = null;
-    if(error){
-      const rowInError = rowsInError.find((row) => row.id === id);
-      errorMessage = rowInError ? rowInError.errorMessage : null
-    } 
-
-    return(
-      <StyledTooltip open={!!error} title={errorMessage}>
-        <Box width={'100%'}>
-          <GridEditInputCell {...props} />
-        </Box>
-      </StyledTooltip>
-    )
-  }
-
 
   // componente che renderizza la cella delle Aczioni sulla colonna azioni
   function RenderActionsCell (params:GridRenderEditCellParams<any, any, any, GridTreeNodeWithRender>){
@@ -403,7 +383,7 @@ export default function Requisiti_table ({data, setData}:{data:Requisito_Table, 
     };
     return [
       <ActionButton key={rowId} sx={{marginRight:'5px'}} icon='edit'  color='warning' onClick={handleEditClick(rowId)}/>,
-      <ActionButton key={`${rowId}-1`} icon='delete'  onClick={handleDeleteClick(rowId)} color='error'/>,
+      <ActionButton key={`${rowId}-1`} icon='delete'  onClick={handleDeletePunteggio(rowId, row.fi_ee_punt_id)} color='error'/>,
     ];
   }
 
@@ -413,31 +393,39 @@ export default function Requisiti_table ({data, setData}:{data:Requisito_Table, 
     //colonna descrizione requisito
     { 
       field: 'fs_ee_req_desc',
-      type:'text',
+      type:'select',
       flex:0.4, 
       minWidth:220, 
       headerName: 'requisito', 
       preProcessEditCellProps: preProcessRequisitoEditCellProps, 
       headerClassName:'customHeader', 
       editable:true,
-      renderEditCell:(params)=> <CustomEditCell {...params} />
-      
+      renderEditCell(params) {
+          return(
+            <RequisitoSelectEditCell props={params} key={params.id}/>
+          )
+      }
     },
-    //colonna sistema
+    //colonna Punteggio
     { 
-      field:'fi_ee_req_customerid', 
-      headerName: 'Sistema', 
+      field:'fi_ee_req_punteggio', 
+      headerName: 'Punteggio', 
       headerClassName:'customHeader', 
+      type:'number',
+      editable: true,
       minWidth:80, 
       flex:0.3, 
-      renderCell:(params:any)=>{
-        const sistema = params.value;
+      renderCell:  (params) => {
+        const row = params.row as RequisitoType_RequisitoTab;
+        const punteggio = row.fi_ee_req_punteggio;
+
         return(
           <>
-            {sistema !== 1 ? <>No</> : <>Si</> }
+            {punteggio}
           </>
         )
-      } 
+       
+      },
     },
 
     //colonna azioni

@@ -32,6 +32,7 @@ export type Option ={
     value: string;
     label: string;
     icon?: string;
+    id?: string | number
     children?: Option[] | [];
 }
 

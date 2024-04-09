@@ -128,7 +128,7 @@ export const AxiosHTTP = (options: Options) => {
             finalResult = decodedResult
         }
         //esporto risultato finale
-        console.log('result: ',finalResult)
+        console.log('AXIOSHTTP: ',finalResult)
         return finalResult;
     };
 
@@ -159,7 +159,7 @@ function processResponse (isAxiosJsonResponse:boolean | undefined, queryResult:a
                 console.error('AXIOS WEB SERVICE ERROR: ',axiosResult.errorMessage);
                 return axiosResult;
             }
-            return axiosResult.response
+            return axiosResult
         }else{
             console.error('AXIOS_HTTP ERROR: ', queryResult.error)
             return queryResult.error

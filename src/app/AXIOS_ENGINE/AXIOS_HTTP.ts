@@ -3,21 +3,21 @@ import { AxiosHTTP } from "./AxiosHTTP";
 class AXIOS_HTTP {
     // le funzioni non sono async in quanto l'asincronicità è gestita dalla funzione AxiosHTTP() che è il cuore del sistema chiamate
 
-    public static async Execute ({url, body, sModule, sService}:{url:string, sModule:string, sService:string, body:any}){
+    public static async Execute ({url, body, sModule, sService}:{url:'/api/launch/execute', sModule:string, sService:string, body:any}){
         //genero il nuovo JSON
         const newJson = this.generateJSON(sService, sModule, body);
         //faccio la chiamata al WebService con il nuovo body
         const result = await AxiosHTTP({url:url, body:newJson, encode:false});
-        console.log('Risposta dal server: ',result)
+  
         return result;
     };
 
-    public static async Retrieve({url, body, sModule, sService}:{url:string, sModule:string, sService:string, body:any}){
+    public static async Retrieve({url, body, sModule, sService}:{url:'/api/launch/retrieve', sModule:string, sService:string, body:any}){
         //genero il nuovo JSON
         const newJson = this.generateJSON(sService, sModule, body);
         //faccio la chiamata al WebService con il nuovo body
-        const result = await AxiosHTTP({url:url, body:newJson});
-        console.log('Risposta dal server: ',result)
+        const result = await AxiosHTTP({url:url, body:newJson, encode:false});
+
         return result;
     };
     

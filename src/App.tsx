@@ -17,6 +17,7 @@ import { TipologiaEdit } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/Tip
 import {theme} from './ms_theme'
 import { BandiPage } from './pages/Bandi/BandiPage';
 import { Login } from './pages/LoginPage/Login';
+import { TipologiaShow } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaShow/TipologiaShow';
 
 function App() {  
   // tema personalizzato per 
@@ -65,6 +66,7 @@ function App() {
                       <Route index path='/Dashboard' element={<Dashboard />}/>
                       <Route path='/impostazioni' element={<SettingsPage />}/>
                       <Route path='/impostazioni/modifica-tipologia' element={<TipologiaEdit/>}  />
+                      <Route path='/impostazioni/visualizza-tipologia' element={<TipologiaShow/>}/>
                       <Route path='/Bandi' element={<BandiPage/>}/>
                       {/* Catch All */}
                       <Route path='*' element={<NotFound/>} /> 

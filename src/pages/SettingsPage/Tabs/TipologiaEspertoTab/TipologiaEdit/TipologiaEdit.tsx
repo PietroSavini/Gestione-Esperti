@@ -1,70 +1,146 @@
-import { Box, FormHelperText, Grid, Icon, InputBase, Typography } from '@mui/material'
+import { Box, Dialog, FormHelperText, Grid, Icon, InputBase, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { selectTipologie } from '../../../../../app/store/Slices/TipologieSlice';
-import { useAppSelector } from '../../../../../app/ReduxTSHooks';
-import { useForm } from 'react-hook-form';
-import { RequisitoTable } from '../Tables/Table_tipologieDiSistema';
-import Table_editTipologiaEsperto from '../Tables/Table_editTipologiaEsperto';
-import { AddSectionButtonWithDialog } from '../../../../../components/partials/Buttons/AddSectionButtonWithDialog';
 
+import { useAppDispatch, useAppSelector } from '../../../../../app/ReduxTSHooks';
+import { useForm } from 'react-hook-form';
+
+import { TipologiaEspertoRow } from '../Tables/Table_tipologieDiSistema';
+import { Requisito_Table } from '../../RequisitiTab/RequisitiTab';
+import Table_RequisitiSelect from './Table_RequisitiSelect';
+import { closeLoader, openLoader } from '../../../../../app/store/Slices/loaderSlice';
+import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
+import { convertData } from '../TipologiaShow/TipologiaShow';
+import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
+import { Custom_Select2 } from '../../../../../components/partials/Inputs/Custom_Select2';
+
+export type InboundSelectData = {
+    fi_ee_req_id: number;
+    fs_ee_req_desc:string;
+}[] | []
+
+type Options = {
+    value:string,
+    label:string,
+    id: string | number
+}
 
 export const TipologiaEdit = () => {
+
     const navigate = useNavigate()
+    const dispatch = useAppDispatch();
     const { state } = useLocation();
-    const { title, id, description, requisitiTables } = state
-    //prelevo tipologie personalizzate dallo state redux per effettuare controllo al refresh della pagina
-    const localState = useAppSelector(selectTipologie);
-    const { tipologiePersonalizzate } = localState;
+    const TEsp = state as TipologiaEspertoRow
+    console.log('tipologia esperto:',TEsp)
+    const id = TEsp.TEspId
+    const title = TEsp.TEspBr;
+    const description = TEsp.TEspDesc;
+    const [formattedData, setFormattedData] = useState<[] | Requisito_Table[]>([])
+    const [selectableItems, setSelectableItems ] = useState<Options[] | []>([])
     //variabili di stato per modifica descrizioni della tipologia da modificare
     const [ newTitle, setNewTitle ] = useState<string>(title)
     const [ newDescription, setNewDescription ] = useState<string>(description)
-    //elenco delle table da generare per ogni sezione contenuta all interno della tipologia esperto es: sezione titolo di studio (con i suoi requisiti etc..)
-    //ci serve anche per "aggiungi sezione"
-    const [tables, setTables] = useState<RequisitoTable>(requisitiTables)
-
     //react hook form
     const form = useForm<any>();
     const { register, handleSubmit, formState } = form;
     const { errors } = formState;
+    //variabili per modal 'aggiungi sezione'
+    const [selectedItem, setSelectedItem] = useState<any>()
+    const [isAddSectionOpen, openAddSectionDialog] = useState<boolean>(false)
+    const [error, setIsError] = useState<boolean>(false)
+    const [errorMessage, setErrorMessage] = useState<string>('')
 
-    //console.log(vari)
-    useEffect(() => {
-        console.log('quello che arriva alla pagina dopo il click modifica',state)
-        console.log('tabelle',tables)
-    }, [])
-    
-    useEffect(() => {
-        //codice sotto forse inutile, da constatare se va effettuata chiamata a DB per popolare pagina(probabilmente si)
-        //elemento di controllo nell ipotesi venga effettuato un refresh della pagina o se per qualche motivo la row non è presente nella tabella
-        if(!tipologiePersonalizzate.some((tipologia) => tipologia.id === id)){
-            navigate('/impostazioni')
+
+    //Funzioni
+    const addNewSection = async () => {
+        if(!selectedItem) {
+            console.log('form in errore')
+            setIsError(true)
+            setErrorMessage('Seleziona almeno un requisito da associare alla tipologia esperto')
+            return
         }
+        setIsError(false)
+        //faccio chiamata
+        await AXIOS_HTTP.Execute({sModule:'IMPOSTAZIONI_INSERT_PUNTEGGIO', sService:'WRITE_PUNTEGGI', url:'/api/launch/execute', body:{ tespId:id , reqId: selectedItem.id, punt:0}})
+            .then((resp) => {
+                console.log(resp);
+                if(resp.errorCode === 0){
+                    const puntId = resp.response.fi_ee_punt_id;
+                     
+                    const newSection: Requisito_Table = {
+                        fi_ee_req_id: selectedItem.id,
+                        fi_ee_punt_id: puntId,
+                        fs_ee_req_desc: selectedItem.value,
+                        requisiti_list: []
+                    }
+    
+                    setFormattedData((prev) => [...prev, newSection])
+                    setSelectedItem(undefined)
+                    openAddSectionDialog(false)
+                }else{
+                    const errorMessage = resp.errorMessage
+                    setIsError(true)
+                    setErrorMessage(errorMessage)
+                }
+            })
+            .catch((err) => console.log(err));
+
+
+        //id tipologia esperto - id requisito - punteggio 
+        //idTesp - idReq- punteggio
+    }   
+
+    //funzione che repara la listItem nella select ''aggiungi requisito
+    const GET_REQUISITI_FOR_SELECT = async () => {
+        await AXIOS_HTTP.Retrieve({sService:'READ_REQUISITI',sModule:'IMPOSTAZIONI_GET_REQUISITI_MASTER',body:{idTesp:id},url:'/api/launch/retrieve'})
+            .then((resp)=>{
+                const arrOfItems = resp.response as InboundSelectData;
+                let finalArray : Options[] = [];
+                arrOfItems.forEach(element => {
+                    const newFormat: Options = {
+                        value: element.fs_ee_req_desc,
+                        label: element.fs_ee_req_desc,
+                        id:element.fi_ee_req_id,
+                    }
+                    finalArray.push(newFormat);
+                });
+                setSelectableItems(finalArray)
+            })
+    }
+
+    // funzione che mostra i requisiti collegati dai punteggi alla tipologia
+    const GET_ALL_PUNTEGGI_COLLEGATI = async () => {
+        dispatch(openLoader())
+        await AXIOS_HTTP.Retrieve({ sModule:'IMPOSTAZIONI_GET_ALL_PUNTEGGI', sService:'READ_PUNTEGGI', url:'/api/launch/retrieve', body:{idTesp:id} })
+            .then((resp)=> {
+                console.log('REQUISITI COLLEGATI ALLA TIPOLOGIA ESPERTO: : ',resp)
+                setFormattedData(convertData(resp.response, 1))
+                dispatch(closeLoader())
+            })
+            .catch((err)=>{
+                console.error(err)
+                dispatch(closeLoader())
+            })
+    }
+
+    //chiamate iniziali al rendering della pagina
+    useEffect(() => {
+        GET_ALL_PUNTEGGI_COLLEGATI()
+        GET_REQUISITI_FOR_SELECT()
     }, [])
+    //console.log (vari)
+    useEffect(() => {
+       console.log('',selectedItem)
+    }, [selectedItem])
+    
     
     //funzione di submit del bottone per modifica descrizioni
-    const submit = () => {
-        console.log('hello')
-    }
 
-    const handleAddSection = (sectionTitle:string) => {
-        const newTable ={
-          id:`table-${sectionTitle}-requisiti-${title}`, //sicuro va assegnato id diverso ma questo è provvisorio
-          sectionTitle: sectionTitle,
-          requisitiList:[]
-        }
-        //Salvo la Tabella appena Creata nel DB
-         //response:200 , ricevo id Table
- 
-        setTables((prevTables) => [...prevTables, newTable] )
-        console.log(tables)
-    }
+    
 
     const updateValue= ({value, url }:{value:string, url?:string}) => {
         setNewDescription(value)
         //funzione con debounce per salvataggio dati su db
-        //se uno dei 2 values è vuoto, non eseguire chiamata nella funzione di debounce ma settare variabile formError su true e return
-
     }
     
   return (
@@ -80,7 +156,7 @@ export const TipologiaEdit = () => {
         </Box>
 
         {/* form per modifica descrizioni */}
-        <Grid container sx={{marginBottom:'1rem'}}  component={'form'} noValidate onSubmit={handleSubmit(submit)} >
+        <Grid container sx={{marginBottom:'1rem'}}  >
             <Grid item lg={6} xs={12} sx={{padding:'0 .5rem', marginBottom:'1rem'}} >
                 <Typography fontWeight={600} color={'#127aa3ff'}>Descrizione Breve</Typography>
                 <InputBase 
@@ -117,17 +193,28 @@ export const TipologiaEdit = () => {
         </Grid>
         {/* END form per modifica descrizioni */}
         <Box sx={{marginBottom:'1rem'}}  display={'flex'} width={'100%'} justifyContent={'flex-start'}>
-            <AddSectionButtonWithDialog successFn={handleAddSection} />
+            <ActionButton text='Aggiungi sezione' onClick={() => openAddSectionDialog(true)} endIcon={<Icon>add</Icon>} color='secondary'/>
+        
+            <Dialog open={isAddSectionOpen} onClose={() => openAddSectionDialog(false)}>
+                <Box display={'flex'} flexDirection={'column'} minHeight={'300px'} minWidth={'600px'} padding={'1rem 2rem'}  >
+                    
+                    <Box  flexGrow={1} marginBottom={'3rem'}>
+                       <Custom_Select2 isRequired label='Seleziona Requisito da aggiungere' error={error} onChange={(newValue) => setSelectedItem(newValue)} options={selectableItems} />
+                        {error && <Typography color={'error'}>{errorMessage}</Typography>}
+                    </Box>
+                    <Box display={'flex'} justifyContent={'flex-end'}>
+                        <ActionButton  onClick={ () => openAddSectionDialog(false) } color='error' icon='cancel' sx={{marginRight:'.5rem'}} />
+                        <ActionButton text='Aggiungi' color='secondary' onClick={ addNewSection} /> 
+                    </Box>
+                </Box>
+
+            </Dialog>
         </Box>
 
         {/* Rendering tabelle con map in base ad array: Tables */}
-        {tables && tables.map((table, index)=>(
-            <>
-                <Table_editTipologiaEsperto key={index} sectionTitle={table.sectionTitle} requisiti={table.requisitiList}/>
-            </>
+        {formattedData && formattedData.map((table, index)=>(     
+            <Table_RequisitiSelect key={index} data={table} setData={()=>{}} tespId={id} />
         ))}
-            
-       
     </>
   )
 }
