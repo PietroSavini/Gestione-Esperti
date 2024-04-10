@@ -1,4 +1,4 @@
-import { Box, Icon, IconButton,  MenuItem, Select, SelectChangeEvent, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from '@mui/material';
+import { Box, Icon, IconButton,  Menu,  MenuItem, Select, SelectChangeEvent, Tooltip, TooltipProps, Typography, styled, tooltipClasses } from '@mui/material';
 import { DataGrid,   GridColDef,  GridEditInputCell,  GridEventListener, GridPreProcessEditCellProps, GridRenderEditCellParams, GridRowEditStopReasons, GridRowId,  GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer, GridTreeNodeWithRender, useGridApiContext  } from '@mui/x-data-grid';
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
@@ -7,6 +7,7 @@ import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import { RequisitoType_RequisitoTab, Requisito_Table } from '../../RequisitiTab/RequisitiTab';
 import '../../RequisitiTab/Tables/Table_requisiti.scss';
 import { InboundSelectData } from './TipologiaEdit';
+import React from 'react';
 
 type Error = { 
   id:string | number;
@@ -33,13 +34,18 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rowsInError, setRowsInError] = useState<Error[] | []>([]);
-  const [newRowValue, setNewRowValue] = useState<string>('')
   const [selectValues, setSelectValues] = useState<SelectOption[] | []>([])
   //appena renderizza la table esegue la chiamata per popolare i campi della select
   useEffect(() => {
     GET_SELECTABLE_ITEMS()
     console.log(rows)
   }, [])
+
+  
+  useEffect(() => {
+    console.log('ROWS IN ERRORE:',rowsInError)
+  }, [rowsInError])
+
 
   async function GET_SELECTABLE_ITEMS () {
     await AXIOS_HTTP.Retrieve({body:{masterId:masterRequisitoId}, url:'/api/launch/retrieve', sModule:'IMPOSTAZIONI_GET_SOTTOREQUISITI', sService:'READ_REQUISITI'})
@@ -80,10 +86,11 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
       //booleani che controllano la logica di aggiuntaa di una nuova Row
       const isAnyNewRowInEditing = rows.some((row)=> row.fi_ee_req_id === 'newRow');
       //se si, non faccio nulla evitando la creazione di altre righe (comportamento scelto)
-      console.log(rowModesModel)
       if ( isAnyNewRowInEditing) return;
       //creo id provvisorio (per evitare errori da DataGridMUI in quanto ogni riga vuole il suo id)
       const id = 'newRow';
+      //aggiungo la Row subito all'array delle rows in errore in modo da evitare il salvataggio
+      setRowsInError((prev)=>[...prev, {id:id, errorMessage:null}])
       //aggiunga la riga vergine in cima all' array di righe
       setRows((oldRows) => [{ fi_ee_req_id:id, fs_ee_req_desc:'', fi_ee_req_customerid:0, fi_ee_req_punteggio: undefined }, ...oldRows ]);
       // aggiungo la Row anche nell'array di oggetti rowModesModel (useState MUI), per creare la nuova row in Edit e focusare il campo descrizione
@@ -178,18 +185,23 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
      //UPDATE PUNTEGGIO
     }else { 
       const puntId = newRow.fi_ee_punt_id;
-      await AXIOS_HTTP.Execute({sService:'WRITE_PUNTEGGI', sModule:'IMPOSTAZIONI_UPDATE_PUNTEGGIO', body:{tespId: tespId, reqId:reqId, punt:punteggio, puntId:puntId}, url:'/api/launch/execute'})
-        .then((resp) => {
-            console.log('UPDATE DEL PUNTEGGIO')
-            console.log(resp)
-            outputRow = {
-              fi_ee_req_id: reqId,
-              fs_ee_req_desc: newRow.fs_ee_req_desc,
-              fi_ee_punt_id: puntId, 
-              fi_ee_req_punteggio: newRow.fi_ee_req_punteggio
-            } 
-        })
-        .catch((err) => console.log(err))
+      if(oldRow.fs_ee_req_desc === newRow.fs_ee_req_desc && oldRow.fi_ee_req_punteggio === newRow.fi_ee_req_punteggio ){
+        outputRow = oldRow; 
+        console.log('IL REQUISITO-PUNTEGGIO NON SONO STATI MODIFICATI: NON FACCIO CHIAMATA A WS')
+      }else{
+        await AXIOS_HTTP.Execute({sService:'WRITE_PUNTEGGI', sModule:'IMPOSTAZIONI_UPDATE_PUNTEGGIO', body:{tespId: tespId, reqId:reqId, punt:punteggio, puntId:puntId}, url:'/api/launch/execute'})
+          .then((resp) => {
+              console.log('UPDATE DEL PUNTEGGIO')
+              console.log(resp)
+              outputRow = {
+                fi_ee_req_id: reqId,
+                fs_ee_req_desc: newRow.fs_ee_req_desc,
+                fi_ee_punt_id: puntId, 
+                fi_ee_req_punteggio: newRow.fi_ee_req_punteggio
+              } 
+          })
+          .catch((err) => console.log(err))
+      }
     }
 
     //asseggna nuovo punteggio alla tipologia
@@ -207,12 +219,12 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
     console.log('handleDeleteCLick')
     AXIOS_HTTP.Execute({sService:'WRITE_PUNTEGGI', sModule:'IMPOSTAZIONI_DELETE_PUNTEGGIO', body:{puntId:puntId}, url:'/api/launch/execute'})
       .then((response)=>{
-        console.log(id,'PUNTEGGIO del sottorequisito cancellato')
+        console.log(id,'PUNTEGGIO-sottorequisito cancellato')
         setRows(rows?.filter((row) => row.fi_ee_req_id !== id));
 
       })
       .catch((error) => {
-        console.log('errore nella cancellazione del PUNTEGGIO del sottorequisito', error)
+        console.log('errore nella cancellazione del PUNTEGGIO-sottorequisito', error)
       })
 
   };
@@ -229,81 +241,61 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
   // listener di eventi 'row edit stop' della Datagrid (enterKeyDown, escapeKeyDown, rowfocusOut ...etc)
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
     const id = params.id as string
-    // Gestione casistiche della pressione dei tasti Enter ed Esc sulla newRow
+    const rowInError = rowsInError.some(row => row.id === id)
+    // Gestione delle varie casistiche di accessibilità della tabella (enter, esc, focusOut, ...etc)
     // vanno eseguite e controllate le casistiche qunado cè lerrore o non sulle descrizioni delle rows in quanto se no si presentano dei bug sia visivi che exploit.
       switch (params.reason) {
         case GridRowEditStopReasons.enterKeyDown:
-          if(params.id === 'newRow'){
-            if(isRequisitoFieldValid(newRowValue.trim(),id )){
-              event.defaultMuiPrevented = true;
-            }else{
-              event.defaultMuiPrevented = false
-            }
+          if(rowInError){
+            event.defaultMuiPrevented = true;
           }else{
-              if(rowsInError.some((rowInError)=> rowInError.id === id)){
-                event.defaultMuiPrevented = true;
-              }else{
-                event.defaultMuiPrevented = false;
-              }
+            event.defaultMuiPrevented = false
           }
           break;
       
         case GridRowEditStopReasons.escapeKeyDown :
-          if(params.id === 'newRow'){
-            if(rowsInError.some((row)=> row.id === id)){
-              event.defaultMuiPrevented = true;
-            }else{
-              event.defaultMuiPrevented = false
-            }
+          if(rowInError || id === 'newRow'){
+            event.defaultMuiPrevented = true;
           }else{
-              if(rowsInError.some((rowInError)=> rowInError.id === id)){
-                event.defaultMuiPrevented = true;
-              }else{
-                event.defaultMuiPrevented = false;
-              }
+            event.defaultMuiPrevented = false
           }
           break;
-      }
 
-    if(params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true;
-    };
+          case GridRowEditStopReasons.rowFocusOut:
+            event.defaultMuiPrevented = true;
+          break;
+      }
   };
 
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
 
-  //funzione triggerata all' onChange del campo di input che includevalidazione
-  const preProcessRequisitoEditCellProps = async (params: GridPreProcessEditCellProps) => {
+  //FUNZIONI TRIGGERATE AL CHANGE DI UNO DEI X CAMPI EDITABILI DELLA ROW
+  const preProcessRequisitoEditCellProp = async (params: GridPreProcessEditCellProps) => {
+    console.log('preProcessRequisitoEditCellProp')
+    console.log(params)
     const row:RequisitoType_RequisitoTab = params.row;
     const value = params.props.value;
+    const punteggio = params.otherFieldsProps!.fi_ee_req_punteggio.value;
     const rowId = row.fi_ee_req_id as string;
-    const isValid = await validateRequisito(rowId, value);
+    const isValid = await validateRequisito(rowId, value, punteggio);
     return { ...params.props, error: isValid };
  
   };
 
   // funzione che valida la cella della colonna "requisito" aggiunge l'id della row all'array di stringhe "rowsInError" in base alla logica di validazione
-  function isRequisitoFieldValid (description: string, rowId:string){
+  function isRequisitoFieldValid ({description, rowId, punteggio}:{description: string, rowId:string | number, punteggio: number|undefined|null}){
     let result = false;
     const isRowAlradyInError = rowsInError.some((rowInError) => rowInError.id === rowId);
-    //validazione campo descrizione requisito 
-    if(description.trim() === ''){
-      console.log(rowId, 'in errore perchè descrizione vuota')
+    //VALIDAZIONI 
+    if(description.trim() === '' || !punteggio){
+      console.log(rowId, 'in errore perchè descrizione o punteggio vuoti ')
       result = true;
       //se è già in errore ritorno true e basta
       if(isRowAlradyInError) return result;
       //se non è presente nell'array delle rows in errore la aggiungo.
       setRowsInError((prev)=> [...prev, {id:rowId , errorMessage:' il nome del requisito è obbligatorio'}]);
-    }else if(rows.some((row)=> description.trim().toLowerCase() === row.fs_ee_req_desc.toLowerCase())){//validazione per non inserire doppioni tra i sottorequisiti
-      console.log(rowId, 'in errore perchè esiste un doppione in tabella')
-      result = true
-      if(isRowAlradyInError){//se è già in errore ritorno true e basta
-        return result;
-      }else{//se non è presente nell'array delle rows in errore la aggiungo.
-        setRowsInError((prev)=> [...prev, {id:rowId , errorMessage:`${description} è già presente nella sezione`}]);;
-      }
     }
     // logica che gestisce la correzzione della row;
     const rowHasBeenCorrected:boolean = isRowAlradyInError && result === false;
@@ -313,8 +305,8 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
     return result;
   };
 
-  function validateRequisito( id:string | number, requisitoDescription:string): Promise<boolean> {
-    const isRowInError = isRequisitoFieldValid(requisitoDescription, id as string)
+  function validateRequisito( id:string | number, requisitoDescription:string, requisitoPunteggio:number | undefined): Promise<boolean> {
+    const isRowInError = isRequisitoFieldValid({description:requisitoDescription, punteggio:requisitoPunteggio, rowId:id as string})
     return new Promise<any>((resolve) => {
       resolve(isRowInError);
     });
@@ -322,59 +314,68 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
   // campi di input------------------------------------------------------------------------------------------------------------
   //componente select che prende nome requisito all interno della sezione requisitio (es. titolo di studio: requisiti[])
   function RequisitoSelectEditCell({props, key}:{props: GridRenderEditCellParams, key:any }) {
-    const { id, value, api, field } = props;
-    const options = selectValues
+    const { id, value, api, field} = props;
+    const arrToFilterOptions = rows.map(row => row.fi_ee_req_id);
+    const filteredSelectValues = selectValues.filter(item => !arrToFilterOptions.includes(item.id))
+
     const handleChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value as string;
         api.setEditCellValue({ id, field, value: newValue });
     };
 
+    const Custom_select = React.forwardRef(function Custom_Select(props, ref){
+
+      return (
+        <Select 
+            {...props} 
+            fullWidth
+            value={value}
+            onChange={handleChange}
+            defaultValue={''}
+            ref={ref}
+ 
+          >
+            {selectValues && selectValues.length > 0 && selectValues.map((option) => 
+              {
+                if( !filteredSelectValues.includes(option) ){
+                  if(option.value === value){
+                    return(
+                      <MenuItem value={option.value}>{option.label}</MenuItem>
+                    )
+                  }
+
+                  return(
+                    <MenuItem disabled value={option.value}>{option.label} - REQUISITO GIA INSERITO</MenuItem>
+                  )
+                  
+                }
+                return(
+                  <MenuItem value={option.value}>{option.label}</MenuItem>
+                )
+              }
+              
+            )}
+            
+            {selectValues.length === 0 && <MenuItem disabled sx={{color:'black', fontWeight:600}} >I requisiti della sezione: "{masterRequisitoTitle}" sono già stati inseriti ...</MenuItem>}
+        </Select>
+      )
+    })
+
     //select MUI
     return (
-        <Select
-          key={key}
-          fullWidth
-          value={value || ''}
-          onChange={handleChange}
-          defaultValue={''}
-        >
-            {options && options.map((option) => <MenuItem value={option.value}>{option.label}</MenuItem>)}
-            
-        </Select>
+      <Custom_select />
     );
   }
  
-  const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: theme.palette.error.main,
-      color: theme.palette.error.contrastText,
-    },
-  }));
 
   // componente che renderizza la cella delle Aczioni sulla colonna azioni
   function RenderActionsCell (params:GridRenderEditCellParams<any, any, any, GridTreeNodeWithRender>){
 
     const row = params.row as RequisitoType_RequisitoTab;
     const rowId = row.fi_ee_req_id;
-    const apiRef = useGridApiContext();
-    const currentEditCellParam : any= apiRef.current.unstable_getEditCellMeta(rowId,'fs_ee_req_desc');
-    const currentValue = currentEditCellParam? currentEditCellParam.value : '';
-    let rowError = false;
+    let rowError =  rowsInError.some((rowInError)=> rowInError.id === rowId) 
     const isInEditMode = rowModesModel[rowId]?.mode === GridRowModes.Edit;
-    const sistema = row.fi_ee_req_customerid;
-
-    if(row.fi_ee_req_id === 'newRow'){
-      setNewRowValue(currentValue);
-      rowError =  rowsInError.some((rowInError)=> rowInError.id === rowId) || newRowValue.trim() === "";
-    }else{
-      rowError = rowsInError.some((rowInError)=> rowInError.id === rowId);
-    }
-    
-    if(sistema === 1){
-      return <></>
-    };
+   
     if (isInEditMode) {
       return [   
         <ActionButton  key={rowId} sx={{marginRight:'5px'}} icon='save' disabled={rowError} color='primary' onClick={()=>switchRowMode(rowId)} />,
@@ -397,7 +398,7 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
       flex:0.4, 
       minWidth:220, 
       headerName: 'requisito', 
-      preProcessEditCellProps: preProcessRequisitoEditCellProps, 
+      preProcessEditCellProps: preProcessRequisitoEditCellProp, 
       headerClassName:'customHeader', 
       editable:true,
       renderEditCell(params) {
@@ -418,7 +419,6 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
       renderCell:  (params) => {
         const row = params.row as RequisitoType_RequisitoTab;
         const punteggio = row.fi_ee_req_punteggio;
-
         return(
           <>
             {punteggio}
@@ -468,6 +468,7 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={(newRow, oldRow) => handleRowSave(oldRow, newRow)}
+          onProcessRowUpdateError={(error) => console.log(error)}
           isCellEditable={(params) => params.row.fi_ee_req_customerid !== 1}
           rows={rows}
           columns={columns}
