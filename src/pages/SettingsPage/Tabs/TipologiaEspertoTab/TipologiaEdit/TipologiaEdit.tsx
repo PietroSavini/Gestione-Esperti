@@ -2,7 +2,7 @@ import { Box, Dialog, FormHelperText, Grid, Icon, InputBase, Paper, Typography }
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { useAppDispatch, useAppSelector } from '../../../../../app/ReduxTSHooks';
+import { useAppDispatch } from '../../../../../app/ReduxTSHooks';
 import { useForm } from 'react-hook-form';
 
 import { TipologiaEspertoRow } from '../Tables/Table_tipologieDiSistema';

@@ -27,17 +27,6 @@ export const Table_tipologieDiSistema = ({rows, addToTipologiePersonalizzateFn} 
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    const handleSwitchChange = (id: string | number) => {
-        setIsLoading(true)
-        //faccio chiamata ad endpoint per il salavataggio dei dati in DB
-            //se la risposta è positiva
-                // Aggiorna lo stato con il nuovo valore dello switch
-
-        setIsLoading(false)
-        //se la risposta è negativa
-            //faccio uscire un messaggio di errore
-    };
-
     const handleAddClick = async (row:TipologiaEspertoRow) => {
         let rowObj = {
             TEspId: row.TEspId,

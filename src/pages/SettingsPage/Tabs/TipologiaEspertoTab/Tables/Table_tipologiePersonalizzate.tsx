@@ -1,6 +1,6 @@
 import { Box, Grid, Switch } from '@mui/material'
 import { DataGrid, GridColDef} from '@mui/x-data-grid'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination'
 import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP'
@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom'
 
 
 type Props ={ 
-    addToTipologiePersonalizzateFn?: React.Dispatch<React.SetStateAction<TipologiaEspertoRow[] | []>>
+    
     fn? :  Function
     rows: TipologiaEspertoRow[] | []
     setRows: Dispatch<SetStateAction<TipologiaEspertoRow[] | []>>
@@ -25,7 +25,7 @@ export type TipologiaEspertoRow = {
 }
 
 
-export const Table_tipologiePersonalizzate = ({rows, setRows, addToTipologiePersonalizzateFn} : Props ) => {
+export const Table_tipologiePersonalizzate = ({rows, setRows} : Props ) => {
 
     
     
@@ -64,7 +64,7 @@ export const Table_tipologiePersonalizzate = ({rows, setRows, addToTipologiePers
         console.log('ciao')
         AXIOS_HTTP.Execute({sModule:'IMPOSTAZIONI_DELETE_TIPOLOGIA_ESPERTO',sService:'WRITE_TIPOLOGIE_ESPERTO',body:{ TEspId : id}, url:'/api/launch/execute'})
             .then((result) => {
-                console.log('tipologia cancellata con successo')
+                console.log('tipologia cancellata con successo', result)
                 setRows((prev)=> prev.filter((row)=> row.TEspId !== id));
             }
             ).catch((err)=> console.log(err))
@@ -100,7 +100,7 @@ export const Table_tipologiePersonalizzate = ({rows, setRows, addToTipologiePers
    /* componente che renderizza i pulsanti azione all'interno della tabella */
    const DataGridActions = ({params}:any) => {
     //estraggo i valori della ROW
-    const { row , id} = params;
+    const { row } = params;
     return(
         <div className='dataGrid-actions'>
             <ActionButton color='secondary' onClick={() => handleAddClick(row)} text='Modifica' icon='edit' direction='row-reverse'/>
@@ -116,7 +116,6 @@ export const Table_tipologiePersonalizzate = ({rows, setRows, addToTipologiePers
         {field: 'TEspBr', headerName: 'Descrizione', minWidth:150, flex:0.3, sortable:false, filterable:false ,  },
         {field: 'TEspDesc', headerName: 'Descrizione Lunga', flex:1, minWidth:350 ,sortable:false, filterable:false },
         {field: 'TEspVis',renderCell(params) {
-            const row : TipologiaEspertoRow = params.row
             return(
                 <VisibleSwitch {...params.row} />
             )
