@@ -34,13 +34,19 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rowsInError, setRowsInError] = useState<Error[] | []>([]);
+  //variabili per le select
   const [selectValues, setSelectValues] = useState<SelectOption[] | []>([])
+  
   //appena renderizza la table esegue la chiamata per popolare i campi della select
   useEffect(() => {
     GET_SELECTABLE_ITEMS()
-    console.log(rows)
+    
   }, [])
 
+  
+  useEffect(() => {
+    console.log(rowModesModel)
+  }, [rowModesModel])
   
   useEffect(() => {
     console.log('ROWS IN ERRORE:',rowsInError)
@@ -80,13 +86,17 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
   //componente personalizzato toolbar che gestisce la logica del click "aggiungi requisito"
   function EditToolbar(props: EditToolbarProps) {
     const { setRows, setRowModesModel } = props;
+    let addReqButtonDisabled: boolean = false
     //funzione click pulsante aggiungi requisito
     //si occupa di aggiungere una riga vuota alle rows, non del salvataggio della row in DB
     const handleClick = () => {
-      //booleani che controllano la logica di aggiuntaa di una nuova Row
-      const isAnyNewRowInEditing = rows.some((row)=> row.fi_ee_req_id === 'newRow');
+      //booleani che controllano la logica di aggiunta di una nuova Row
+      const isAnyRowInEdit: boolean = Object.values(rowModesModel).some((rowMode) => rowMode.mode === GridRowModes.Edit);
       //se si, non faccio nulla evitando la creazione di altre righe (comportamento scelto)
-      if ( isAnyNewRowInEditing) return;
+      if ( isAnyRowInEdit){
+        addReqButtonDisabled = true
+        return;
+      } 
       //creo id provvisorio (per evitare errori da DataGridMUI in quanto ogni riga vuole il suo id)
       const id = 'newRow';
       //aggiungo la Row subito all'array delle rows in errore in modo da evitare il salvataggio
@@ -119,7 +129,6 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
         <Box display={'flex'} alignItems={'center'} width={'45%'} >
           <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{masterRequisitoTitle}</Typography>
           <Box className='req-master-actions'>
-            <IconButton><Icon sx={{fontSize:'20px'}} color='warning'>edit</Icon></IconButton>
             <IconButton onClick={()=> deleteMasterPunteggio(masterRequisitoId, masterPunteggio)}><Icon color='error' sx={{fontSize:'20px'}}>delete</Icon></IconButton>
           </Box>
         </Box>
@@ -161,14 +170,13 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
   const handleRowSave = async ( oldRow:RequisitoType_RequisitoTab ,newRow:RequisitoType_RequisitoTab) => {
     
     console.log('handleRowSave')
-    console.log('VECCHIA ROW: ', oldRow)
     setIsLoading(true)
     let outputRow = {};
     const reqId = selectValues.find((req) => newRow.fs_ee_req_desc === req.label)!.id;
     const punteggio = newRow.fi_ee_req_punteggio;
-
+    
+   if(oldRow.fi_ee_req_id === 'newRow'){
      //INSERT PUNTEGGIO
-    if(oldRow.fi_ee_req_id === 'newRow'){
       await AXIOS_HTTP.Execute({sService:'WRITE_PUNTEGGI', sModule:'IMPOSTAZIONI_INSERT_PUNTEGGIO', body:{tespId: tespId, reqId:reqId, punt:punteggio}, url:'/api/launch/execute'})
         .then((resp) => {
           console.log('CREAZIONE PUNTEGGIO')
@@ -240,6 +248,7 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
 
   // listener di eventi 'row edit stop' della Datagrid (enterKeyDown, escapeKeyDown, rowfocusOut ...etc)
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
+    console.log('roweditStop')
     const id = params.id as string
     const rowInError = rowsInError.some(row => row.id === id)
     // Gestione delle varie casistiche di accessibilità della tabella (enter, esc, focusOut, ...etc)
@@ -247,14 +256,6 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
       switch (params.reason) {
         case GridRowEditStopReasons.enterKeyDown:
           if(rowInError){
-            event.defaultMuiPrevented = true;
-          }else{
-            event.defaultMuiPrevented = false
-          }
-          break;
-      
-        case GridRowEditStopReasons.escapeKeyDown :
-          if(rowInError || id === 'newRow'){
             event.defaultMuiPrevented = true;
           }else{
             event.defaultMuiPrevented = false
@@ -268,6 +269,12 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
   };
 
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
+    const arrRowModesModel = Object.values(rowModesModel);
+    const isAnyRowInEdit = arrRowModesModel.some((row)=> row.mode === 'edit');
+    if(isAnyRowInEdit){
+      console.log('ci sono altre row in edit',arrRowModesModel)
+      return
+    }
     setRowModesModel(newRowModesModel);
   };
 
@@ -275,8 +282,11 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
   const preProcessRequisitoEditCellProp = async (params: GridPreProcessEditCellProps) => {
     console.log('preProcessRequisitoEditCellProp')
     console.log(params)
+    
+    
     const row:RequisitoType_RequisitoTab = params.row;
     const value = params.props.value;
+    //aggiungo il valore selezionato all'array che esclude i campi selezionabili della select
     const punteggio = params.otherFieldsProps!.fi_ee_req_punteggio.value;
     const rowId = row.fi_ee_req_id as string;
     const isValid = await validateRequisito(rowId, value, punteggio);
@@ -315,9 +325,9 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
   //componente select che prende nome requisito all interno della sezione requisitio (es. titolo di studio: requisiti[])
   function RequisitoSelectEditCell({props, key}:{props: GridRenderEditCellParams, key:any }) {
     const { id, value, api, field} = props;
-    const arrToFilterOptions = rows.map(row => row.fi_ee_req_id);
+    const arrToFilterOptions = rows.map(row => row.fi_ee_req_id); 
     const filteredSelectValues = selectValues.filter(item => !arrToFilterOptions.includes(item.id))
-
+    const allRequisitiInseriti = filteredSelectValues.length === 0;
     const handleChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value as string;
         api.setEditCellValue({ id, field, value: newValue });
@@ -327,36 +337,36 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
 
       return (
         <Select 
-            {...props} 
-            fullWidth
-            value={value}
-            onChange={handleChange}
-            defaultValue={''}
-            ref={ref}
- 
+          fullWidth
+          value={value}
+          onChange={handleChange}
+          defaultValue={''}
+          ref={ref}
+          {...props} 
+  
           >
-            {selectValues && selectValues.length > 0 && selectValues.map((option) => 
+            {selectValues && selectValues.length > 0 && selectValues.map((option, index) => 
               {
                 if( !filteredSelectValues.includes(option) ){
-                  if(option.value === value){
+
+                  if(option.value === value ){
                     return(
-                      <MenuItem value={option.value}>{option.label}</MenuItem>
+                      <MenuItem key={index} value={option.value}>{option.label}</MenuItem>
                     )
                   }
-
                   return(
-                    <MenuItem disabled value={option.value}>{option.label} - REQUISITO GIA INSERITO</MenuItem>
+                    <MenuItem sx={{maxHeight:0, padding:0}} key={index} disabled></MenuItem>
                   )
-                  
                 }
+
                 return(
-                  <MenuItem value={option.value}>{option.label}</MenuItem>
+                  <MenuItem key={index} value={option.value}>{option.label}</MenuItem>
                 )
               }
               
             )}
             
-            {selectValues.length === 0 && <MenuItem disabled sx={{color:'black', fontWeight:600}} >I requisiti della sezione: "{masterRequisitoTitle}" sono già stati inseriti ...</MenuItem>}
+            {selectValues.length === 0 && <MenuItem disabled sx={{color:'black', fontWeight:600}} >Non esistono requisiti selezionabili per la sezione: "{masterRequisitoTitle}" ...</MenuItem>}
         </Select>
       )
     })
@@ -375,7 +385,8 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
     const rowId = row.fi_ee_req_id;
     let rowError =  rowsInError.some((rowInError)=> rowInError.id === rowId) 
     const isInEditMode = rowModesModel[rowId]?.mode === GridRowModes.Edit;
-   
+    const isAnyRowInEdit: boolean = Object.values(rowModesModel).some((rowMode) => rowMode.mode === GridRowModes.Edit);
+  
     if (isInEditMode) {
       return [   
         <ActionButton  key={rowId} sx={{marginRight:'5px'}} icon='save' disabled={rowError} color='primary' onClick={()=>switchRowMode(rowId)} />,
@@ -383,7 +394,7 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
       ];
     };
     return [
-      <ActionButton key={rowId} sx={{marginRight:'5px'}} icon='edit'  color='warning' onClick={handleEditClick(rowId)}/>,
+      <ActionButton key={rowId} sx={{marginRight:'5px'}} icon='edit' disabled={isAnyRowInEdit}  color='warning' onClick={handleEditClick(rowId)}/>,
       <ActionButton key={`${rowId}-1`} icon='delete'  onClick={handleDeletePunteggio(rowId, row.fi_ee_punt_id)} color='error'/>,
     ];
   }

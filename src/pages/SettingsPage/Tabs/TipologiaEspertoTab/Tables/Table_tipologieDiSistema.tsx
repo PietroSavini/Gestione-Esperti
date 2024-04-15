@@ -1,9 +1,7 @@
 import { Box, Grid, Switch } from '@mui/material'
 import { DataGrid, GridColDef} from '@mui/x-data-grid'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { useState } from 'react'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
-
-import { DuplicateButtonWithDialog } from '../../../../../components/partials/Buttons/DuplicateButtonWithDialog'
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination'
 import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP'
 import { useNavigate } from 'react-router-dom'
@@ -19,7 +17,7 @@ export type TipologiaEspertoRow = {
     TEspId:string | number;
     TEspDesc:string,
     TEspBr:string;
-    TEspVis:number;
+    TEspVis:boolean;
     TEspSys:boolean;
 }
 
@@ -45,9 +43,10 @@ export const Table_tipologieDiSistema = ({rows, addToTipologiePersonalizzateFn} 
             TEspId: row.TEspId,
             TEspDesc: row.TEspDesc,
             TEspBr: `${row.TEspBr}-(COPIA)`,
-            TEspVis: 0,
+            TEspVis: false,
             EspSys: false,
-        }
+        };
+
         //faccio chiamata a webService x l'id
         await AXIOS_HTTP.Execute({sService:'WRITE_TIPOLOGIE_ESPERTO', sModule:'IMPOSTAZIONI_DUPLICA_TIPOLOGIA_ESPERTO', body:rowObj, url:'/api/launch/execute'})
             .then((response) => {
@@ -59,30 +58,53 @@ export const Table_tipologieDiSistema = ({rows, addToTipologiePersonalizzateFn} 
                     TEspDesc: rowObj.TEspDesc,
                     TEspVis : rowObj.TEspVis,
                     TEspSys: rowObj.EspSys
-                }
+                };
                 console.log('TIPOLOGIA DUPLICATA: ',newTipologia)
                 if(addToTipologiePersonalizzateFn){
                     console.log('aggiungo a tablella personalizzate')
                     addToTipologiePersonalizzateFn((prev) => [...prev, newTipologia])
-                }
+                };
                 
-            })
-        
-    }
+            });
+    };
  
-    const VisibleSwitch = ({id, value}:{ id:number | string, value:number }) => {
-        return <Switch id={id as string} onChange={() => handleSwitchChange(id)} checked={ value === 0 ? false : true } />;
+    
+    const VisibleSwitch = (TErow:TipologiaEspertoRow) => {
+        const value = TErow.TEspVis;
+        const id = TErow.TEspId as string;
+        const [switchValue, setValue] = useState<boolean>(value);
+
+        const handleSwitchChange = async (value: boolean) => {
+        
+            const newValue: boolean = !value;
+            await AXIOS_HTTP.Execute({sService:'WRITE_TIPOLOGIE_ESPERTO', url:'/api/launch/execute', sModule:'IMPOSTAZIONI_UPDATE_TIPOLOGIA_ESPERTO', 
+                body:{
+                    TEspId: id,
+                    TEspDesc: TErow.TEspDesc,
+                    TEspBr: TErow.TEspBr,
+                    TEspVis: newValue,
+                },
+            }).then((res) =>{
+                const addNewValue: boolean = res.response.TEspVis
+                setValue(addNewValue);
+            }).catch((err) => 
+                console.log(err)
+            )
+
+        };
+
+        return <Switch id={id as string} onChange={() => handleSwitchChange(switchValue)} checked={switchValue} />;
     };
 
     const DataGridActions = ({params}:{params:any}) => {   
         const row = params.row as TipologiaEspertoRow
         return(
             <div className='dataGrid-actions'>
-                <ActionButton color='primary' onClick={() => handleAddClick(params.row)} text='Duplica' icon='content_copy' direction='row-reverse' />  
+                <ActionButton color='primary' onClick={() => handleAddClick(row)} text='Duplica' icon='content_copy' direction='row-reverse' />  
                 <ActionButton color='warning' onClick={() => { navigate(`/impostazioni/visualizza-tipologia`,{state:{...row}})}} text='Visualizza' icon='preview' direction='row-reverse'/>
             </div>
         )  
-    }
+    };
 
    
     //dichiaro un array di oggetti "columns" per semplificare la creazione degli Headers delle colonne
@@ -93,7 +115,7 @@ export const Table_tipologieDiSistema = ({rows, addToTipologiePersonalizzateFn} 
             renderCell(params) {
                 const row : TipologiaEspertoRow = params.row
                 return(
-                    <VisibleSwitch id={params.id} value={row.TEspVis} />
+                    <VisibleSwitch  {...row} />
                 )
             }
         },
@@ -132,7 +154,6 @@ export const Table_tipologieDiSistema = ({rows, addToTipologiePersonalizzateFn} 
                             labelRowsPerPage: 'Righe per pagina:',
                         },
                     }}
-                    
                 />
             </Grid>
         </Grid>

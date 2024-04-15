@@ -2,7 +2,6 @@ import { Box, Grid, Switch } from '@mui/material'
 import { DataGrid, GridColDef} from '@mui/x-data-grid'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
-import { DuplicateButtonWithDialog } from '../../../../../components/partials/Buttons/DuplicateButtonWithDialog'
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination'
 import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP'
 import { DeleteButtonWithDialog } from '../../../../../components/partials/Buttons/DeleteButtonWithDialog'
@@ -21,7 +20,7 @@ export type TipologiaEspertoRow = {
     TEspId:string | number;
     TEspDesc:string,
     TEspBr:string;
-    TEspVis:number;
+    TEspVis:boolean;
     TEspSys:boolean;
 }
 
@@ -39,7 +38,7 @@ export const Table_tipologiePersonalizzate = ({rows, setRows, addToTipologiePers
             TEspId: row.TEspId,
             TEspDesc: row.TEspDesc,
             TEspBr: `${row.TEspBr}-(COPIA)`,
-            TEspVis: 0,
+            TEspVis: false,
             EspSys: false,
         }
         //faccio chiamata a webService x l'id
@@ -73,29 +72,29 @@ export const Table_tipologiePersonalizzate = ({rows, setRows, addToTipologiePers
 
     const VisibleSwitch = (TErow:TipologiaEspertoRow) => {
         const value = TErow.TEspVis;
-        const id = TErow.TEspId;
+        const id = TErow.TEspId as string;
+        const [switchValue, setValue] = useState<boolean>(value);
 
-        const [switchValue, setValue] = useState(value);
+        const handleSwitchChange = async (value: boolean) => {
+            const newValue: boolean = !value;
 
-        const handleSwitchChange = (value: number) => {
-            if(value === 0){
-                setValue(1);
-            }else{
-                setValue(0);
-            };
-            //una volta cambiata la UI faccio chiamata a backend
-            AXIOS_HTTP.Execute({sService:'WRITE_TIPOLOGIE_ESPERTO', url:'/api/launch/execute', sModule:'IMPOSTAZIONI_UPDATE_TIPOLOGIA_ESPERTO', 
+            await AXIOS_HTTP.Execute({sService:'WRITE_TIPOLOGIE_ESPERTO', url:'/api/launch/execute', sModule:'IMPOSTAZIONI_UPDATE_TIPOLOGIA_ESPERTO', 
                 body:{
                     TEspId: id,
                     TEspDesc: TErow.TEspDesc,
                     TEspBr: TErow.TEspBr,
-                    TEspVis: switchValue,
+                    TEspVis: newValue,
                 },
-            }).then((res)=> console.log(res))
+            }).then((res) =>{
+                const addNewValue = res.response.TEspVis
+                setValue(addNewValue);
+            }).catch((err) => 
+                console.log(err)
+            )
 
         };
 
-        return <Switch id={id as string} onChange={() => handleSwitchChange(switchValue)} checked={ switchValue === 0 ? false : true } />;
+        return <Switch id={id as string} onChange={() => handleSwitchChange(switchValue)} checked={ switchValue } />;
     };
 
    /* componente che renderizza i pulsanti azione all'interno della tabella */
