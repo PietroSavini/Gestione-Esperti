@@ -15,16 +15,10 @@ type Props = {
     setRows: Dispatch<SetStateAction<TipologiaEspertoRow[] | []>>
 }
 
-
-
-
 export const Table_tipologiePersonalizzate = ({ rows, setRows }: Props) => {
-
-
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const navigate = useNavigate();
-
 
     const handleAddClick = async (row: TipologiaEspertoRow) => {
         let rowObj = {
@@ -97,7 +91,6 @@ export const Table_tipologiePersonalizzate = ({ rows, setRows }: Props) => {
         )
     };
 
-
     /* componente che renderizza i pulsanti azione all'interno della tabella */
     const DataGridActions = ({ params }: any) => {
         //estraggo i valori della ROW
@@ -111,22 +104,19 @@ export const Table_tipologiePersonalizzate = ({ rows, setRows }: Props) => {
         )
     }
 
-
     //dichiaro un array di oggetti "columns" per semplificare la creazione degli Headers delle colonne
     const columns: GridColDef[] = [
         { field: 'TEspBr', headerName: 'Descrizione', minWidth: 150, flex: 0.3, sortable: false, filterable: false, },
         { field: 'TEspDesc', headerName: 'Descrizione Lunga', flex: 1, minWidth: 350, sortable: false, filterable: false },
-        {
-            field: 'TEspVis', renderCell(params) {
+        { field: 'TEspVis',headerName: 'Visibile', minWidth: 70, align: 'center', headerAlign: 'center', flex: .3, sortable: false, filterable: false,
+            renderCell(params) {
                 return (
                     <VisibleSwitch {...params.row} />
                 )
-            }, headerName: 'Visibile', minWidth: 70, align: 'center', headerAlign: 'center', flex: .3, sortable: false, filterable: false
+            }
         },
         { field: 'actions', type: 'actions', headerAlign: 'center', align: 'center', headerName: 'azioni', width: 320, sortable: false, filterable: false, renderCell: (params: any) => (<DataGridActions params={params} />) }
     ];
-
-
 
     return (
         <Box className="dataTable" >

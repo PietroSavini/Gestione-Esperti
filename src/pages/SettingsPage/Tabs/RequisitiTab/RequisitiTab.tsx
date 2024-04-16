@@ -8,9 +8,9 @@ import { convertData } from '../../functions';
 
 export const RequisitiTab = () => {
     const [tables, setTables] = useState<Requisito_Table[] | []>([]);
+
     //chiamata iniziale per requisiti gia presenti
     useEffect(() => {
-
         AXIOS_HTTP.Retrieve({ url: '/api/launch/retrieve', body: null, sService: 'READ_REQUISITI', sModule: 'IMPOSTAZIONI_GET_ALL_REQUISITI' })
             .then(result => {
                 setTables(convertData(result.response))
@@ -19,7 +19,6 @@ export const RequisitiTab = () => {
                 console.log(error)
             });
     }, [])
-
 
     const handleAddSection = async (title: string) => {
         const newMasterReq = {

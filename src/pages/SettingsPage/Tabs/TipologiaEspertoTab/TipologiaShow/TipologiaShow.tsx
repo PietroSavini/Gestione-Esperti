@@ -29,10 +29,10 @@ export const TipologiaShow = () => {
             .catch((err) => {
                 console.error(err)
             })
-            
-        }
+    }
         
         useEffect(() => {
+            dispatch(openLoader())
             GET_ALL_REQUISITI_COLLEGATI()
         }, [])
 

@@ -85,7 +85,7 @@ export const TipologiaEdit = () => {
             .catch((err) => console.log(err));
     }
 
-    //funzione che repara la listItem nella select ''aggiungi requisito
+    //funzione che repara la listItem nella select 'aggiungi requisito'
     const GET_REQUISITI_FOR_SELECT = async () => {
         await AXIOS_HTTP.Retrieve({ sService: 'READ_REQUISITI', sModule: 'IMPOSTAZIONI_GET_REQUISITI_MASTER', body: { TEspId: id }, url: '/api/launch/retrieve' })
             .then((resp) => {
