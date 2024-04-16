@@ -76,7 +76,7 @@ export const TipologiaEsperto = () => {
               <Typography variant='body1' fontWeight={600} color={'#42648aff'}> Tipologie di Sistema </Typography>
             </AccordionSummary>
             <AccordionDetails>
-             { tipologieDiSistema && <Table_tipologieDiSistema rows={tipologieDiSistema} addToTipologiePersonalizzateFn={setTipologiePersonalizzate} />}
+              <Table_tipologieDiSistema rows={tipologieDiSistema} addToTipologiePersonalizzateFn={setTipologiePersonalizzate} />
             </AccordionDetails>
           </Accordion>
     

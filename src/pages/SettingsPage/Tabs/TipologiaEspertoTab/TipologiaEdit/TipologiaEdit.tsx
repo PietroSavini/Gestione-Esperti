@@ -13,6 +13,7 @@ import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import { convertData } from '../TipologiaShow/TipologiaShow';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
 import { Custom_Select2 } from '../../../../../components/partials/Inputs/Custom_Select2';
+import { Custom_TextField } from '../../../../../components/partials/Inputs/CustomITextField';
 
 export type InboundSelectData = {
     fi_ee_req_id: number;
@@ -86,15 +87,11 @@ export const TipologiaEdit = () => {
                 }
             })
             .catch((err) => console.log(err));
-
-
-        //id tipologia esperto - id requisito - punteggio 
-        //idTesp - idReq- punteggio
     }
 
     //funzione che repara la listItem nella select ''aggiungi requisito
     const GET_REQUISITI_FOR_SELECT = async () => {
-        await AXIOS_HTTP.Retrieve({ sService: 'READ_REQUISITI', sModule: 'IMPOSTAZIONI_GET_REQUISITI_MASTER', body: { idTesp: id }, url: '/api/launch/retrieve' })
+        await AXIOS_HTTP.Retrieve({ sService: 'READ_REQUISITI', sModule: 'IMPOSTAZIONI_GET_REQUISITI_MASTER', body: { TEspId: id }, url: '/api/launch/retrieve' })
             .then((resp) => {
                 const arrOfItems = resp.response as InboundSelectData;
                 let finalArray: Options[] = [];
@@ -113,7 +110,7 @@ export const TipologiaEdit = () => {
     // funzione che mostra i requisiti collegati dai punteggi alla tipologia
     const GET_ALL_PUNTEGGI_COLLEGATI = async () => {
         dispatch(openLoader())
-        await AXIOS_HTTP.Retrieve({ sModule: 'IMPOSTAZIONI_GET_ALL_PUNTEGGI', sService: 'READ_PUNTEGGI', url: '/api/launch/retrieve', body: { idTesp: id } })
+        await AXIOS_HTTP.Retrieve({ sModule: 'IMPOSTAZIONI_GET_ALL_PUNTEGGI', sService: 'READ_PUNTEGGI', url: '/api/launch/retrieve', body: { TEspId: id } })
             .then((resp) => {
                 console.log('REQUISITI COLLEGATI ALLA TIPOLOGIA ESPERTO: : ', resp)
                 setFormattedData(convertData(resp.response, 1))
@@ -130,7 +127,8 @@ export const TipologiaEdit = () => {
         GET_ALL_PUNTEGGI_COLLEGATI()
         GET_REQUISITI_FOR_SELECT()
     }, [])
-    //console.log (vari)
+    
+
     useEffect(() => {
         console.log('', selectedItem)
     }, [selectedItem])
@@ -139,19 +137,25 @@ export const TipologiaEdit = () => {
     //funzione di submit del bottone per modifica descrizioni
     const updateDescriptions = async (formData: any) => {
         const { TEspBr, TEspDesc } = formData;
-        await AXIOS_HTTP.Execute({ sService:'WRITE_TIPOLOGIE_ESPERTO', sModule:'IMPOSTAZIONI_UPDATE_TIPOLOGIA_ESPERTO', url:'/api/launch/execute', body:{ TEspBr: TEspBr, TEspDesc: TEspDesc, TEspId: id, TEspVis: TEspVis } })
+        await AXIOS_HTTP.Execute({ sService: 'WRITE_TIPOLOGIE_ESPERTO', sModule: 'IMPOSTAZIONI_UPDATE_TIPOLOGIA_ESPERTO', url: '/api/launch/execute', body: { TEspBr: TEspBr, TEspDesc: TEspDesc, TEspId: id, TEspVis: TEspVis } })
             .then((res) => {
-                console.log('UPDATE DESCRIZIONI :', res.response)
-                const newTitleAfterSave = res.response.TEspBr as string;
-                const newDescriptionAfterSave = res.response.TEspDesc as string;
-                setTitle(newTitleAfterSave);
-                setDescription(newDescriptionAfterSave)
-             
+
+                if(res.errorCode && res.errorCode !== 0){
+                    console.log('errore')
+                    setGenErr(res.errorMessage)
+                }else{
+                    console.log('UPDATE DESCRIZIONI :', res.response)
+                    const newTitleAfterSave = res.response.TEspBr as string;
+                    const newDescriptionAfterSave = res.response.TEspDesc as string;
+                    setTitle(newTitleAfterSave);
+                    setDescription(newDescriptionAfterSave)
+                }
+
             })
             .catch((err) => console.log(err))
     }
 
-
+    const [genErr, setGenErr] = useState<string>('')
 
     return (
         <>
@@ -167,57 +171,65 @@ export const TipologiaEdit = () => {
 
 
             {/* form per modifica descrizioni */}
-            <Paper sx={{ padding: '1rem .3rem', marginBottom: '1rem', backgroundColor:`${title === newTitle && description === newDescription ? '#fff' : 'rgba(255, 255, 163, .2)'}`, transition:'400ms' }} component={'form'} noValidate onSubmit={handleSubmit(updateDescriptions)} >
-                <Typography textAlign={'center'} fontWeight={600} fontSize={18}> Modifica descrizioni</Typography>
+            <Paper sx={{ padding: '1rem .3rem', marginBottom: '1rem', backgroundColor: `${title === newTitle && description === newDescription ? '#fff' : 'rgba(255, 255, 163, .2)'}`, transition: '400ms' }} component={'form'} noValidate onSubmit={handleSubmit(updateDescriptions)} >
+                <Typography marginBottom={3} textAlign={'center'} fontWeight={600} fontSize={20}> Modifica descrizioni</Typography>
                 <Grid container sx={{ marginBottom: '1rem' }} >
                     <Grid item lg={6} xs={12} sx={{ padding: '0 .5rem', marginBottom: '1rem' }} >
-                        <Typography fontWeight={600} color={'#127aa3ff'}>Descrizione Breve</Typography>
-                        <InputBase
-                            className={`ms_input ${errors.TEspBr ? 'error' : ''}`}
-                            error={!!errors.TEspBr}
+                        
+                        <Custom_TextField 
+                            label={'Descrizione Breve'}
+                            error={!!errors.TEspBr || genErr !== ''}
                             fullWidth
                             placeholder='Inserisci una descrizione breve'
                             {...register('TEspBr', { required: 'La descrizione breve è richiesta' })}
                             value={newTitle}
-                            onChange={(e) => setNewTitle(e.target.value)}
-
+                            onChange={(e) => {
+                                setGenErr('')
+                                setNewTitle(e.target.value)
+                            }}
                         />
+                       
                         {errors.TEspBr && <FormHelperText sx={{ paddingLeft: '.5rem' }} error>{errors.TEspBr?.message as string}</FormHelperText>}
 
                     </Grid>
                     <Grid item lg={6} xs={12} sx={{ padding: '0 .5rem' }} >
 
-                        <Typography fontWeight={600} color={'#127aa3ff'}>Descrizione Lunga</Typography>
-                        <InputBase
-                            sx={{ padding: '0 .5rem' }}
-                            multiline
-                            error={!!errors.TEspDesc}
-                            maxRows={4}
-                            className={`ms_input ${errors.TEspDesc ? 'error' : ''}`}
-                            fullWidth
-                            placeholder='Inserisci una descrizione lunga'
-                            {...register('TEspDesc', { required: 'La descrizione lunga è richiesta' })}
-                            value={newDescription}
-                            onChange={(e) => setNewDescription(e.target.value)}
+                            <Custom_TextField
+                                sx={{minHeight:'50px', paddingLeft:'.5rem'}}
+                                label={'Descrizione Lunga'}
+                                
+                                error={!!errors.TEspDesc || genErr !== ''}
+                                maxRows={4}
+                                fullWidth
+                                placeholder='Inserisci una descrizione lunga'
+                                {...register('TEspDesc', { required: 'La descrizione lunga è richiesta' })}
+                                value={newDescription}
+                                className={`ms_input ${errors.TEspDesc ? 'error' : ''}`}
+                                onChange={(e) => {
+                                    setGenErr('')
+                                    setNewDescription(e.target.value)
+                                }} 
+                            />
 
-                        />
                         {errors.TEspDesc && <FormHelperText sx={{ paddingLeft: '.5rem' }} error>{errors.TEspDesc?.message as string}</FormHelperText>}
+
                     </Grid>
+                    {genErr && <Typography color='error'>{genErr}</Typography>}
                 </Grid>
                 <Box textAlign={'end'} paddingRight={'.5rem'}>
-                    {title === newTitle && description === newDescription ? 
-                    (<>
-                        <ActionButton text='Salva Modifiche' endIcon={<Icon>save</Icon>} color='primary' disabled={true}/>
-                    </>) : (
-                    <>
-                        <ActionButton text='Salva Modifiche' endIcon={<Icon>save</Icon>} color='secondary' type='submit' />
-                    </>
-                    )}
+                    {title === newTitle && description === newDescription ?
+                        (<>
+                            <ActionButton text='Salva Modifiche' endIcon={<Icon>save</Icon>} color='primary' disabled={true} />
+                        </>) : (
+                            <>
+                                <ActionButton text='Salva Modifiche' endIcon={<Icon>save</Icon>} color='secondary' type='submit' />
+                            </>
+                        )}
                 </Box>
             </Paper>
             {/* END form per modifica descrizioni */}
             <Paper sx={{ padding: '1rem .3rem', marginBottom: '1rem' }}>
-                <Typography textAlign={'center'} fontWeight={600} fontSize={18}>Modifica Requisiti</Typography>
+                <Typography marginBottom={3} textAlign={'center'} fontWeight={600} fontSize={20}>Modifica Requisiti</Typography>
                 <Box sx={{ marginBottom: '1rem' }} display={'flex'} width={'100%'} justifyContent={'flex-start'}>
                     <ActionButton text='Collega requisito' onClick={() => openAddSectionDialog(true)} endIcon={<Icon>add</Icon>} color='secondary' />
 

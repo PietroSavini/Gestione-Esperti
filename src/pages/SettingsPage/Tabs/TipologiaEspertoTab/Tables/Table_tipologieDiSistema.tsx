@@ -1,4 +1,4 @@
-import { Box, Grid, Switch } from '@mui/material'
+import { Box, CircularProgress, Grid, Switch } from '@mui/material'
 import { DataGrid, GridColDef} from '@mui/x-data-grid'
 import { useState } from 'react'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
@@ -30,7 +30,7 @@ export const Table_tipologieDiSistema = ({rows, addToTipologiePersonalizzateFn} 
     const handleAddClick = async (row:TipologiaEspertoRow) => {
         let rowObj = {
             TEspId: row.TEspId,
-            TEspDesc: row.TEspDesc,
+            TEspDesc: `${row.TEspDesc}-(COPIA)`,
             TEspBr: `${row.TEspBr}-(COPIA)`,
             TEspVis: false,
             EspSys: false,
@@ -39,7 +39,7 @@ export const Table_tipologieDiSistema = ({rows, addToTipologiePersonalizzateFn} 
         //faccio chiamata a webService x l'id
         await AXIOS_HTTP.Execute({sService:'WRITE_TIPOLOGIE_ESPERTO', sModule:'IMPOSTAZIONI_DUPLICA_TIPOLOGIA_ESPERTO', body:rowObj, url:'/api/launch/execute'})
             .then((response) => {
-                const id = response.response.fi_ee_tesp_id;
+                const id = response.response.TEspId;
                 console.log('NUOVO ID: ',id)
                 const newTipologia: TipologiaEspertoRow = {
                     TEspId: id,
@@ -62,10 +62,10 @@ export const Table_tipologieDiSistema = ({rows, addToTipologiePersonalizzateFn} 
         const value = TErow.TEspVis;
         const id = TErow.TEspId as string;
         const [switchValue, setValue] = useState<boolean>(value);
-
-        const handleSwitchChange = async (value: boolean) => {
-        
+        const [loading, isLoading] = useState<boolean>(false)
+        const handleSwitchChange = async (value: boolean) => {  
             const newValue: boolean = !value;
+            isLoading(true)
             await AXIOS_HTTP.Execute({sService:'WRITE_TIPOLOGIE_ESPERTO', url:'/api/launch/execute', sModule:'IMPOSTAZIONI_UPDATE_TIPOLOGIA_ESPERTO', 
                 body:{
                     TEspId: id,
@@ -76,13 +76,20 @@ export const Table_tipologieDiSistema = ({rows, addToTipologiePersonalizzateFn} 
             }).then((res) =>{
                 const addNewValue: boolean = res.response.TEspVis
                 setValue(addNewValue);
-            }).catch((err) => 
+                isLoading(false)
+            }).catch((err) => {
                 console.log(err)
-            )
+                isLoading(false)
+            })
 
         };
 
-        return <Switch id={id as string} onChange={() => handleSwitchChange(switchValue)} checked={switchValue} />;
+        return(
+            <Box width={'100%'} display={'flex'} alignItems={'center'} justifyContent={'center'}>
+                <Switch id={id as string} onChange={() => handleSwitchChange(switchValue)} checked={switchValue} />
+                <CircularProgress size={loading ? 15 : 0} />
+            </Box>
+        )
     };
 
     const DataGridActions = ({params}:{params:any}) => {   

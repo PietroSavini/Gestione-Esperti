@@ -1,5 +1,5 @@
-import { Box, Grid, Switch } from '@mui/material'
-import { DataGrid, GridColDef} from '@mui/x-data-grid'
+import { Box, CircularProgress, Grid, Switch } from '@mui/material'
+import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination'
@@ -8,157 +8,166 @@ import { DeleteButtonWithDialog } from '../../../../../components/partials/Butto
 import { useNavigate } from 'react-router-dom'
 
 
-type Props ={ 
-    
-    fn? :  Function
+type Props = {
+    fn?: Function
     rows: TipologiaEspertoRow[] | []
     setRows: Dispatch<SetStateAction<TipologiaEspertoRow[] | []>>
 }
 
 
 export type TipologiaEspertoRow = {
-    TEspId:string | number;
-    TEspDesc:string,
-    TEspBr:string;
-    TEspVis:boolean;
-    TEspSys:boolean;
+    TEspId: string | number;
+    TEspDesc: string,
+    TEspBr: string;
+    TEspVis: boolean;
+    TEspSys: boolean;
 }
 
 
-export const Table_tipologiePersonalizzate = ({rows, setRows} : Props ) => {
+export const Table_tipologiePersonalizzate = ({ rows, setRows }: Props) => {
 
-    
-    
+
+
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const navigate = useNavigate();
-    
 
-    const handleAddClick = async (row:TipologiaEspertoRow) => {
+
+    const handleAddClick = async (row: TipologiaEspertoRow) => {
         let rowObj = {
             TEspId: row.TEspId,
-            TEspDesc: row.TEspDesc,
+            TEspDesc: `${row.TEspDesc}-(COPIA)`,
             TEspBr: `${row.TEspBr}-(COPIA)`,
             TEspVis: false,
             EspSys: false,
         }
+
         //faccio chiamata a webService x l'id
-        await AXIOS_HTTP.Execute({sService:'WRITE_TIPOLOGIE_ESPERTO', sModule:'IMPOSTAZIONI_INSERT_TIPOLOGIA_ESPERTO', body:rowObj, url:'/api/launch/execute'})
+        await AXIOS_HTTP.Execute({ sService: 'WRITE_TIPOLOGIE_ESPERTO', sModule: 'IMPOSTAZIONI_DUPLICA_TIPOLOGIA_ESPERTO', body: rowObj, url: '/api/launch/execute' })
             .then((response) => {
-                const id = response.response.fi_ee_tesp_id;
-                console.log('NUOVO ID: ',id)
+                const id = response.response.TEspId;
                 const newTipologia: TipologiaEspertoRow = {
                     TEspId: id,
                     TEspBr: rowObj.TEspBr,
                     TEspDesc: rowObj.TEspDesc,
-                    TEspVis : rowObj.TEspVis,
+                    TEspVis: rowObj.TEspVis,
                     TEspSys: rowObj.EspSys
-                }
-                
-                console.log('aggiungo a tablella personalizzate')
-                setRows((prev) => [...prev, newTipologia])
+                };
+
+                console.log('aggiungo a tablella personalizzate');
+                setRows((prev) => [...prev, newTipologia]);
             })
-        
-    }
-    
-    const handleDeleteTipologia = (id: string | number) => {
-        console.log('ciao')
-        AXIOS_HTTP.Execute({sModule:'IMPOSTAZIONI_DELETE_TIPOLOGIA_ESPERTO',sService:'WRITE_TIPOLOGIE_ESPERTO',body:{ TEspId : id}, url:'/api/launch/execute'})
-            .then((result) => {
-                console.log('tipologia cancellata con successo', result)
-                setRows((prev)=> prev.filter((row)=> row.TEspId !== id));
-            }
-            ).catch((err)=> console.log(err))
+            .catch((err) => { console.log(err) });
     }
 
-    const VisibleSwitch = (TErow:TipologiaEspertoRow) => {
+    const handleDeleteTipologia = (id: string | number) => {
+        AXIOS_HTTP.Execute({ sModule: 'IMPOSTAZIONI_DELETE_TIPOLOGIA_ESPERTO', sService: 'WRITE_TIPOLOGIE_ESPERTO', body: { TEspId: id }, url: '/api/launch/execute' })
+            .then((result) => {
+                console.log('tipologia cancellata con successo', result)
+                setRows((prev) => prev.filter((row) => row.TEspId !== id));
+            }
+            ).catch((err) => console.log(err));
+    };
+
+    const VisibleSwitch = (TErow: TipologiaEspertoRow) => {
         const value = TErow.TEspVis;
         const id = TErow.TEspId as string;
         const [switchValue, setValue] = useState<boolean>(value);
-
+        const [loading, isLoading] = useState<boolean>(false)
         const handleSwitchChange = async (value: boolean) => {
             const newValue: boolean = !value;
-
-            await AXIOS_HTTP.Execute({sService:'WRITE_TIPOLOGIE_ESPERTO', url:'/api/launch/execute', sModule:'IMPOSTAZIONI_UPDATE_TIPOLOGIA_ESPERTO', 
-                body:{
+            isLoading(true);
+            await AXIOS_HTTP.Execute({
+                sService: 'WRITE_TIPOLOGIE_ESPERTO', url: '/api/launch/execute', sModule: 'IMPOSTAZIONI_UPDATE_TIPOLOGIA_ESPERTO',
+                body: {
                     TEspId: id,
                     TEspDesc: TErow.TEspDesc,
                     TEspBr: TErow.TEspBr,
                     TEspVis: newValue,
                 },
-            }).then((res) =>{
-                const addNewValue = res.response.TEspVis
+            }).then((res) => {
+                const addNewValue: boolean = res.response.TEspVis
                 setValue(addNewValue);
-            }).catch((err) => 
+                isLoading(false)
+            }).catch((err) => {
                 console.log(err)
-            )
+                isLoading(false)
+            })
 
         };
 
-        return <Switch id={id as string} onChange={() => handleSwitchChange(switchValue)} checked={ switchValue } />;
+        return (
+            <Box width={'100%'} display={'flex'} alignItems={'center'} justifyContent={'center'}>
+                <Switch id={id as string} onChange={() => handleSwitchChange(switchValue)} checked={switchValue} />
+                <CircularProgress size={loading ? 15 : 0} />
+            </Box>
+        )
     };
 
-   /* componente che renderizza i pulsanti azione all'interno della tabella */
-   const DataGridActions = ({params}:any) => {
-    //estraggo i valori della ROW
-    const { row } = params;
-    return(
-        <div className='dataGrid-actions'>
-            <ActionButton color='secondary' onClick={() => handleAddClick(row)} text='Modifica' icon='edit' direction='row-reverse'/>
-            <ActionButton color='warning' onClick={() => navigate('/impostazioni/modifica-tipologia',{state:{...row}})} text='Modifica' icon='edit' direction='row-reverse'/>
-            <DeleteButtonWithDialog row={row as TipologiaEspertoRow} successFn={ handleDeleteTipologia }/>
-        </div>
-    )
-}
 
-   
+    /* componente che renderizza i pulsanti azione all'interno della tabella */
+    const DataGridActions = ({ params }: any) => {
+        //estraggo i valori della ROW
+        const { row } = params;
+        return (
+            <div className='dataGrid-actions'>
+                <ActionButton color='secondary' onClick={() => handleAddClick(row)} text='Duplica' icon='content_copy' direction='row-reverse' />
+                <ActionButton color='warning' onClick={() => navigate('/impostazioni/modifica-tipologia', { state: { ...row } })} text='Modifica' icon='edit' direction='row-reverse' />
+                <DeleteButtonWithDialog row={row as TipologiaEspertoRow} successFn={handleDeleteTipologia} />
+            </div>
+        )
+    }
+
+
     //dichiaro un array di oggetti "columns" per semplificare la creazione degli Headers delle colonne
-    const columns:GridColDef[] = [
-        {field: 'TEspBr', headerName: 'Descrizione', minWidth:150, flex:0.3, sortable:false, filterable:false ,  },
-        {field: 'TEspDesc', headerName: 'Descrizione Lunga', flex:1, minWidth:350 ,sortable:false, filterable:false },
-        {field: 'TEspVis',renderCell(params) {
-            return(
-                <VisibleSwitch {...params.row} />
-            )
-        }, headerName: 'Visibile', minWidth: 70, align:'center', headerAlign:'center', flex:.3, sortable:false, filterable:false },
-        {field: 'actions', type:'actions', headerAlign:'center', align:'center',headerName:'azioni',  width: 320 , sortable:false, filterable:false , renderCell: (params:any) => (<DataGridActions params={params}/>)}
-    ]; 
+    const columns: GridColDef[] = [
+        { field: 'TEspBr', headerName: 'Descrizione', minWidth: 150, flex: 0.3, sortable: false, filterable: false, },
+        { field: 'TEspDesc', headerName: 'Descrizione Lunga', flex: 1, minWidth: 350, sortable: false, filterable: false },
+        {
+            field: 'TEspVis', renderCell(params) {
+                return (
+                    <VisibleSwitch {...params.row} />
+                )
+            }, headerName: 'Visibile', minWidth: 70, align: 'center', headerAlign: 'center', flex: .3, sortable: false, filterable: false
+        },
+        { field: 'actions', type: 'actions', headerAlign: 'center', align: 'center', headerName: 'azioni', width: 320, sortable: false, filterable: false, renderCell: (params: any) => (<DataGridActions params={params} />) }
+    ];
 
- 
 
-  return (
-    <Box className="dataTable" >
-        <Grid container mb={10} ml={15} spacing={2}>
-            <Grid item width={'100%'} padding={'0 !important'}>
-                <DataGrid
-                    getRowId={(row)=> row.TEspId}
-                    slots={{
-                        pagination: CustomPagination,
-                    }}
-                    hideFooterSelectedRowCount
-                    loading={isLoading}
-                    autoHeight
-                    rows={rows}
-                    columns={columns}
-                    initialState={{
-                        pagination: {
-                            paginationModel: { page: 0, pageSize: 10 }
-                        },
-                    }}
-                    pageSizeOptions={[5, 10, 20, 50]}
-                    sx={{
-                        padding:'0',
-                        fontSize: 14,
-                    }}
-                    localeText={{
-                        noRowsLabel:'Nessun elemento trovato',
-                        MuiTablePagination: {
-                            labelRowsPerPage: 'Righe per pagina:',
-                        },
-                    }}
-                    
-                />
+
+    return (
+        <Box className="dataTable" >
+            <Grid container mb={10} ml={15} spacing={2}>
+                <Grid item width={'100%'} padding={'0 !important'}>
+                    <DataGrid
+                        getRowId={(row) => row.TEspId}
+                        slots={{
+                            pagination: CustomPagination,
+                        }}
+                        hideFooterSelectedRowCount
+                        loading={isLoading}
+                        autoHeight
+                        rows={rows}
+                        columns={columns}
+                        initialState={{
+                            pagination: {
+                                paginationModel: { page: 0, pageSize: 10 }
+                            },
+                        }}
+                        pageSizeOptions={[5, 10, 20, 50]}
+                        sx={{
+                            padding: '0',
+                            fontSize: 14,
+                        }}
+                        localeText={{
+                            noRowsLabel: 'Nessun elemento trovato',
+                            MuiTablePagination: {
+                                labelRowsPerPage: 'Righe per pagina:',
+                            },
+                        }}
+
+                    />
+                </Grid>
             </Grid>
-        </Grid>
-    </Box>
-  )
+        </Box>
+    )
 }

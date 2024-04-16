@@ -43,16 +43,6 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
     
   }, [])
 
-  
-  useEffect(() => {
-    console.log(rowModesModel)
-  }, [rowModesModel])
-  
-  useEffect(() => {
-    console.log('ROWS IN ERRORE:',rowsInError)
-  }, [rowsInError])
-
-
   async function GET_SELECTABLE_ITEMS () {
     await AXIOS_HTTP.Retrieve({body:{masterId:masterRequisitoId}, url:'/api/launch/retrieve', sModule:'IMPOSTAZIONI_GET_SOTTOREQUISITI', sService:'READ_REQUISITI'})
       .then((resp)=> {
@@ -187,8 +177,6 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
             fi_ee_punt_id: newPuntId, 
             fi_ee_req_punteggio: newRow.fi_ee_req_punteggio
           } 
-          
-          
         })
      //UPDATE PUNTEGGIO
     }else { 
@@ -211,12 +199,9 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
           .catch((err) => console.log(err))
       }
     }
-
-    //asseggna nuovo punteggio alla tipologia
    
-    setIsLoading(false);
-    console.log('OUTPUTROW: ', outputRow);
     setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
+    setIsLoading(false);
     return outputRow
   };
   
@@ -327,7 +312,6 @@ export default function Table_RequisitiSelect ({data, setData, tespId}:{data:Req
     const { id, value, api, field} = props;
     const arrToFilterOptions = rows.map(row => row.fi_ee_req_id); 
     const filteredSelectValues = selectValues.filter(item => !arrToFilterOptions.includes(item.id))
-    const allRequisitiInseriti = filteredSelectValues.length === 0;
     const handleChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value as string;
         api.setEditCellValue({ id, field, value: newValue });
