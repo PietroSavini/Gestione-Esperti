@@ -8,9 +8,6 @@ import Table_RequisitiPunteggiShow from "../../RequisitiTab/Tables/Table_Requisi
 import { Requisito_Table, TipologiaEspertoRow } from "../../../types";
 import { convertData } from "../../../functions";
 
-
-
-
 export const TipologiaShow = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate();
@@ -19,32 +16,32 @@ export const TipologiaShow = () => {
     const descriptionBr = tipologia.TEspBr;
     const description = tipologia.TEspDesc;
     const id = tipologia.TEspId;
+    const [formattedData, setFormattedData] = useState<[] | Requisito_Table[] | undefined>(undefined)
 
-    const [formattedData, setFormattedData] = useState<[] | Requisito_Table[]>()
-
-    useEffect(() => {
-        console.log('dati formattati: ', formattedData)
-        if (formattedData) {
-            dispatch(closeLoader())
-        }
-    }, [formattedData])
-
+    
     const GET_ALL_REQUISITI_COLLEGATI = async () => {
         dispatch(openLoader())
         await AXIOS_HTTP.Retrieve({ sModule: 'IMPOSTAZIONI_GET_ALL_PUNTEGGI', sService: 'READ_PUNTEGGI', url: '/api/launch/retrieve', body: { TEspId: id } })
             .then((resp) => {
                 setFormattedData(convertData(resp.response, 0))
-
             })
             .catch((err) => {
                 console.error(err)
             })
-    }
-
-    useEffect(() => {
-        GET_ALL_REQUISITI_COLLEGATI()
-    }, [])
-
+            
+        }
+        
+        useEffect(() => {
+            GET_ALL_REQUISITI_COLLEGATI()
+        }, [])
+        
+        useEffect(() => {
+            if (formattedData ) {
+                dispatch(closeLoader())
+                console.log('dati formattati: ', formattedData)
+            }
+        }, [formattedData])
+        
     return (
         <>
             <Box marginBottom='1rem'>
