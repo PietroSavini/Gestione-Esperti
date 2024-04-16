@@ -2,7 +2,7 @@ import { Box, Icon, IconButton, InputBase, Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridEventListener, GridPreProcessEditCellProps, GridRenderEditCellParams, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer, GridTreeNodeWithRender, useGridApiContext } from '@mui/x-data-grid';
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Table_requisiti.scss';
 import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import React from 'react';
@@ -25,6 +25,10 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rowsInError, setRowsInError] = useState<Error[] | []>([]);
+
+  useEffect(()=>{
+    console.log('ROWS IN ERRORE: ',rowsInError)
+  },[rowsInError])
 
   //custom toolBar con logica del pulsante "+ Aggiungi requisito"-------------------------------------------------------------------------------------------------------------------
   interface EditToolbarProps {
@@ -64,7 +68,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
           <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{masterRequisitoTitle}</Typography>
           <Box className='req-master-actions'>
             <IconButton><Icon sx={{ fontSize: '20px' }} color='warning'>edit</Icon></IconButton>
-            <IconButton onClick={() => handleDeleteClick(masterRequisitoId)}><Icon color='error' sx={{ fontSize: '20px' }}>delete</Icon></IconButton>
+            <IconButton onClick={() => handleDeleteClick({id:masterRequisitoId, isReqMst:true})}><Icon color='error' sx={{ fontSize: '20px' }}>delete</Icon></IconButton>
           </Box>
         </Box>
         <Box display={'flex'} justifyContent={'flex-end'} flexGrow={1} >
@@ -82,7 +86,8 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
 
   //cancella Modifica row
   const handleCancelClick = (id: GridRowId) => () => {
-
+    console.log('handleCancel click')
+    //reset per eliminare l'errore
     if (rowsInError.some((rowInError) => rowInError.id === id)) {
       setRowsInError((prev) => prev.filter((rowInError) => rowInError.id !== id))
     }
@@ -90,22 +95,22 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
-
-    const editedRow = rows?.find((row) => row.fi_ee_req_id === id);
-    if (editedRow!.fi_ee_req_id === 'newRow') {
+    const thisRow = rows!.find((row) => row.fi_ee_req_id === id);
+    if (thisRow && thisRow.fi_ee_req_id === 'newRow') {
+    
       setRows(rows?.filter((row) => row.fi_ee_req_id !== id));
-    };
+    }
   };
-  //----------------------------------------||--------LOGICA BOTTONI-------||--------------------------------------------------------------
-  //---------------------------------------------------------------------------------------------------------------------------------------
+
   //------------------------------------------------CREATE/UPDATE--------------------------------------------------------------------------
   //---------------------------------------------------------------------------------------------------------------------------------------
-  //---ATTENZIONE---
+
   //Questa funzione è triggerata dalla dataGrid (grazie al parametro "processRowUpdate") quando la row passa da edit a view (e NON viceversa), di fatto gestisce l'update in UI ed il salvataggio sul WS
   const handleRowSave = async (oldRow: RequisitoType_RequisitoTab, newRow: RequisitoType_RequisitoTab) => {
 
-    setIsLoading(true);
     let outputRow = {};
+    setIsLoading(true);
+
     //INSERT REQUISITO
     if (newRow.fi_ee_req_id === 'newRow') {
       await AXIOS_HTTP.Execute({ sService: 'WRITE_REQUISITI', sModule: 'IMPOSTAZIONI_INSERT_REQUISITO', body: { masterId:masterRequisitoId, descrizione: newRow.fs_ee_req_desc }, url: '/api/launch/execute' })
@@ -113,7 +118,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
           //caso in cui cè un errore nella response dal WEBSERVICE
           if (response.errorCode && response.errorCode !== 0) {
             console.log('errore durante l inserimento del requisito: ', response.errorMessage)
-            setIsLoading(false);
+         
             outputRow = oldRow;
           }
           const newId = response.response.fi_ee_req_id;
@@ -128,6 +133,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
         .catch((error) => {
           outputRow = oldRow
           console.log(error)
+      
         })
 
     } else {//UPDATE REQUISITO
@@ -152,8 +158,8 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
             outputRow = oldRow;
           })
       };
-
     };
+
     setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
     setIsLoading(false)
     return outputRow
@@ -162,11 +168,14 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
   //--------------------------------------------------------------------------------------------------------------------------------
   //----------------------------------------------------DELETE----------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------
-  const handleDeleteClick = async (id: GridRowId)  => {
+  const handleDeleteClick = async ({id, isReqMst}:{id: GridRowId, isReqMst:boolean})  => {
 
     await AXIOS_HTTP.Execute({ sService: 'WRITE_REQUISITI', sModule: 'IMPOSTAZIONI_DELETE_REQUISITO', body: { reqId: id }, url: '/api/launch/execute' })
       .then((response) => {
         console.log(id, 'requisito cancellato', response)
+        if(isReqMst){
+          setData((prev)=> prev.filter((MasterReq) => MasterReq.fi_ee_req_id !== id))
+        }
         setRows(rows?.filter((row) => row.fi_ee_req_id !== id));
       })
       .catch((error) => {
@@ -183,6 +192,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
 
   // listener di eventi 'row edit stop' della Datagrid (enterKeyDown, escapeKeyDown, rowfocusOut ...etc)
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
+    console.log('handleRowEditStop click')
     const id = params.id as string
     const rowInError = rowsInError.some(row => row.id === id);
     
@@ -271,6 +281,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
     const inputRef = React.useRef<HTMLInputElement | null>(null)
     const apiRef = useGridApiContext();
     let errorMessage: any = '';
+
     useEnhancedEffect(() => {
       if (hasFocus && inputRef.current) {
         inputRef.current.focus();
@@ -279,11 +290,11 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
 
     if (error) {
       const errorObj = rowsInError.find((row) => row.id = id);
-      errorMessage = errorObj!.errorMessage as string
+      errorMessage = errorObj?.errorMessage as string
     }
 
 
-    const CustomErrorTooltip = ({ errorMessage }: { errorMessage: string }) => {
+    const CustomErrorTooltip = ({ errorMessage }: { errorMessage: string  }) => {
       return (
         <Box position={'absolute'} className='custom-tooltip-error' right={'5px'} bottom={'10px'} zIndex={2} padding={'.2rem .5rem'} sx={{ backgroundColor: 'rgba(255, 20, 20, .8)', borderRadius: '10px' }}>
           <Typography fontSize={'.9rem'}>{errorMessage}</Typography>
@@ -328,7 +339,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
     };
     return [
       <ActionButton key={rowId} sx={{ marginRight: '5px' }} icon='edit' disabled={isAnyNewRowInEditing} color='warning' onClick={handleEditClick(rowId)} />,
-      <ActionButton key={`${rowId}-1`} icon='delete' onClick={() => handleDeleteClick(rowId)} color='error' />,
+      <ActionButton key={`${rowId}-1`} icon='delete' onClick={() => handleDeleteClick({isReqMst:false, id:rowId})} color='error' />,
     ];
   }
 
