@@ -128,7 +128,6 @@ export const AxiosHTTP = (options: Options) => {
             finalResult = decodedResult
         }
         //esporto risultato finale
-        console.log('AXIOSHTTP: ',finalResult)
         return finalResult;
     };
 
