@@ -1,11 +1,3 @@
-export type RawData = {
-    fi_ee_req_id: string | number,
-    fs_ee_req_desc: string,
-    fi_ee_req_punteggio: number,
-    fi_ee_req_master_id: number | null
-    fi_ee_punt_id?: number
-}[] | [];
-
 export type Requisito_Table = {
     fi_ee_req_id: string | number;
     fs_ee_req_desc: string;

@@ -6,6 +6,7 @@ import { CustomPagination } from '../../../../../components/partials/CustomPagin
 import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP'
 import { DeleteButtonWithDialog } from '../../../../../components/partials/Buttons/DeleteButtonWithDialog'
 import { useNavigate } from 'react-router-dom'
+import { TipologiaEspertoRow } from '../../../types'
 
 
 type Props = {
@@ -15,13 +16,6 @@ type Props = {
 }
 
 
-export type TipologiaEspertoRow = {
-    TEspId: string | number;
-    TEspDesc: string,
-    TEspBr: string;
-    TEspVis: boolean;
-    TEspSys: boolean;
-}
 
 
 export const Table_tipologiePersonalizzate = ({ rows, setRows }: Props) => {

@@ -1,19 +1,16 @@
 import { Box, Dialog, FormHelperText, Grid, Icon, InputBase, Paper, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks';
 import { useForm } from 'react-hook-form';
-
-import { TipologiaEspertoRow } from '../Tables/Table_tipologieDiSistema';
-import { Requisito_Table } from '../../RequisitiTab/RequisitiTab';
 import Table_RequisitiSelect from './Table_RequisitiSelect';
 import { closeLoader, openLoader } from '../../../../../app/store/Slices/loaderSlice';
 import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
-import { convertData } from '../TipologiaShow/TipologiaShow';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
 import { Custom_Select2 } from '../../../../../components/partials/Inputs/Custom_Select2';
 import { Custom_TextField } from '../../../../../components/partials/Inputs/CustomITextField';
+import { Requisito_Table, TipologiaEspertoRow } from '../../../types';
+import { convertData } from '../../../functions';
 
 export type InboundSelectData = {
     fi_ee_req_id: number;
@@ -52,7 +49,6 @@ export const TipologiaEdit = () => {
     const [isAddSectionOpen, openAddSectionDialog] = useState<boolean>(false)
     const [error, setIsError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>('')
-
 
     //Funzioni
     const addNewSection = async () => {
@@ -105,7 +101,7 @@ export const TipologiaEdit = () => {
                 });
                 setSelectableItems(finalArray)
             })
-    }
+    };
 
     // funzione che mostra i requisiti collegati dai punteggi alla tipologia
     const GET_ALL_PUNTEGGI_COLLEGATI = async () => {
@@ -113,14 +109,14 @@ export const TipologiaEdit = () => {
         await AXIOS_HTTP.Retrieve({ sModule: 'IMPOSTAZIONI_GET_ALL_PUNTEGGI', sService: 'READ_PUNTEGGI', url: '/api/launch/retrieve', body: { TEspId: id } })
             .then((resp) => {
                 console.log('REQUISITI COLLEGATI ALLA TIPOLOGIA ESPERTO: : ', resp)
-                setFormattedData(convertData(resp.response, 1))
+                setFormattedData(convertData(resp.response))
                 dispatch(closeLoader())
             })
             .catch((err) => {
                 console.error(err)
                 dispatch(closeLoader())
             })
-    }
+    };
 
     //chiamate iniziali al rendering della pagina
     useEffect(() => {
@@ -128,11 +124,9 @@ export const TipologiaEdit = () => {
         GET_REQUISITI_FOR_SELECT()
     }, [])
     
-
     useEffect(() => {
         console.log('', selectedItem)
     }, [selectedItem])
-
 
     //funzione di submit del bottone per modifica descrizioni
     const updateDescriptions = async (formData: any) => {
@@ -149,14 +143,12 @@ export const TipologiaEdit = () => {
                     const newDescriptionAfterSave = res.response.TEspDesc as string;
                     setTitle(newTitleAfterSave);
                     setDescription(newDescriptionAfterSave)
-                }
-
+                };
             })
             .catch((err) => console.log(err))
-    }
+    };
 
-    const [genErr, setGenErr] = useState<string>('')
-
+    const [genErr, setGenErr] = useState<string>('');
     return (
         <>
             <Box marginBottom='1rem'>

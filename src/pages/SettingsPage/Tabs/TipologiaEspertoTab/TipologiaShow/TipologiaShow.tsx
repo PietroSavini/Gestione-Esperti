@@ -23,7 +23,8 @@ export const TipologiaShow = () => {
         dispatch(openLoader())
         await AXIOS_HTTP.Retrieve({ sModule: 'IMPOSTAZIONI_GET_ALL_PUNTEGGI', sService: 'READ_PUNTEGGI', url: '/api/launch/retrieve', body: { TEspId: id } })
             .then((resp) => {
-                setFormattedData(convertData(resp.response, 0))
+                const newData = convertData(resp.response);
+                setFormattedData(newData)
             })
             .catch((err) => {
                 console.error(err)
@@ -34,7 +35,7 @@ export const TipologiaShow = () => {
         useEffect(() => {
             GET_ALL_REQUISITI_COLLEGATI()
         }, [])
-        
+
         useEffect(() => {
             if (formattedData ) {
                 dispatch(closeLoader())

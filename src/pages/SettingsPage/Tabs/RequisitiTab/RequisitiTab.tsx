@@ -6,11 +6,6 @@ import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import { Requisito_Table } from '../../types';
 import { convertData } from '../../functions';
 
-
-
-
-
-
 export const RequisitiTab = () => {
     const [tables, setTables] = useState<Requisito_Table[] | []>([]);
     //chiamata iniziale per requisiti gia presenti
@@ -18,13 +13,11 @@ export const RequisitiTab = () => {
 
         AXIOS_HTTP.Retrieve({ url: '/api/launch/retrieve', body: null, sService: 'READ_REQUISITI', sModule: 'IMPOSTAZIONI_GET_ALL_REQUISITI' })
             .then(result => {
-                setTables(convertData(result.response, 0))
+                setTables(convertData(result.response))
             })
             .catch(error => {
                 console.log(error)
             });
-
-
     }, [])
 
 
@@ -49,9 +42,7 @@ export const RequisitiTab = () => {
 
                 console.log('requisito MAster passato alla tabella :', newRequisitoMaster)
                 setTables((prev) => [...prev, newRequisitoMaster])
-
             })
-
     }
 
     return (

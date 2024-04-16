@@ -1,23 +1,22 @@
-import { Box, Icon, IconButton, InputBase, Tooltip, Typography } from '@mui/material';
-import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridPreProcessEditCellProps, GridRenderEditCellParams, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer, GridTreeNodeWithRender, useGridApiContext } from '@mui/x-data-grid';
+import { Box, Icon, IconButton, InputBase, Typography } from '@mui/material';
+import { DataGrid, GridColDef, GridEventListener, GridPreProcessEditCellProps, GridRenderEditCellParams, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer, GridTreeNodeWithRender, useGridApiContext } from '@mui/x-data-grid';
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination';
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
-import { RequisitoType_RequisitoTab, Requisito_Table } from '../RequisitiTab';
-import { forwardRef, useEffect, useState } from 'react';
-
+import { useState } from 'react';
 import './Table_requisiti.scss';
 import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import React from 'react';
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
+import { RequisitoType_RequisitoTab, Requisito_Table } from '../../../types';
 
 type Error = {
   id: string | number;
   errorMessage: string | null;
 }
+
 //dataTable -------------------------------------------------------------------------------------------------------------------------
 export default function Requisiti_table({ data, setData }: { data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>> }) {
   const requisiti = data.requisiti_list;
-
   // variabili del requisito master
   const masterRequisitoTitle = data.fs_ee_req_desc;
   const masterRequisitoId = data.fi_ee_req_id;
@@ -26,8 +25,6 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rowsInError, setRowsInError] = useState<Error[] | []>([]);
-
-
 
   //custom toolBar con logica del pulsante "+ Aggiungi requisito"-------------------------------------------------------------------------------------------------------------------
   interface EditToolbarProps {
