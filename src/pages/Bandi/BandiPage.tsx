@@ -1,6 +1,6 @@
 import  { useState } from 'react'
 import { ActionButton } from '../../components/partials/Buttons/ActionButton'
-import { Avatar, Box, Button, Dialog, Divider, Icon, MobileStepper, Step, StepLabel, Stepper, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import './BandiPage.scss'
 import AXIOS_HTTP from '../../app/AXIOS_ENGINE/AXIOS_HTTP'
 import { WizardCreazioneBando } from './WizardCreazioneBando/WizardCreazioneBando'
@@ -12,18 +12,17 @@ export const BandiPage = () => {
         setOpenModal(false)
     }
     
+    const GET_ALL_BANDI =  async () => {
+      AXIOS_HTTP.Retrieve({sModule:'GET_ALL_BANDI',sService:'READ_BANDI',url:'/api/launch/retrieve', body:{}})
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err))
+    }
 
   return (
     <>
         <div>Pagina dei Bandi</div>
         <Box marginBottom={'1rem'} display={'flex'} gap={2}>
-
-            <ActionButton color='secondary' text=' tutta la datatable' onClick={ () => AXIOS_HTTP.Retrieve({url:'/api/Retrieve/retrieve', sService:'GET_ALL_CLASSI_DOC',body:{}, sModule:''})}/>
-            <ActionButton color='warning' text='crea NOME su db' onClick={()=> AXIOS_HTTP.Execute({url:'/api/Execute/execute',sModule:'WRITE_BANDO',sService:'WRITE',body:{ Visibile:true, Descrizione:"aowudhioawhduaiwhdiawhd", CustomerId:1 , DescrizioneBreve:"ciao"}})}/>
-            <ActionButton color='secondary' text='filtra per username ' onClick={()=> AXIOS_HTTP.Retrieve({url:'/api/Retrieve/retrieve',sModule:'',sService:'GET_CLASSI_DOC',body:{Username:'Gabriele'}})}/>
-            <ActionButton color='warning' text='update passando ID e newUsername' onClick={()=> AXIOS_HTTP.Execute({url:'/api/Execute/execute',sModule:'UPDATE_BANDO',sService:'WRITE',body:{ID:81, newUsername:'VECCHIOBACUCCO'}})}/>
-            <ActionButton color='error' text='elimina passando ID' onClick={()=> AXIOS_HTTP.Execute({url:'/api/Execute/execute',sModule:'DELETE_BANDO',sService:'WRITE',body:{ID:100}})}/>
-
+          <ActionButton color='secondary' text='GET ALL BANDI' onClick={ () => GET_ALL_BANDI() }/>
         </Box>
         <ActionButton color='secondary' text='Crea nuovo Bando' onClick={() => setOpenModal(true)}  />
         

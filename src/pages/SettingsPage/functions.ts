@@ -17,6 +17,14 @@ type DataTwo = {
     ReqSys: number;
 }
 
+type DataThree ={
+    ReqId: string | number;
+    ReqDesc: string;
+    MasterId: number | null;
+    Valore: number;
+    fi_ee_punt_id: number
+}
+
 function mergeRequisitiArrays(array1: Requisito_Table[], array2: Requisito_Table[]): Requisito_Table[] {
     const idMap = new Map<string | number, Requisito_Table>();
     // Aggiungi requisiti dal primo array alla mappa
@@ -45,8 +53,9 @@ export const convertData = (rawData: RawData): Requisito_Table[] | [] => {
     if (Array.isArray(rawData) && rawData.length > 0) {
         //prendo il primo item per riconosccere il tipo di Dati in ingresso
         const firstItem = rawData[0];
-
+        
         if ('ReqId' in firstItem && 'ReqDesc' in firstItem && 'ReqMstId' in firstItem && 'ReqSys' in firstItem) {
+            console.log('DATI DA CONVERTIRE: REQUISITI');
             // Tipo 1: rawData è di tipo DataTwo
             (rawData as DataTwo[]).forEach(RawDataItem => {
                 if (RawDataItem.ReqMstId === null) {
@@ -69,6 +78,7 @@ export const convertData = (rawData: RawData): Requisito_Table[] | [] => {
                             fs_ee_req_desc: RawDataItem.ReqDesc,
                             fi_ee_req_punteggio: undefined,
                             fi_ee_req_customerid: RawDataItem.ReqSys,
+                            fi_ee_mst_id: parentRequisito.fi_ee_req_id,
                         };
                         parentRequisito.requisiti_list = [...parentRequisito.requisiti_list, requisitoFiglio];      
                         requisitiMasterWithotherRequisiti = [...requisitiMasterWithotherRequisiti, parentRequisito];
@@ -78,13 +88,14 @@ export const convertData = (rawData: RawData): Requisito_Table[] | [] => {
 
             requisitiTables = mergeRequisitiArrays(requisitiMaster, requisitiMasterWithotherRequisiti);
             
-        } else if ('fi_ee_req_id' in firstItem && 'fs_ee_req_desc' in firstItem) {
-            // Tipo 0: rawData è di tipo RequisitoType_RequisitoTab[]
-            (rawData as DataOne[]).forEach(RawDataItem => {
-                if (RawDataItem.fi_ee_req_master_id === null) {
+        } else if ( 'ReqId' in firstItem && 'ReqDesc' in firstItem && 'MasterId' in firstItem && 'Valore' in firstItem && 'TEspId' in firstItem && 'fi_ee_punt_id' in firstItem) {
+
+            console.log('DATI DA CONVERTIRE: PUNTEGGI');
+            (rawData as DataThree[]).forEach(RawDataItem => {
+                if (RawDataItem.MasterId === null) {
                     const requisitoToInsert: Requisito_Table = {
-                        fi_ee_req_id: RawDataItem.fi_ee_req_id,
-                        fs_ee_req_desc: RawDataItem.fs_ee_req_desc,
+                        fi_ee_req_id: RawDataItem.ReqId,
+                        fs_ee_req_desc: RawDataItem.ReqDesc,
                         fi_ee_punt_id: RawDataItem.fi_ee_punt_id,
                         requisiti_list: []
                     };
@@ -92,24 +103,25 @@ export const convertData = (rawData: RawData): Requisito_Table[] | [] => {
                 }
             });
 
-            (rawData as DataOne[]).forEach(requisito => {
-                if (requisito.fi_ee_req_punteggio !== undefined && requisito.fi_ee_req_punteggio !== 0) {
-                    const parentRequisito = requisitiMaster.find(master => master.fi_ee_req_id === requisito.fi_ee_req_master_id);
+            (rawData as DataThree[]).forEach(RawDataItem => {
+                if (RawDataItem.MasterId !== null) {
+                    const parentRequisito = requisitiMaster.find(master => master.fi_ee_req_id === RawDataItem.MasterId);
                     if (parentRequisito) {
                         const requisitoFiglio = {
-                            fi_ee_req_id: requisito.fi_ee_req_id,
-                            fs_ee_req_desc: requisito.fs_ee_req_desc,
-                            fi_ee_req_punteggio: requisito.fi_ee_req_punteggio,
-                            fi_ee_punt_id: requisito.fi_ee_punt_id
+                            fi_ee_req_id: RawDataItem.ReqId,
+                            fs_ee_req_desc: RawDataItem.ReqDesc,
+                            fi_ee_req_punteggio: RawDataItem.Valore,
+                            fi_ee_punt_id: RawDataItem.fi_ee_punt_id,
                         };
-                        parentRequisito.requisiti_list = [...parentRequisito.requisiti_list, requisitoFiglio];  
-                        requisitiMasterWithotherRequisiti = [...requisitiMasterWithotherRequisiti, parentRequisito]
+                        parentRequisito.requisiti_list = [...parentRequisito.requisiti_list, requisitoFiglio];      
+                        requisitiMasterWithotherRequisiti = [...requisitiMasterWithotherRequisiti, parentRequisito];
                     }
                 }
             });
-
+            
             requisitiTables = mergeRequisitiArrays(requisitiMaster, requisitiMasterWithotherRequisiti);
-        } else {
+     
+        }else {
             console.error('Struttura dati non riconosciuta.');
             return requisitiTables;
         }

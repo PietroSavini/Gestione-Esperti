@@ -1,4 +1,4 @@
-import  { useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import AXIOS_HTTP from '../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import { Avatar, Box, Button, Dialog, Divider, Icon, MobileStepper, Step, StepLabel, Stepper, Typography } from '@mui/material';
@@ -6,28 +6,90 @@ import { FormStep1 } from './Steps/FormStep1';
 import { FormStep2 } from './Steps/FormStep2';
 import { FormStep3 } from './Steps/FormStep3';
 import { ActionButton } from '../../../components/partials/Buttons/ActionButton';
+import { Requisito_Table } from '../../SettingsPage/types';
+import { convertData } from '../../SettingsPage/functions';
+import { FormStep4 } from './Steps/FormStep4';
+import { FormStep5 } from './Steps/FormStep5';
 
 type Params = {
     close: () => void;
     isOpen: boolean
 }
 
+export type AttivitaObj = {
+    Id:string
+    actionId?:string;
+    actionDett:string;
+    actionDesc?:string;
+    actionName?:string;
+    delete:boolean; //true se è componente che è cancellabile 
+    fiProcessOwnerId?:number;
+    posizione:number;
+}
+
+export type AttList = {
+    actionId:number, // -> id (value?)
+    actionDesc:string; // descrizione attività
+    ActionDett:string; // dettaglio es(UPLOAD_DOC)  (value?)
+    actionName:string; // lable attività -> lable
+};
+
+export type User = {
+    user_id: number;
+    utente: string;
+};
+
+export type UserGroup = {
+    fiGroupId:number;
+    fsGroupExtDescription:string;
+    fsGroupName:string;
+}
+
+export type ModelloProcedimento = {
+    pm_id: number;
+    pm_subject:string;
+    pm_ext_desc:string;
+    iTotalRow:number;
+}
+
 export const WizardCreazioneBando = (params:Params) => {
     const {close, isOpen} = params
-    //lista dei requisiti (sezioni e requisiti singoli) che andranno inseriti nel data nella funzione submit per poi andare a completare la creazione del bando
-    const [requisitiBando, setRequisitiBando] = useState({})
-    //variabile di State per sezione "archivio collegato"
-    const [archivioCollegato, setArchivioCollegato] = useState<string|null>(null)
-
-    //tutto da aggiungere nel modal creazione bando in componente separato
-  
     //react Hook Forms
     const { register, handleSubmit, trigger, formState, control, watch, unregister } = useForm<any>();
     const { errors } = formState;
     const [activeStep, setActiveStep] = useState(0);    
+    //-----------------------variabili di state che servono per invio form finale.-----------------------------------------//
+    //variabile di State per sezione "archivio collegato"
+    const [archivioCollegato, setArchivioCollegato] = useState<string|null>(null)
+    //variabile di State per TipologiaEsperto
+    const [TEsp, setTEsp] = useState<string|number|undefined>(undefined);
+    //variabile di State per salvataggio punteggi (già formattati)
+    const [punteggi, setPunteggi] = useState<Requisito_Table[]|[]>([]);
+    //variabile di state per procedimenti (lista attività)
+    const [procedimenti, setProcedimenti] = useState<AttivitaObj[]|[]>([])
+    //funzione per chiamare i punteggi e salvarli nello state
+    async function GET_ALL_PUNTEGGI_COLLEGATI (id:string|number) {
+        await AXIOS_HTTP.Retrieve({url:'/api/launch/retrieve', sService:'READ_PUNTEGGI', sModule:'IMPOSTAZIONI_GET_ALL_PUNTEGGI', body:{TEspId:id}})
+            .then((resp)=>{
+                const allPunteggi = convertData(resp.response) ;
+                console.log('PUNTEGGI COLLEGATI: ',allPunteggi);
+                setPunteggi(allPunteggi)
+                
+            })
+    };
+
+    //useState che utilizzo per chiamare i punteggi collegati alla tipologiaEsperto e salvarli per mostrarli nel 4o step
+    useEffect(() => {
+        if(TEsp){
+            GET_ALL_PUNTEGGI_COLLEGATI(TEsp)
+        }
+        if(TEsp === undefined || null && punteggi.length > 0){
+            setPunteggi([])
+            console.log('punteggi cancellati', punteggi)
+        }
+    }, [TEsp]);
     
-
-
+    
     //steps (stepper MUI)
     const steps = [
         {
@@ -57,30 +119,38 @@ export const WizardCreazioneBando = (params:Params) => {
         },
     ]
 
+    //funzione per popolare la select della tipologia esperto
+
     //funzione che gestisce validazione degli step e logica per prossimo step !**PULSANTE 'AVANTI', NON SUBMIT**!
     const handleNextStep = async (params:string[]) => {
+        console.log('validazione :' , params)
         const result = await trigger(params)
-        if(!result) return
+        console.log(result)
+        if(!result) return result;
         setActiveStep((prev) => prev +1)
+        return true
     }
 
     //funzione di submit
     const submitWizard = (data:any) => {
         setActiveStep(0)
         close()
-        console.log('form Inviato: ', data)
-
+        
         //********************* */
-        const submittedData = {} //struttura dati da creare successivamente 
+        const submittedData = {...data, 
+            requisiti: punteggi,
+            
+        } //struttura dati da creare successivamente 
+        console.log('form Inviato: ', data)
         //******************** */
 
         //chiamata a WebService
        // AXIOS_HTTP.Retrieve({url:'api/Retrieve/retrieve',sService:'GET_CLASSI_DOC', body:data, sModule:''})
     }
     //se si vuole si possono inserire gli array di stringhe 
-    const formStep1Validation: string[] = ['ciaone'];
+    const formStep1Validation: string[] = ['TEsp'];
     const formStep2Validations: string[] = ['scadenza','pubblicazione_albo_richiedente','pubblicazione_albo_oggetto'];
-    const formStep3Validations: string[] = []
+    const formStep3Validations: string[] = ['responsabile']
 
     const ValidateAndGoNext = () => {
         switch (activeStep){
@@ -91,7 +161,6 @@ export const WizardCreazioneBando = (params:Params) => {
 
             case 1:
                 handleNextStep(formStep2Validations)
-                
             break;
 
             case 2:
@@ -101,8 +170,9 @@ export const WizardCreazioneBando = (params:Params) => {
             case 3:
                 setActiveStep((prev) => prev + 1)
             break;
-
-            
+            case 4:
+               handleNextStep(formStep3Validations);
+            break;
         }
     }
   return (
@@ -157,9 +227,11 @@ export const WizardCreazioneBando = (params:Params) => {
                     <Box component={'form'} noValidate onSubmit={handleSubmit(submitWizard)}>
                         <Box className={'ms_form-group'}>
                             {/* qui vanno renderizzati i vari form input in base agli steps */}
-                            <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control} />
+                            <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control} setState={setTEsp}/>
                             <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors} control={control} fn={watch} unregister={unregister}/>
                             <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors} setArchivio={setArchivioCollegato}/>
+                            <FormStep4 className={`${activeStep !== 3 && 'd-none'}`} register={register} errors={errors} data={punteggi} setState={setPunteggi} TEspId={TEsp}/>
+                            <FormStep5 className={`${activeStep !== 4 && 'd-none'}`} register={register} errors={errors} control={control} data={procedimenti} setState={setProcedimenti} />
                         </Box>
 
                         {/* mobile navigation xs -> md */}

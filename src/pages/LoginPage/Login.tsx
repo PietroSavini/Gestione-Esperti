@@ -63,9 +63,6 @@ export const Login = () => {
 
     const onSubmit = useThrottled(
 
-
-        
-        
         async (data: any) => {
 
             setGenErr('')

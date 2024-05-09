@@ -58,7 +58,7 @@ export const Table_tipologiePersonalizzate = ({ rows, setRows }: Props) => {
 
     const VisibleSwitch = (TErow: TipologiaEspertoRow) => {
         const value = TErow.TEspVis;
-        const id = TErow.TEspId as string;
+        const id = `${TErow.TEspId}` 
         const [switchValue, setValue] = useState<boolean>(value);
         const [loading, isLoading] = useState<boolean>(false)
         const handleSwitchChange = async (value: boolean) => {
@@ -67,7 +67,7 @@ export const Table_tipologiePersonalizzate = ({ rows, setRows }: Props) => {
             await AXIOS_HTTP.Execute({
                 sService: 'WRITE_TIPOLOGIE_ESPERTO', url: '/api/launch/execute', sModule: 'IMPOSTAZIONI_UPDATE_TIPOLOGIA_ESPERTO',
                 body: {
-                    TEspId: id,
+                    TEspId: TErow.TEspId,
                     TEspDesc: TErow.TEspDesc,
                     TEspBr: TErow.TEspBr,
                     TEspVis: newValue,
@@ -85,7 +85,7 @@ export const Table_tipologiePersonalizzate = ({ rows, setRows }: Props) => {
 
         return (
             <Box width={'100%'} display={'flex'} alignItems={'center'} justifyContent={'center'}>
-                <Switch id={id as string} onChange={() => handleSwitchChange(switchValue)} checked={switchValue} />
+                <Switch id={id} onChange={() => handleSwitchChange(switchValue)} checked={switchValue} />
                 <CircularProgress size={loading ? 15 : 0} />
             </Box>
         )
@@ -97,7 +97,7 @@ export const Table_tipologiePersonalizzate = ({ rows, setRows }: Props) => {
         const { row } = params;
         return (
             <div className='dataGrid-actions'>
-                <ActionButton color='secondary' onClick={() => handleAddClick(row)} text='Duplica' icon='content_copy' direction='row-reverse' />
+                <ActionButton color='primary' onClick={() => handleAddClick(row)} text='Duplica' icon='content_copy' direction='row-reverse' />
                 <ActionButton color='warning' onClick={() => navigate('/impostazioni/modifica-tipologia', { state: { ...row } })} text='Modifica' icon='edit' direction='row-reverse' />
                 <DeleteButtonWithDialog row={row as TipologiaEspertoRow} successFn={handleDeleteTipologia} />
             </div>

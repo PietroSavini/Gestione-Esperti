@@ -1,9 +1,8 @@
 import { Box, Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridToolbarContainer } from '@mui/x-data-grid';
 import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination';
-import { RequisitoType_RequisitoTab, Requisito_Table } from '../RequisitiTab';
-import { useState } from 'react';
 import './Table_requisiti.scss';
+import { Requisito_Table } from '../../../types';
 
 
 //dataTable -------------------------------------------------------------------------------------------------------------------------
@@ -16,7 +15,7 @@ export default function Table_RequisitiPunteggiShow({ data }: { data: Requisito_
     return (
       <GridToolbarContainer className='requisiti-section-title' sx={{ backgroundColor: '#ebeeffff', display: 'flex', width: '100%' }}>
         <Box display={'flex'} alignItems={'center'} width={'45%'} >
-          <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{masterRequisitoTitle}</Typography>
+          <Typography component={'h3'} variant='body1' fontWeight={400}>{masterRequisitoTitle}</Typography>
         </Box>
       </GridToolbarContainer>
     );

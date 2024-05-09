@@ -62,7 +62,7 @@ export const FirmaSection = (params:Params) => {
                 <Grid container>
                     <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                         <Custom_Select2
-                            onChange={(e)=> handleFirmaChange(e)}
+                            onChangeSelect={(e)=> handleFirmaChange(e)}
                             label={'Da firmare ?'}
                             options={firmaOptions.daFirmare}
                             defaultValue={firmaOptions.daFirmare[1]}

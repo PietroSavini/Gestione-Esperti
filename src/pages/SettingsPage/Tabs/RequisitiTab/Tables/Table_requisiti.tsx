@@ -7,7 +7,7 @@ import './Table_requisiti.scss';
 import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import React from 'react';
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
-import { RequisitoType_RequisitoTab, Requisito_Table } from '../../../types';
+import { Requisiti_List, RequisitoType_RequisitoTab, Requisito_Table } from '../../../types';
 
 type Error = {
   id: string | number;
@@ -15,20 +15,25 @@ type Error = {
 }
 
 //dataTable -------------------------------------------------------------------------------------------------------------------------
-export default function Requisiti_table({ data, setData }: { data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>> }) {
+export default function Requisiti_table({ data, setData, tables,  }: { data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>, tables:Requisito_Table[] | []}) {
+
   const requisiti = data.requisiti_list;
   // variabili del requisito master
   const masterRequisitoTitle = data.fs_ee_req_desc;
   const masterRequisitoId = data.fi_ee_req_id;
   // variabili di stato per la tabella
-  const [rows, setRows] = useState<RequisitoType_RequisitoTab[]>(requisiti);
+  const [rows, setRows] = useState<RequisitoType_RequisitoTab[] | []>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rowsInError, setRowsInError] = useState<Error[] | []>([]);
 
   useEffect(()=>{
-    console.log('ROWS IN ERRORE: ',rowsInError)
-  },[rowsInError])
+    setIsLoading(true)
+    if(data && data.requisiti_list){
+      setRows(data.requisiti_list)
+    }
+    setIsLoading(false)
+  },[data])
 
   //custom toolBar con logica del pulsante "+ Aggiungi requisito"-------------------------------------------------------------------------------------------------------------------
   interface EditToolbarProps {
@@ -65,7 +70,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
     return (
       <GridToolbarContainer className='requisiti-section-title' sx={{ backgroundColor: '#ebeeffff', display: 'flex', width: '100%' }}>
         <Box display={'flex'} alignItems={'center'} width={'45%'} >
-          <Typography component={'h3'} variant='body1' fontWeight={400} textTransform={'uppercase'}>{masterRequisitoTitle}</Typography>
+          <Typography component={'h3'} variant='body1' fontWeight={400}>{masterRequisitoTitle}</Typography>
           <Box className='req-master-actions'>
             <IconButton><Icon sx={{ fontSize: '20px' }} color='warning'>edit</Icon></IconButton>
             <IconButton onClick={() => handleDeleteClick({id:masterRequisitoId, isReqMst:true})}><Icon color='error' sx={{ fontSize: '20px' }}>delete</Icon></IconButton>
@@ -78,6 +83,8 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
     );
   };
 
+  //funzione per aggiornamento in dati da cui provengono le tabelle
+ 
   //Funzioni per pulsanti CRUD -----------------------------------------------------------------------------------------------------
   //edit mode della row, cambia solo lo stato della row interessata da "view ad Edit"
   const handleEditClick = (id: GridRowId) => () => {
@@ -108,7 +115,15 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
   //Questa funzione è triggerata dalla dataGrid (grazie al parametro "processRowUpdate") quando la row passa da edit a view (e NON viceversa), di fatto gestisce l'update in UI ed il salvataggio sul WS
   const handleRowSave = async (oldRow: RequisitoType_RequisitoTab, newRow: RequisitoType_RequisitoTab) => {
 
-    let outputRow = {};
+    let outputRow: RequisitoType_RequisitoTab = {
+      fi_ee_req_id: 0,
+      fs_ee_req_desc: '',
+      fi_ee_req_customerid: 0,
+      fi_ee_req_punteggio: undefined,
+      //fi_ee_mst_id: masterRequisitoId,
+    };
+
+    let updatedRequisiti_list: Requisiti_List = []
     setIsLoading(true);
 
     //INSERT REQUISITO
@@ -117,8 +132,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
         .then((response) => {
           //caso in cui cè un errore nella response dal WEBSERVICE
           if (response.errorCode && response.errorCode !== 0) {
-            console.log('errore durante l inserimento del requisito: ', response.errorMessage)
-         
+            console.log('errore durante l inserimento del requisito: ', response.errorMessage);
             outputRow = oldRow;
           }
           const newId = response.response.fi_ee_req_id;
@@ -126,16 +140,16 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
             fi_ee_req_id: newId,
             fs_ee_req_desc: newRow.fs_ee_req_desc,
             fi_ee_req_customerid: newRow.fi_ee_req_customerid,
-            fi_ee_req_punteggio: newRow.fi_ee_req_punteggio
+            fi_ee_req_punteggio: newRow.fi_ee_req_punteggio,
           };
-
+          
+          updatedRequisiti_list = [...requisiti, outputRow];
         })
         .catch((error) => {
-          outputRow = oldRow
           console.log(error)
-      
+          return
         })
-
+     
     } else {//UPDATE REQUISITO
       //se la row è da aggiornare, controllo se è stata effettivamente modificata, se si la salvo se no ignoro l'update.
       const rowNeedUpdate: boolean = newRow.fs_ee_req_desc.trim() !== oldRow.fs_ee_req_desc.trim();
@@ -150,16 +164,31 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
               fi_ee_req_id: newRow.fi_ee_req_id,
               fs_ee_req_desc: response.response.fs_ee_req_desc,
               fi_ee_req_customerid: newRow.fi_ee_req_customerid,
-              fi_ee_req_punteggio: newRow.fi_ee_req_punteggio
+              fi_ee_req_punteggio: newRow.fi_ee_req_punteggio,
+              
             };
+            updatedRequisiti_list = requisiti.map((requisiti) => requisiti.fi_ee_req_id === outputRow.fi_ee_req_id ? outputRow : requisiti);
           })
           .catch((error) => {
             console.log('errore nell update del requisito', error);
             outputRow = oldRow;
           })
+         
       };
     };
 
+    const updatedTable: Requisito_Table = {
+      fi_ee_req_id: data.fi_ee_req_id,
+      fs_ee_req_desc:data.fs_ee_req_desc,
+      fi_ee_punt_id:data.fi_ee_punt_id,
+      requisiti_list: updatedRequisiti_list,
+    };
+
+
+    setData((prev) =>{ 
+      const newTables = prev.map((table) => table.fi_ee_req_id === updatedTable.fi_ee_req_id ? updatedTable : table);
+      return newTables;
+    })
     setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
     setIsLoading(false)
     return outputRow
@@ -169,18 +198,21 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
   //----------------------------------------------------DELETE----------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------
   const handleDeleteClick = async ({id, isReqMst}:{id: GridRowId, isReqMst:boolean})  => {
-
+    setIsLoading(true)
     await AXIOS_HTTP.Execute({ sService: 'WRITE_REQUISITI', sModule: 'IMPOSTAZIONI_DELETE_REQUISITO', body: { reqId: id }, url: '/api/launch/execute' })
       .then((response) => {
-        console.log(id, 'requisito cancellato', response)
+        //console.log(id, 'requisito cancellato', response);
         if(isReqMst){
-          setData((prev)=> prev.filter((MasterReq) => MasterReq.fi_ee_req_id !== id))
+          const filteredTables = tables.filter((item) => item.fi_ee_req_id !== id)
+          setData(filteredTables);
+        }else{
+          setRows(rows?.filter((row) => row.fi_ee_req_id !== id));
         }
-        setRows(rows?.filter((row) => row.fi_ee_req_id !== id));
       })
       .catch((error) => {
         console.log('errore nella cancellazione del requisito', error)
       })
+      setIsLoading(false)
   };
   //-----------------------------------------------------------------------------------------------------------------------------------
   //funzione triggerata al click del pulsante 'salva'
@@ -246,7 +278,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
         errorMessage = 'Il nome del requisito è obbligatorio';
       } else if (isDuplicateDescription) {
         errorMessage = `${description} è già presente nella sezione`;
-      }
+      };
 
       if (isRowAlreadyInError) {
         // Modifica il messaggio di errore per la riga esistente
@@ -258,15 +290,15 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
       } else {
         // Aggiungi la riga in errore all'array
         setRowsInError((prev) => [...prev, { id: rowId, errorMessage }]);
-      }
+      };
       return true;
     } else {
       // Se la riga era in errore e ora è corretta, rimuovila dagli errori
       if (isRowAlreadyInError) {
         setRowsInError((prev) => prev.filter((rowInError) => rowInError.id !== rowId));
-      }
+      };
       return false;
-    }
+    };
   };
 
   function validateRequisito({ id, requisitoDescription }: { id: string | number, requisitoDescription: string }): Promise<boolean> {
@@ -278,7 +310,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
   // campi di input------------------------------------------------------------------------------------------------------------
   const CustomEditCell = (props: GridRenderEditCellParams) => {
     const { id, value, hasFocus, field, error } = props;
-    const inputRef = React.useRef<HTMLInputElement | null>(null)
+    const inputRef = React.useRef<HTMLInputElement | null>(null);
     const apiRef = useGridApiContext();
     let errorMessage: any = '';
 
@@ -290,8 +322,8 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
 
     if (error) {
       const errorObj = rowsInError.find((row) => row.id = id);
-      errorMessage = errorObj?.errorMessage as string
-    }
+      errorMessage = errorObj?.errorMessage as string;
+    };
 
 
     const CustomErrorTooltip = ({ errorMessage }: { errorMessage: string  }) => {
@@ -325,8 +357,8 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
     const rowId = row.fi_ee_req_id;
     const isInEditMode = rowModesModel[rowId]?.mode === GridRowModes.Edit;
     const sistema = row.fi_ee_req_customerid;
-    let rowError = rowsInError.some((rowInError) => rowInError.id === rowId)
-    const isAnyNewRowInEditing = Object.values(rowModesModel).length > 0
+    let rowError = rowsInError.some((rowInError) => rowInError.id === rowId);
+    const isAnyNewRowInEditing = Object.values(rowModesModel).length > 0;
 
     if (sistema === 1) {
       return <></>
@@ -341,11 +373,12 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
       <ActionButton key={rowId} sx={{ marginRight: '5px' }} icon='edit' disabled={isAnyNewRowInEditing} color='warning' onClick={handleEditClick(rowId)} />,
       <ActionButton key={`${rowId}-1`} icon='delete' onClick={() => handleDeleteClick({isReqMst:false, id:rowId})} color='error' />,
     ];
-  }
+  };
 
   //impostazione delle colonne DataGrid MUI
   const columns: GridColDef[] = [
     //colonna descrizione requisito
+    
     {
       field: 'fs_ee_req_desc',
       type: 'text',
@@ -398,6 +431,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
     <>
       <Box className='requisiti-table' sx={{ backgroundColor: '#fff' }} >
         <DataGrid
+
           slots={{
             pagination: CustomPagination,
             toolbar: EditToolbar,
@@ -406,7 +440,7 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
             toolbar: { setRows, setRowModesModel },
           }}
           getRowId={(row) => {
-            return row.fi_ee_req_id
+            return row.fi_ee_req_id;
           }}
           loading={isLoading}
           editMode='row'
@@ -439,5 +473,5 @@ export default function Requisiti_table({ data, setData }: { data: Requisito_Tab
         />
       </Box>
     </>
-  )
-}
+  );
+};

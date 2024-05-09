@@ -1,13 +1,14 @@
 import { Box, Icon, IconButton, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
-import { DataGrid, GridColDef, GridEventListener, GridPreProcessEditCellProps, GridRenderEditCellParams, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer, GridTreeNodeWithRender, useGridApiRef } from '@mui/x-data-grid';
-import { CustomPagination } from '../../../../../components/partials/CustomPagination/CustomPagination';
-import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton';
+import { DataGrid, GridColDef, GridEventListener, GridPreProcessEditCellProps, GridRenderEditCellParams, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridRowsProp, GridToolbarContainer, GridTreeNodeWithRender } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import AXIOS_HTTP from '../../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
-import '../../RequisitiTab/Tables/Table_requisiti.scss';
-import { InboundSelectData } from './TipologiaEdit';
+import '../../../SettingsPage/Tabs/RequisitiTab/Tables/Table_requisiti.scss';
 import React from 'react';
-import { Requisiti_List, RequisitoType_RequisitoTab, Requisito_Table } from '../../../types';
+import { Requisiti_List, RequisitoType_RequisitoTab,  Requisito_Table } from '../../../SettingsPage/types';
+import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
+import { InboundSelectData } from '../../../SettingsPage/Tabs/TipologiaEspertoTab/TipologiaEdit/TipologiaEdit';
+import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
+import { CustomPagination } from '../../../../components/partials/CustomPagination/CustomPagination';
+
 
 type Error = {
   id: string | number;
@@ -21,46 +22,33 @@ type SelectOption = {
 }
 
 //dataTable -------------------------------------------------------------------------------------------------------------------------
-export default function Table_RequisitiSelect({ data, setData, tespId,  }: { data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>, tespId: string | number}) {
+export default function Table_PunteggiBando({ data, setData, tespId }: { data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>, tespId: string | number }) {
+  const requisiti: Requisiti_List = data.requisiti_list;
 
-  const requisiti = data.requisiti_list;
   // variabili del requisito master
   const masterRequisitoTitle = data.fs_ee_req_desc;
   const masterRequisitoId = data.fi_ee_req_id;
-  const masterPunteggio = data.fi_ee_punt_id;
+
   // variabili di stato per la tabella
-  //const [rows, setRows] = useState<RequisitoType_RequisitoTab[]>([]);
-  const [rows, setRows] = useState<RequisitoType_RequisitoTab[]>(requisiti);
+  const [rows, setRows] = useState<RequisitoType_RequisitoTab[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rowsInError, setRowsInError] = useState<Error[] | []>([]);
   //variabili per le select
   const [selectValues, setSelectValues] = useState<SelectOption[] | []>([])
 
+  //appena renderizza la table esegue la chiamata per popolare i campi della select
+
+
   useEffect(()=>{
-    console.log('renderizzo la dataTable')
     setIsLoading(true)
     if(data && data.requisiti_list){
-      setRows(data.requisiti_list)
+      setRows(data.requisiti_list);
+      GET_SELECTABLE_ITEMS();
     }
-
-    //  const fetchData = async () => {
-    //    await GET_SELECTABLE_ITEMS()
-    //  }
-    //  fetchData()
-
     setIsLoading(false)
   },[data])
 
-
- useEffect(()=>{
-    GET_SELECTABLE_ITEMS();
-  },[])
- 
-
-  
-  
-  //appena renderizza la table esegue la chiamata per popolare i campi della select
   async function GET_SELECTABLE_ITEMS() {
     await AXIOS_HTTP.Retrieve({ body: { masterId: masterRequisitoId }, url: '/api/launch/retrieve', sModule: 'IMPOSTAZIONI_GET_SOTTOREQUISITI', sService: 'READ_REQUISITI' })
       .then((resp) => {
@@ -82,6 +70,9 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
       .catch(err => console.log(err))
   }
 
+  const deleteMasterPunteggio = (id: string|number) => {
+    setData!((prev: Requisito_Table[]) => [...prev.filter((item)=> item.fi_ee_req_id !== id)])
+  }
 
   //custom toolBar con logica del pulsante "+ Aggiungi requisito"-------------------------------------------------------------------------------------------------------------------
   interface EditToolbarProps {
@@ -119,29 +110,13 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
 
     };
 
-    const deleteMasterPunteggio = (masterId: string | number, punteggioId: number | undefined) => {
     
-      setIsLoading(true)
-      AXIOS_HTTP.Execute({ sService: 'WRITE_PUNTEGGI', sModule: 'IMPOSTAZIONI_DELETE_PUNTEGGIO', body: { puntId: punteggioId }, url: '/api/launch/execute' })
-        .then((response) => {
-          if (response.errorCode !== 0) {
-            console.error(response);
-            return
-          };
-          console.log('PUNTEGGIO Cancellato con successo')
-          setData((prevData) => [...prevData.filter((data) => data.fi_ee_req_id !== masterId)])
-        })
-        .catch((err) => console.log('errore durante la cancellazione del PUNTEGGIO', masterRequisitoId, ':', err))
-
-        setIsLoading(false)
-    }
-
     return (
       <GridToolbarContainer className='requisiti-section-title' sx={{ backgroundColor: '#ebeeffff', display: 'flex', width: '100%' }}>
         <Box display={'flex'} alignItems={'center'} width={'45%'} >
-          <Typography component={'h3'} variant='body1' fontWeight={400}>{masterRequisitoTitle} -- {masterRequisitoId}</Typography>
+          <Typography component={'h3'} variant='body1' fontWeight={400} >{masterRequisitoTitle}</Typography>
           <Box className='req-master-actions'>
-            <IconButton onClick={() => deleteMasterPunteggio(masterRequisitoId, masterPunteggio)}><Icon color='error' sx={{ fontSize: '20px' }}>delete</Icon></IconButton>
+            <IconButton onClick={() => deleteMasterPunteggio(masterRequisitoId)}><Icon color='error' sx={{ fontSize: '20px' }}>delete</Icon></IconButton>
           </Box>
         </Box>
         <Box display={'flex'} justifyContent={'flex-end'} flexGrow={1} >
@@ -181,72 +156,23 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
   //Questa funzione è triggerata dalla dataGrid (grazie al parametro "processRowUpdate") quando la row passa da edit a view (e NON viceversa), di fatto gestisce l'update in UI ed il salvataggio sul WS
   const handleRowSave = async (oldRow: RequisitoType_RequisitoTab, newRow: RequisitoType_RequisitoTab) => {
 
-    console.log('handleRowSave')
-    setIsLoading(true)
-    let updatedRequisiti_list: Requisiti_List = []
-    let outputRow: RequisitoType_RequisitoTab = {
-      fi_ee_req_id: 0,
-      fs_ee_req_desc: '',
-      fi_ee_punt_id: 0,
-      fi_ee_req_punteggio: undefined,
-      //fi_ee_mst_id: masterRequisitoId,
+    console.log('handleRowSave');
+    setIsLoading(true);
+    let updatedRequisiti_list: Requisiti_List = [];
+    let outputRow = {};
+    const reqId = selectValues.find((req) => newRow.fs_ee_req_desc === req.label)!.id; //id requisito
+    const punteggio = newRow.fi_ee_req_punteggio; // valore punteggio
+
+    outputRow = {
+        fi_ee_req_id: reqId,
+        fs_ee_req_desc: newRow.fs_ee_req_desc,
+        fi_ee_req_punteggio: punteggio,
+        fi_ee_mst_id: masterRequisitoId
     };
-    const reqId = selectValues.find((req) => newRow.fs_ee_req_desc === req.label)!.id;
-    const punteggio = newRow.fi_ee_req_punteggio;
+   
+    setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
 
-    if (oldRow.fi_ee_req_id === 'newRow') {
-      //INSERT PUNTEGGIO
-      await AXIOS_HTTP.Execute({ sService: 'WRITE_PUNTEGGI', sModule: 'IMPOSTAZIONI_INSERT_PUNTEGGIO', body: { tespId: tespId, reqId: reqId, punt: punteggio }, url: '/api/launch/execute' })
-        .then((resp) => {
-          console.log('CREAZIONE PUNTEGGIO')
-          const newPuntId = resp.response.fi_ee_punt_id;
-          outputRow = {
-            fi_ee_req_id: reqId,
-            fs_ee_req_desc: newRow.fs_ee_req_desc,
-            fi_ee_punt_id: newPuntId,
-            fi_ee_req_punteggio: newRow.fi_ee_req_punteggio
-          };
-
-          updatedRequisiti_list = [...requisiti, outputRow];
-        })
-
-      //UPDATE PUNTEGGIO
-    } else {
-      const puntId = newRow.fi_ee_punt_id;
-      if (oldRow.fs_ee_req_desc === newRow.fs_ee_req_desc && oldRow.fi_ee_req_punteggio === newRow.fi_ee_req_punteggio) {
-        outputRow = oldRow;
-        console.log('IL REQUISITO-PUNTEGGIO NON SONO STATI MODIFICATI: NON FACCIO CHIAMATA A WS')
-      } else {
-        await AXIOS_HTTP.Execute({ sService: 'WRITE_PUNTEGGI', sModule: 'IMPOSTAZIONI_UPDATE_PUNTEGGIO', body: { tespId: tespId, reqId: reqId, punt: punteggio, puntId: puntId }, url: '/api/launch/execute' })
-          .then((resp) => {
-            console.log('UPDATE DEL PUNTEGGIO')
-            console.log(resp)
-            console.log('newRow',newRow)
-            outputRow = {
-              fi_ee_req_id: reqId,
-              fs_ee_req_desc: newRow.fs_ee_req_desc,
-              fi_ee_punt_id: puntId,
-              fi_ee_req_punteggio: newRow.fi_ee_req_punteggio
-            };
-
-            console.log('outputRow', outputRow)
-            updatedRequisiti_list = requisiti.map((requisito) => {
-              //con l operatore ternario non funziona, con l' if si..boh
-              if(requisito.fi_ee_req_id === newRow.fi_ee_req_id){
-                return newRow
-              } else {
-                return requisito
-              }
-            })
-      
-          })
-          .catch((err) => console.log(err))
-      }
-    }
-    //PROCESSO DI AGGIORNAMENTO DATI DEL GENITORE
-    console.log('SOTTOREQUISITO DA AGGIUNGERE: ', outputRow);
-    
-    console.log('REQUISITI_LIST AGGIORNATA: ', updatedRequisiti_list);
+    updatedRequisiti_list = [...requisiti, outputRow as RequisitoType_RequisitoTab];
 
     const updatedTable: Requisito_Table = {
       fi_ee_req_id: data.fi_ee_req_id,
@@ -254,15 +180,11 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
       fi_ee_punt_id:data.fi_ee_punt_id,
       requisiti_list: updatedRequisiti_list,
     };
-
-    console.log('TABLE AGGIORNATA DA AGGIUNGERE: ', updatedTable)
-
-    setData((prev) =>{  
+    // aggiorno i dati madre
+    setData((prev) =>{ 
       const newTables = prev.map((table) => table.fi_ee_req_id === updatedTable.fi_ee_req_id ? updatedTable : table);
-      return [...newTables];
+      return newTables;
     })
-    
-    setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
     setIsLoading(false);
     return outputRow
   };
@@ -272,15 +194,8 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
   //--------------------------------------------------------------------------------------------------------------------------------
   const handleDeletePunteggio = (id: GridRowId, puntId: number | undefined) => () => {
     console.log('handleDeleteCLick')
-    AXIOS_HTTP.Execute({ sService: 'WRITE_PUNTEGGI', sModule: 'IMPOSTAZIONI_DELETE_PUNTEGGIO', body: { puntId: puntId }, url: '/api/launch/execute' })
-      .then(() => {
-        console.log(id, 'PUNTEGGIO-sottorequisito cancellato')
-        setRows(rows?.filter((row) => row.fi_ee_req_id !== id));
-      })
-      .catch((error) => {
-        console.log('errore nella cancellazione del PUNTEGGIO-sottorequisito', error)
-      })
-
+    setRows(rows?.filter((row) => row.fi_ee_req_id !== id));
+  
   };
   //-----------------------------------------------------------------------------------------------------------------------------------
   //funzioni per gestire comportamenti delle rows
@@ -315,9 +230,8 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
   };
 
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
-    let isAnyRowInEdit: boolean = false
     const arrRowModesModel = Object.values(rowModesModel);
-    isAnyRowInEdit = arrRowModesModel.some((row) => row.mode === 'edit');
+    const isAnyRowInEdit = arrRowModesModel.some((row) => row.mode === 'edit');
     if (isAnyRowInEdit) {
       console.log('ci sono altre row in edit', arrRowModesModel)
       return
@@ -327,8 +241,10 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
 
   //FUNZIONI TRIGGERATE AL CHANGE DI UNO DEI X CAMPI EDITABILI DELLA ROW
   const preProcessRequisitoEditCellProp = async (params: GridPreProcessEditCellProps) => {
-    console.log('preProcessRequisitoEditCellProp');
-    console.log(params);
+    console.log('preProcessRequisitoEditCellProp')
+    console.log(params)
+
+
     const row: RequisitoType_RequisitoTab = params.row;
     const value = params.props.value;
     //aggiungo il valore selezionato all'array che esclude i campi selezionabili della select
@@ -345,12 +261,12 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
     const isRowAlradyInError = rowsInError.some((rowInError) => rowInError.id === rowId);
     //VALIDAZIONI 
     if (description.trim() === '' || !punteggio) {
-      console.log(rowId, 'in errore perchè descrizione o punteggio vuoti ');
+      console.log(rowId, 'in errore perchè descrizione o punteggio vuoti ')
       result = true;
       //se è già in errore ritorno true e basta
       if (isRowAlradyInError) return result;
       //se non è presente nell'array delle rows in errore la aggiungo.
-      setRowsInError((prev) => [...prev, { id: rowId, errorMessage: ' i campi requisito e punteggio son o obbligatori' }]);
+      setRowsInError((prev) => [...prev, { id: rowId, errorMessage: ' il nome del requisito è obbligatorio' }]);
     }
     // logica che gestisce la correzzione della row;
     const rowHasBeenCorrected: boolean = isRowAlradyInError && result === false;
@@ -361,19 +277,17 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
   };
 
   function validateRequisito(id: string | number, requisitoDescription: string, requisitoPunteggio: number | undefined): Promise<boolean> {
-    const isRowInError = isRequisitoFieldValid({ description: requisitoDescription, punteggio: requisitoPunteggio, rowId: id as string });
+    const isRowInError = isRequisitoFieldValid({ description: requisitoDescription, punteggio: requisitoPunteggio, rowId: id as string })
     return new Promise<any>((resolve) => {
       resolve(isRowInError);
     });
   }
-
   // campi di input------------------------------------------------------------------------------------------------------------
   //componente select che prende nome requisito all interno della sezione requisitio (es. titolo di studio: requisiti[])
   function RequisitoSelectEditCell({ props, key }: { props: GridRenderEditCellParams, key: any }) {
     const { id, value, api, field } = props;
     const arrToFilterOptions = rows.map(row => row.fi_ee_req_id);
-    const filteredSelectValues = selectValues.filter(item => !arrToFilterOptions.includes(item.id));
-
+    const filteredSelectValues = selectValues.filter(item => !arrToFilterOptions.includes(item.id))
     const handleChange = (event: SelectChangeEvent) => {
       const newValue = event.target.value as string;
       api.setEditCellValue({ id, field, value: newValue });
@@ -382,31 +296,30 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
     const Custom_select = React.forwardRef(function Custom_Select(props, ref) {
 
       return (
-      
         <Select
-          id={key}
           fullWidth
           value={value}
           onChange={handleChange}
           defaultValue={''}
           ref={ref}
           {...props}
+
         >
           {selectValues && selectValues.length > 0 && selectValues.map((option, index) => {
             if (!filteredSelectValues.includes(option)) {
 
               if (option.value === value) {
                 return (
-                  <MenuItem key={index} value={option.value}>{option.label}</MenuItem>
+                  <MenuItem value={option.value}>{option.label}</MenuItem>
                 )
-              };
+              }
               return (
-                <MenuItem key={index} sx={{ maxHeight: 0, padding: 0 }} disabled></MenuItem>
+                <MenuItem sx={{ maxHeight: 0, padding: 0 }} disabled></MenuItem>
               )
-            };
+            }
 
             return (
-              <MenuItem key={index} value={option.value}>{option.label}</MenuItem>
+              <MenuItem value={option.value}>{option.label}</MenuItem>
             )
           }
 
@@ -415,7 +328,7 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
           {selectValues.length === 0 && <MenuItem disabled sx={{ color: 'black', fontWeight: 600 }} >Non esistono requisiti selezionabili per la sezione: "{masterRequisitoTitle}" ...</MenuItem>}
         </Select>
       )
-    });
+    })
 
     //select MUI
     return (
@@ -481,6 +394,7 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
             {punteggio}
           </>
         )
+
       },
     },
 
@@ -507,11 +421,8 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
   return (
     <>
       <Box className='requisiti-table' sx={{ backgroundColor: '#fff' }} >
-        <Typography fontWeight={600}>Requisiti selezionabili del requisito Master: {masterRequisitoTitle}</Typography>
-        <Typography>
-          {JSON.stringify(selectValues)}
-        </Typography>
         <DataGrid
+
           slots={{
             pagination: CustomPagination,
             toolbar: EditToolbar,

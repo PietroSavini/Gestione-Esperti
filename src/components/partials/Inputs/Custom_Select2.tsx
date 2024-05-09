@@ -22,14 +22,14 @@ type Props = {
     isMulti?:boolean;
     isClearable?:boolean;
     isRequired?:boolean
-    onChange?: ((newValue: SingleValue<Option>, actionMeta: ActionMeta<Option>) => void) | undefined
+    onChangeSelect?: ((newValue: SingleValue<Option>, actionMeta: ActionMeta<Option>) => void) | undefined
     value?:any
   
     
 }
 
 export type Option ={
-    value: string;
+    value: string | number;
     label: string;
     icon?: string;
     id?: string | number
@@ -38,7 +38,7 @@ export type Option ={
 
 
 export const Custom_Select2 = (props:Props) => {
-    const {id, name, control, label, error, errorMessage,  defaultValue, readOnly, disabled, options, placeholder, validations, isMulti, isClearable, onChange, isRequired, value} = props
+    const {id, name, control, label, error, errorMessage,  defaultValue, readOnly, disabled, options, placeholder, validations, isMulti, isClearable, onChangeSelect, isRequired, value} = props
     const rndId = uuidv4()
   return (
     <>
@@ -51,7 +51,7 @@ export const Custom_Select2 = (props:Props) => {
         }
 
         <Box marginBottom={'1rem'} position={'relative'} className={`${readOnly || disabled ? 'ms_react-select-readOnly':'ms_react-select'}`}>
-            {readOnly || disabled && <Box sx={{position:'absolute', top:0, left:0, right:0,bottom:0, zIndex:3}} ></Box>}
+            {readOnly || disabled && <Box sx={{position:'absolute', top:0, left:0, right:0,bottom:0, zIndex:0}} ></Box>}
                 {isRequired ? 
                     (
                     <>
@@ -86,9 +86,14 @@ export const Custom_Select2 = (props:Props) => {
                             options={options}
                             onChange={ (selectedOption) => {
                                 if (selectedOption) {
-                                    onChange(selectedOption.value);
+                                    if(onChangeSelect){
+                                        onChange(selectedOption.value)
+                                        onChangeSelect(selectedOption, {action:'select-option', option:selectedOption});
+                                    }else{
+                                        onChange(selectedOption.value)
+                                    }
                                 } else {
-                                    onChange(null); // Imposta il valore a null quando l'opzione "clear" viene selezionata
+                                    onChange(null); //Imposta il valore a null quando l'opzione "clear" viene selezionata
                                 }
                             } }
                             value={options.find(c => c.value === value)}
@@ -132,12 +137,12 @@ export const Custom_Select2 = (props:Props) => {
                     isDisabled={disabled}
                     isClearable={isClearable}
                     isSearchable
-                    onChange={onChange}
+                    onChange={onChangeSelect}
                     classNamePrefix='react-select'
                     options={options}
                     defaultValue={defaultValue}
-                    name={name}
-                    placeholder={placeholder}
+                    name={name ? name : `${rndId}`}
+                    placeholder={placeholder ? placeholder : 'Seleziona...'}
                     id={id? id : rndId}
                     aria-labelledby={`${name}-select-label`}
                     styles={{ 

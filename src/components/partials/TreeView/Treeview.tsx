@@ -195,8 +195,9 @@ export const CustomTreeview = (props:Props) => {
         }
         return(
             <>
-                {data.map((item:Tview)=> (
+                {data.map((item:Tview, index)=> (
                     <TreeView 
+                        key={index}
                         onNodeSelect={(event, nodeIds)=> {
                             const selectedNode = findNodeById(data, nodeIds);
                             setTreeItem(selectedNode);

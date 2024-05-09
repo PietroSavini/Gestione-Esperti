@@ -241,7 +241,7 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
                                 isClearable
                                 label='sottofascicolo/inserto'
                                 placeholder='Seleziona un sottofascicolo'
-                                onChange={onSottoFascicoloChange}
+                                onChangeSelect={onSottoFascicoloChange}
                                 options={fascicoloSelezionato.fascicoliInterni}
                                 defaultValue={sottoFascicoloSelezionato ? sottoFascicoloSelezionato : undefined}
 
@@ -413,7 +413,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                                     isClearable
                                     label='sottofascicolo/inserto'
                                     placeholder='Seleziona un sottofascicolo'
-                                    onChange={onSottoFascicoloChange}
+                                    onChangeSelect={(newValue) => onSottoFascicoloChange(newValue)}
                                     options={fascicoloSelezionato.fascicoliInterni}
                                     value={sottoFascicoloSelezionato}
 

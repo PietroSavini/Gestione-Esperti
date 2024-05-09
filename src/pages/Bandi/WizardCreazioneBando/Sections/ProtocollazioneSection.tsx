@@ -52,7 +52,7 @@ export const ProtocollazioneSection = (params:Params) => {
                 <Grid container>
                     <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                         <Custom_Select2
-                            onChange={(e) => handleProtocolloChange(e)}
+                            onChangeSelect={(e) => handleProtocolloChange(e)}
                             label={'Da Protocollare ?'}
                             options={ProtocollazioneOptions.daProtocollare}
                             defaultValue={ProtocollazioneOptions.daProtocollare[1]}

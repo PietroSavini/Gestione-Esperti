@@ -1,4 +1,4 @@
-import { Box, Dialog, FormHelperText, Grid, Icon, InputBase, Paper, Typography } from '@mui/material'
+import { Box, Dialog, FormHelperText, Grid, Icon, Paper, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks';
@@ -11,16 +11,17 @@ import { Custom_Select2 } from '../../../../../components/partials/Inputs/Custom
 import { Custom_TextField } from '../../../../../components/partials/Inputs/CustomITextField';
 import { Requisito_Table, TipologiaEspertoRow } from '../../../types';
 import { convertData } from '../../../functions';
+import React from 'react';
 
 export type InboundSelectData = {
     fi_ee_req_id: number;
     fs_ee_req_desc: string;
 }[] | []
 
-type Options = {
+export type Options = {
     value: string,
     label: string,
-    id: string | number
+    id?: string | number
 }
 
 export const TipologiaEdit = () => {
@@ -40,15 +41,15 @@ export const TipologiaEdit = () => {
     const [description, setDescription] = useState<string>(TEspDesc)
     const [newTitle, setNewTitle] = useState<string>(title)
     const [newDescription, setNewDescription] = useState<string>(description)
-    //react hook form
-    const form = useForm<any>();
-    const { register, handleSubmit, formState } = form;
-    const { errors } = formState;
     //variabili per modal 'aggiungi sezione'
     const [selectedItem, setSelectedItem] = useState<any>()
     const [isAddSectionOpen, openAddSectionDialog] = useState<boolean>(false)
     const [error, setIsError] = useState<boolean>(false)
     const [errorMessage, setErrorMessage] = useState<string>('')
+    //react hook form
+    const form = useForm<any>();
+    const { register, handleSubmit, formState } = form;
+    const { errors } = formState;
 
     //Funzioni
     const addNewSection = async () => {
@@ -103,7 +104,7 @@ export const TipologiaEdit = () => {
             })
     };
 
-    // funzione che mostra i requisiti collegati dai punteggi alla tipologia
+    // funzione che mostra i requisiti collegati ed i punteggi collegati alla tipologia esperto
     const GET_ALL_PUNTEGGI_COLLEGATI = async () => {
         dispatch(openLoader())
         await AXIOS_HTTP.Retrieve({ sModule: 'IMPOSTAZIONI_GET_ALL_PUNTEGGI', sService: 'READ_PUNTEGGI', url: '/api/launch/retrieve', body: { TEspId: id } })
@@ -229,7 +230,7 @@ export const TipologiaEdit = () => {
                         <Box display={'flex'} flexDirection={'column'} minHeight={'300px'} minWidth={'600px'} padding={'1rem 2rem'}  >
 
                             <Box flexGrow={1} marginBottom={'3rem'}>
-                                <Custom_Select2 placeholder='Scegli un Requisito...' isRequired label='Seleziona Requisito da aggiungere' error={error} onChange={(newValue) => setSelectedItem(newValue)} options={selectableItems} />
+                                <Custom_Select2 placeholder='Scegli un Requisito...' isRequired label='Seleziona Requisito da aggiungere' error={error} onChangeSelect={(newValue) => setSelectedItem(newValue)} options={selectableItems} />
                                 {error && <Typography color={'error'}>{errorMessage}</Typography>}
                             </Box>
                             <Box display={'flex'} justifyContent={'flex-end'}>
@@ -243,7 +244,11 @@ export const TipologiaEdit = () => {
 
                 {/* Rendering tabelle con map in base ad array: Tables */}
                 {formattedData && formattedData.map((table, index) => (
-                    <Table_RequisitiSelect key={index} data={table} setData={() => { }} tespId={id} />
+                    <div key={index} >
+                        <span>Tabella {index}</span>
+                        <span>{JSON.stringify(table)}</span>
+                        <Table_RequisitiSelect  data={table} setData={setFormattedData} tespId={id} />
+                    </div>
                 ))}
             </Paper>
         </>

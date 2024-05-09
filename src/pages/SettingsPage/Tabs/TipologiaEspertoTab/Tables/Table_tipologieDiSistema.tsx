@@ -25,7 +25,7 @@ export const Table_tipologieDiSistema = ({ rows, addToTipologiePersonalizzateFn 
             TEspDesc: `${row.TEspDesc}-(COPIA)`,
             TEspBr: `${row.TEspBr}-(COPIA)`,
             TEspVis: false,
-            EspSys: false,
+            TEspSys: false,
         };
 
         //faccio chiamata a webService x l'id
@@ -38,7 +38,7 @@ export const Table_tipologieDiSistema = ({ rows, addToTipologiePersonalizzateFn 
                     TEspBr: rowObj.TEspBr,
                     TEspDesc: rowObj.TEspDesc,
                     TEspVis: rowObj.TEspVis,
-                    TEspSys: rowObj.EspSys
+                    TEspSys: rowObj.TEspSys
                 };
                 console.log('TIPOLOGIA DUPLICATA: ', newTipologia)
                 if (addToTipologiePersonalizzateFn) {
@@ -55,6 +55,7 @@ export const Table_tipologieDiSistema = ({ rows, addToTipologiePersonalizzateFn 
         const id = TErow.TEspId as string;
         const [switchValue, setValue] = useState<boolean>(value);
         const [loading, isLoading] = useState<boolean>(false)
+        
         const handleSwitchChange = async (value: boolean) => {
             const newValue: boolean = !value;
             isLoading(true)
@@ -65,6 +66,7 @@ export const Table_tipologieDiSistema = ({ rows, addToTipologiePersonalizzateFn 
                     TEspDesc: TErow.TEspDesc,
                     TEspBr: TErow.TEspBr,
                     TEspVis: newValue,
+                    TEspSys: true,
                 },
             }).then((res) => {
                 const addNewValue: boolean = res.response.TEspVis

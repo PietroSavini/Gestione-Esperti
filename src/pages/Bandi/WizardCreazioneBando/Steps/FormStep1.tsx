@@ -2,7 +2,10 @@ import { Divider, Grid, Paper, Typography } from '@mui/material'
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 
 import { FieldErrors, UseFormGetValues, UseFormRegister, UseFormUnregister } from 'react-hook-form';
-import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
+import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
+import { useEffect, useState } from 'react';
+import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
+import { TipologiaEspertoRow } from '../../../SettingsPage/types';
 
 const validations={
 
@@ -34,23 +37,58 @@ const options = {
   ],
     
 }
+
+
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
 export type FormStepProps = {
     register: UseFormRegister<any>;
     errors: FieldErrors<any>
     className: string;
-    control?:any
-    fn?:any
-    unregister?:UseFormUnregister<any>
+    control?:any;
+    fn?:any;
+    unregister?:UseFormUnregister<any>;
+    setState?:React.Dispatch<React.SetStateAction<any>>;
+    data?:any
 }
 
+type SelectOptions = {
+    name:string,
+    options:Option[]
+}[]
+
+
 export const FormStep1 = (props: FormStepProps) => {
-    const { register, errors, className, control } = props;
+    const { register, errors, className, control, setState } = props;
     //requisiti di validazione per campo
   
 const handleChange = (selectedOption:any) => {
   console.log('handleChange',selectedOption);
 }
+//valori per select Tipologia Esperto select
+const [TEspOptions, setTEspOptions] = useState<TipologiaEspertoRow[] | []>([])
+const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
+
+    useEffect(() => {
+       retrieveTEspOptions()
+    }, [])
+
+    useEffect(() => {
+       console.log('menu items per tipologia esperto: ', TEspMenuItems)
+     }, [TEspMenuItems])
+
+    const retrieveTEspOptions = async () => {
+        await AXIOS_HTTP.Retrieve({ sService: 'READ_TIPOLOGIA_ESPERTO', sModule: 'IMPOSTAZIONI_GET_ALL_TIPOLOGIE_ESPERTO', url: '/api/launch/retrieve', body: null })
+            .then((res) => {
+                let optionsArr: any = []
+                const TEspArr: TipologiaEspertoRow[] = res.response;
+                const onlyVisTEsp = TEspArr.filter((tipologia) => tipologia.TEspVis === true);
+                onlyVisTEsp.forEach(element => optionsArr.push({value:element.TEspBr, label:element.TEspBr, id:element.TEspId}));
+                setTEspMenuItems(optionsArr)
+            })
+            .catch((err) => console.log(err))
+
+    }
+
 
     return (
         <>
@@ -77,13 +115,14 @@ const handleChange = (selectedOption:any) => {
                         <Custom_Select2 
                           placeholder='Seleziona Tipologia Esperto...' 
                           label='Tipologia Esperto' 
-                          name={'ciaone'} 
+                          name={'TEsp'} 
                           control={control} 
-                          error={!!errors.ciaone} 
-                          errorMessage={errors.ciaone?.message as string} 
-                          options={options.select2}
-                          validations={validations.select2}
-                          
+                          error={!!errors.TEsp} 
+                          errorMessage={errors.TEsp?.message as string} 
+                          options={TEspMenuItems}
+                          validations={{required:'il campo è obbligatorio'}}
+                          onChangeSelect={(newValue) => setState!(newValue?.id)}
+                          isRequired
                         />
                     </Grid>
 
