@@ -148,7 +148,7 @@ export const WizardCreazioneBando = (params:Params) => {
        // AXIOS_HTTP.Retrieve({url:'api/Retrieve/retrieve',sService:'GET_CLASSI_DOC', body:data, sModule:''})
     }
     //se si vuole si possono inserire gli array di stringhe 
-    const formStep1Validation: string[] = ['TEsp'];
+    const formStep1Validation: string[] = [];
     const formStep2Validations: string[] = ['scadenza','pubblicazione_albo_richiedente','pubblicazione_albo_oggetto'];
     const formStep3Validations: string[] = ['responsabile']
 
