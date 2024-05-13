@@ -66,7 +66,9 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
     function ActivityComponent ({index, activity}:{index:number, activity: AttivitaObj}){
 
         const [style, setStyle] = useState<any>(undefined)
-
+        // variabili di reset 
+        const resetOnPointerUpEvent = document.onpointerup;
+        const resetrOnPointerMove = document.onpointermove;
         //funzione per verificare che il pulsante del mouse cliccato sia quello sinistro
         function detectLeftMouseClick(e:any){
             if ("buttons" in e){
@@ -79,7 +81,8 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
         async function dragStart(e:React.PointerEvent<HTMLDivElement>, index:number) {
             //controllo che sia un click con il pulsante sinistro del mouse
             if(!detectLeftMouseClick(e)) return;
-            
+            //evito il comportamento di default dell'evento (selezione del testo o elementi html)
+            e.preventDefault();
             /* (HACK FIX) => sviluippo una funzione asincrona che mi permette di aspettare che l'index venga effettivamente messo sulla variabile di state di useState, 
             * in quanto se fosse sincrono andrei ad applicare lo syle inline, 
             * poi l'index si setta sull indice dell elemento selezionato applicando la classe "dragging" che sovrascriverebbe lo style inline in quanto stimolerebbe un nuovo rendering.
@@ -87,27 +90,23 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
             async function addIndexToisDragging(index:number){
                setIsDragging(index);
             }
-            //definisco la funzione di dragEnd che si esegue al rilascio del pulsante sinistro del mouse
-            function dragEnd () {
-                setIsDragging(undefined)
-                //reset dello style
-                setStyle(undefined)
-                itemToDrag.style.position = "";
-                itemToDrag.style.zIndex = "";
-                itemToDrag.style.top = "";
-                itemToDrag.style.left = "";
-                itemToDrag.style.cursor = "";
-            };
+            async function removeIndexToisDragging(){
+                setIsDragging(undefined);
+            }
+
+            
 
             //assegno l'index ad 'isDragging' in modo da assegnare la classe "dragging" all elemento che sto draggando
             await addIndexToisDragging(index);
                 //definisco il container attuale sfruttando il ref
                 const container = containerRef.current;
     
-                //utilizzo Array.From per ritornare un array di eHTMLElement  in modo da utilizzare la funzione getBoundingClientRect() sull item che ho selezionato.
+                //utilizzo Array.From per ritornare un array di HTMLElement in modo da utilizzare la funzione getBoundingClientRect() sull item che ho selezionato.
                 const items = Array.from(container!.childNodes).filter(
                     (node): node is HTMLElement => node instanceof HTMLElement
                 );
+
+                const itemsBelowDragItem = items.slice(index + 1 );
     
                 //seleziono l'HTMLElement sul quale eseguire il dragging
                 const itemToDrag = items[index];
@@ -117,18 +116,70 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
                 //setto lo style inline dell' elemento in dragging
                 itemToDrag.style.position = 'fixed',
                 itemToDrag.style.zIndex = '5000',
-                itemToDrag.style.top = `${e.clientY - dragBoundingClientRect.height / 2}px`;
-                itemToDrag.style.left = `${e.clientX - dragBoundingClientRect.width / 2}px`;
-                itemToDrag.style.cursor = "grabbing";
-                console.log('HTMLDiv in dragging: ', itemToDrag);
+                itemToDrag.style.width = `${dragBoundingClientRect.width}px`;
+                itemToDrag.style.height = `${dragBoundingClientRect.height}px`;
+                itemToDrag.style.top = `${dragBoundingClientRect.top}px`;
+                itemToDrag.style.left = `${dragBoundingClientRect.left}px`;
+                itemToDrag.style.cursor = 'grabbing'
 
-            
+                //creo un div temporaneo quando l'itemToDrag passa a position Fixed
+                const tempDiv = document.createElement('div');
+                tempDiv.id = "div-temp";
+                tempDiv.style.width = `${dragBoundingClientRect.width}px`;
+                tempDiv.style.height = `${dragBoundingClientRect.height}px`;
+                tempDiv.style.pointerEvents = "none";
+
+                // appendo il div temporaneo al container 
+                container!.appendChild(tempDiv);
+
+                //muovo gli elmenti sotto a dragItem
+                //distanza da muovere
+                const distance = dragBoundingClientRect.height;
+                //applico la distanza agli altri elementi nell array
+                itemsBelowDragItem.forEach((item) => {
+                    item.style.transform = `translateY(${distance + 8}px )`
+                })
+
+                //coordinate originale del mouse
+                let x = e.clientX;
+                let y = e.clientY;
+                //funzione che calcola lo spostamento dell item in base alle coordinate del mouse
+                function dragMove (e:any) {
+                    //calcolo la distanza che il pointer del mouse ha percorso
+                    const posX = e.clientX - x;
+                    const posY = e.clientY - y;
+
+                    //muovo l'item
+                    itemToDrag.style.transform = `translate(${posX}px, ${posY}px)`;
+                }
+
+                //performo all'hover
+                document.onpointermove = dragMove;
                 
 
 
-   
-            
+                
 
+                //definisco la funzione di dragEnd che si esegue al rilascio del pulsante sinistro del mouse
+                async function dragEnd () {
+                    await removeIndexToisDragging()
+                    //reset degli eventi
+                    document.onpointermove = resetrOnPointerMove;
+                    document.onpointerup = resetOnPointerUpEvent;
+                    //reset dello style dell elemento in dragging 
+                    itemToDrag.style.position = "";
+                    itemToDrag.style.zIndex = "";
+                    itemToDrag.style.width = ""
+                    itemToDrag.style.height = "";
+                    itemToDrag.style.top = "";
+                    itemToDrag.style.left = "";
+                    itemToDrag.style.cursor = "";
+
+                    //rimuovo il tempDiv
+                    const tempDivToEliminate = document.getElementById('div-temp');
+                    tempDivToEliminate!.remove();
+                    //rimuovo l'index dalla variabile useState
+                };
             //eseguo dragEnd
             document.onpointerup = dragEnd;
         }
@@ -137,7 +188,7 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
         return(
             <>
                 <div  className={`draggable-container ${isDragging === index ? 'dragging' : ''}`} >
-                    <Box component={'div'} className='grab-icon' minHeight={'80px'} onPointerDown={(e) => dragStart(e, index)} display={'flex'} alignItems={'center'} justifyContent={'center'} width={'10%'}>
+                    <Box component={'div'} className='grab-icon' minHeight={'80px'} onPointerDown={(e) => dragStart(e, index)} display={'flex'} alignItems={'center'} justifyContent={'center'} width={'10%'} >
                         <Icon  >
                             drag_indicator
                         </Icon>
@@ -158,7 +209,7 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
   return (
     <>
         <Box className={'attivita-container'}  sx={{minHeight:'250px'}}>
-            <Box component={'div'} ref={containerRef} border={'1px solid red'} position={'relative'} minHeight={'300px'} padding={'.5rem 0rem'} display={'flex'} flexDirection={'column'}  gap={1}>
+            <Box component={'div'} ref={containerRef} border={'1px solid red'} position={'relative'} minHeight={'300px'} padding={'.5rem 0rem'} display={'flex'} flexDirection={'column'} justifyContent={'center'} gap={1}>
                 {data && data.length === 0 &&
                     <NoActivityComponent/>
 
