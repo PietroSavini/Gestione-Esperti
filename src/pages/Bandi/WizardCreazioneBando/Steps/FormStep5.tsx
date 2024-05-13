@@ -71,7 +71,7 @@ export const FormStep5 = (props:FormStepProps) => {
                 </Grid>
             </Grid>
 
-            <AttivitàSection data={lstAttivita} setData={() => {}} userList={[]} attList={[]} userGroup={[]} modelliProcedimento={[]}/>
+            <AttivitàSection data={lstAttivita} setData={setLstAttivita} userList={[]} attList={[]} userGroup={[]} modelliProcedimento={[]}/>
         </Paper>
     </>
   )

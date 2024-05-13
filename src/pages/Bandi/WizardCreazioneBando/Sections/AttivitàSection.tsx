@@ -105,8 +105,10 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
                 const items = Array.from(container!.childNodes).filter(
                     (node): node is HTMLElement => node instanceof HTMLElement
                 );
-
                 const itemsBelowDragItem = items.slice(index + 1 );
+                const notDragItems = items.filter((_, i) => i !== index)
+                const draggedElementData = data[index];
+                let newData = data;
     
                 //seleziono l'HTMLElement sul quale eseguire il dragging
                 const itemToDrag = items[index];
@@ -151,17 +153,41 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
 
                     //muovo l'item
                     itemToDrag.style.transform = `translate(${posX}px, ${posY}px)`;
+
+                    //swap della posizione dell'item
+                    notDragItems.forEach(item => {
+                        //controllo dell'overlap degli elementi attraverso le posizioni sulla pagina 
+                        const rect1 = itemToDrag.getBoundingClientRect();
+                        const rect2 = item.getBoundingClientRect();
+                        let isOverlapping = rect1.y < rect2.y + (rect2.height / 2) && rect1.y + (rect1.height /2) > rect2.y;
+                        //swap delle posizioni in UI
+                        if(isOverlapping){
+                            if(item.getAttribute("style")){
+                                item.style.transform = "";
+                                index ++
+                               
+
+                            }else{
+                                item.style.transform = `translateY(${distance}px)`;
+                                index --
+                               
+                            }
+
+                            //swap nei dati
+                            newData = data.filter(item => item.Id !== draggedElementData.Id);
+                            newData.splice(index, 0 , draggedElementData)
+                            console.log(newData)
+                            
+                        }
+                    } )
                 }
 
                 //performo all'hover
                 document.onpointermove = dragMove;
-                
-
-
-                
 
                 //definisco la funzione di dragEnd che si esegue al rilascio del pulsante sinistro del mouse
                 async function dragEnd () {
+                    setData(newData)
                     await removeIndexToisDragging()
                     //reset degli eventi
                     document.onpointermove = resetrOnPointerMove;
