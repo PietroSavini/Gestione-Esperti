@@ -64,7 +64,7 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
     }
 
     function ActivityComponent ({index, activity}:{index:number, activity: AttivitaObj}){
-
+       
         const [style, setStyle] = useState<any>(undefined)
         // variabili di reset 
         const resetOnPointerUpEvent = document.onpointerup;
@@ -77,7 +77,6 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
             let button = e.which || e.button;
             return button === 1;
         }
-
         async function dragStart(e:React.PointerEvent<HTMLDivElement>, index:number) {
             //controllo che sia un click con il pulsante sinistro del mouse
             if(!detectLeftMouseClick(e)) return;
@@ -165,19 +164,15 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
                             if(item.getAttribute("style")){
                                 item.style.transform = "";
                                 index ++
-                               
-
                             }else{
                                 item.style.transform = `translateY(${distance}px)`;
                                 index --
-                               
                             }
 
                             //swap nei dati
                             newData = data.filter(item => item.Id !== draggedElementData.Id);
-                            newData.splice(index, 0 , draggedElementData)
-                            console.log(newData)
-                            
+                            newData.splice(index, 0 , draggedElementData);
+                            newData.map((item,index) => item.posizione = index);
                         }
                     } )
                 }
@@ -189,9 +184,11 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
                 async function dragEnd () {
                     setData(newData)
                     await removeIndexToisDragging()
+                    console.log('old data: ', data);
+                    console.log('newData: ', newData);
                     //reset degli eventi
                     document.onpointermove = resetrOnPointerMove;
-                    document.onpointerup = resetOnPointerUpEvent;
+                    
                     //reset dello style dell elemento in dragging 
                     itemToDrag.style.position = "";
                     itemToDrag.style.zIndex = "";
@@ -203,7 +200,9 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
 
                     //rimuovo il tempDiv
                     const tempDivToEliminate = document.getElementById('div-temp');
-                    tempDivToEliminate!.remove();
+                    if(tempDivToEliminate){
+                        tempDivToEliminate.remove();
+                    };
                     //rimuovo l'index dalla variabile useState
                 };
             //eseguo dragEnd
@@ -243,9 +242,7 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
                 {
                     data &&  data.length > 0 &&
                     data.map((activity, index) =>
-
                         <ActivityComponent index={index} activity={activity} />
-
                     )
                 }
             </Box>
