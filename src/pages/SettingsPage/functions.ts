@@ -22,7 +22,8 @@ type DataThree ={
     ReqDesc: string;
     MasterId: number | null;
     Valore: number;
-    fi_ee_punt_id: number
+    fi_ee_punt_id: number;
+    progr:number
 }
 
 function mergeRequisitiArrays(array1: Requisito_Table[], array2: Requisito_Table[]): Requisito_Table[] {
@@ -88,7 +89,7 @@ export const convertData = (rawData: RawData): Requisito_Table[] | [] => {
 
             requisitiTables = mergeRequisitiArrays(requisitiMaster, requisitiMasterWithotherRequisiti);
             
-        } else if ( 'ReqId' in firstItem && 'ReqDesc' in firstItem && 'MasterId' in firstItem && 'Valore' in firstItem && 'TEspId' in firstItem && 'fi_ee_punt_id' in firstItem) {
+        } else if ( 'ReqId' in firstItem && 'ReqDesc' in firstItem && 'MasterId' in firstItem && 'Valore' in firstItem && 'TEspId' in firstItem && 'fi_ee_punt_id' in firstItem && 'Progr' in firstItem) {
 
             console.log('DATI DA CONVERTIRE: PUNTEGGI');
             (rawData as DataThree[]).forEach(RawDataItem => {
@@ -97,6 +98,7 @@ export const convertData = (rawData: RawData): Requisito_Table[] | [] => {
                         fi_ee_req_id: RawDataItem.ReqId,
                         fs_ee_req_desc: RawDataItem.ReqDesc,
                         fi_ee_punt_id: RawDataItem.fi_ee_punt_id,
+                        progr: RawDataItem.progr,
                         requisiti_list: []
                     };
                     requisitiMaster.push(requisitoToInsert);
@@ -133,3 +135,8 @@ export const convertData = (rawData: RawData): Requisito_Table[] | [] => {
     console.log('requisiti formattati: ', requisitiTables);
     return requisitiTables;
 };
+
+export const createOptionArray = ({arr, value, label}: {arr: any[], value:any, label:any}) => {
+    const newArr = arr.map((item) => ({value:arr[value] , label:arr[label]}))
+    return newArr;
+}

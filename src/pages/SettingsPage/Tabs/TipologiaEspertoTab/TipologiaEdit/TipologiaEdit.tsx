@@ -61,7 +61,8 @@ export const TipologiaEdit = () => {
         }
         setIsError(false)
         //faccio chiamata
-        await AXIOS_HTTP.Execute({ sModule: 'IMPOSTAZIONI_INSERT_PUNTEGGIO', sService: 'WRITE_PUNTEGGI', url: '/api/launch/execute', body: { tespId: id, reqId: selectedItem.id, punt: 0 } })
+        const progr = formattedData.length + 1;
+        await AXIOS_HTTP.Execute({ sModule: 'IMPOSTAZIONI_INSERT_PUNTEGGIO', sService: 'WRITE_PUNTEGGI', url: '/api/launch/execute', body: { tespId: id, reqId: selectedItem.id, punt: 0, progr:progr } })
             .then((resp) => {
                 console.log(resp);
                 if (resp.errorCode === 0) {
@@ -71,6 +72,7 @@ export const TipologiaEdit = () => {
                         fi_ee_req_id: selectedItem.id,
                         fi_ee_punt_id: puntId,
                         fs_ee_req_desc: selectedItem.value,
+                        progr:formattedData.length,
                         requisiti_list: []
                     }
 

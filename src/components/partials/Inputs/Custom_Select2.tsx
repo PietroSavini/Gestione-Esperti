@@ -21,10 +21,10 @@ type Props = {
     validations?:Object;
     isMulti?:boolean;
     isClearable?:boolean;
-    isRequired?:boolean
+    isRequired?:boolean;
     onChangeSelect?: ((newValue: SingleValue<Option>, actionMeta: ActionMeta<Option>) => void) | undefined
-    value?:any
-  
+    value?:any;
+    marginBottom?:string;
     
 }
 
@@ -38,7 +38,7 @@ export type Option ={
 
 
 export const Custom_Select2 = (props:Props) => {
-    const {id, name, control, label, error, errorMessage,  defaultValue, readOnly, disabled, options, placeholder, validations, isMulti, isClearable, onChangeSelect, isRequired, value} = props
+    const {id, name, control, label, error, errorMessage,  defaultValue, readOnly, disabled, options, placeholder, validations, isMulti, isClearable, onChangeSelect, isRequired, value, marginBottom} = props
     const rndId = uuidv4()
   return (
     <>
@@ -50,7 +50,7 @@ export const Custom_Select2 = (props:Props) => {
         */
         }
 
-        <Box marginBottom={'1rem'} position={'relative'} className={`${readOnly || disabled ? 'ms_react-select-readOnly':'ms_react-select'}`}>
+        <Box marginBottom={marginBottom ? marginBottom : '1rem'} position={'relative'} className={`${readOnly || disabled ? 'ms_react-select-readOnly':'ms_react-select'}`}>
             {readOnly || disabled && <Box sx={{position:'absolute', top:0, left:0, right:0,bottom:0, zIndex:0}} ></Box>}
                 {isRequired ? 
                     (
@@ -144,13 +144,14 @@ export const Custom_Select2 = (props:Props) => {
                     name={name ? name : `${rndId}`}
                     placeholder={placeholder ? placeholder : 'Seleziona...'}
                     id={id? id : rndId}
-                    aria-labelledby={`${name}-select-label`}
+                    aria-labelledby={`${name ? name : rndId}-select-label`}
                     styles={{ 
                         control:(provided:CSSObjectWithLabel,state) => ({
                             ...provided,
                             borderRadius:'10px',
                             border: `${error ? '1px solid red' : provided.border}`,
-                            boxShadow:'0px 0px 2px grey'
+                            boxShadow:'0px 0px 2px grey',
+                            marginBottom:`${marginBottom ? marginBottom : '1rem'}`
                         })
                     }}
                     //@ts-ignore

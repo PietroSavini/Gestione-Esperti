@@ -67,6 +67,8 @@ export const WizardCreazioneBando = (params:Params) => {
     const [punteggi, setPunteggi] = useState<Requisito_Table[]|[]>([]);
     //variabile di state per procedimenti (lista attività)
     const [procedimenti, setProcedimenti] = useState<AttivitaObj[]|[]>([])
+    //variabile di state per i valori delle select
+
     //funzione per chiamare i punteggi e salvarli nello state
     async function GET_ALL_PUNTEGGI_COLLEGATI (id:string|number) {
         await AXIOS_HTTP.Retrieve({url:'/api/launch/retrieve', sService:'READ_PUNTEGGI', sModule:'IMPOSTAZIONI_GET_ALL_PUNTEGGI', body:{TEspId:id}})
@@ -78,16 +80,21 @@ export const WizardCreazioneBando = (params:Params) => {
             })
     };
 
-    //useState che utilizzo per chiamare i punteggi collegati alla tipologiaEsperto e salvarli per mostrarli nel 4o step
+   
+
+    //useEffect che utilizzo per chiamare i punteggi collegati alla tipologiaEsperto e salvarli per mostrarli nel 4o step
     useEffect(() => {
         if(TEsp){
             GET_ALL_PUNTEGGI_COLLEGATI(TEsp)
+            
         }
         if(TEsp === undefined || null && punteggi.length > 0){
             setPunteggi([])
             console.log('punteggi cancellati', punteggi)
         }
     }, [TEsp]);
+
+   
     
     
     //steps (stepper MUI)
@@ -141,7 +148,7 @@ export const WizardCreazioneBando = (params:Params) => {
             requisiti: punteggi,
             
         } //struttura dati da creare successivamente 
-        console.log('form Inviato: ', data)
+        console.log('form Inviato: ', submittedData)
         //******************** */
 
         //chiamata a WebService
@@ -222,47 +229,49 @@ export const WizardCreazioneBando = (params:Params) => {
                 {/*-----------------------------------------FINE STEPPER ------------------------------------------------*/}
                 {/*------------------------------------------------------------------------------------------------------*/}
                 {/*-------------------------------------FORM + NAVIGATION------------------------------------------------*/}
-                <Box className={'form-container'} >
-                    {/* form con logica per visualizzare i form */}
-                    <Box component={'form'} noValidate onSubmit={handleSubmit(submitWizard)}>
-                        <Box className={'ms_form-group'}>
-                            {/* qui vanno renderizzati i vari form input in base agli steps */}
-                            <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control} setState={setTEsp}/>
-                            <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors} control={control} fn={watch} unregister={unregister}/>
-                            <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors} setArchivio={setArchivioCollegato}/>
-                            <FormStep4 className={`${activeStep !== 3 && 'd-none'}`} register={register} errors={errors} data={punteggi} setState={setPunteggi} TEspId={TEsp}/>
-                            <FormStep5 className={`${activeStep !== 4 && 'd-none'}`} register={register} errors={errors} control={control} data={procedimenti} setState={setProcedimenti} />
-                        </Box>
-
-                        {/* mobile navigation xs -> md */}
-                        <Box sx={{padding:'.5rem 1rem', borderTop:'1px solid #efefef', backgroundColor:'#fafbffff'}} className={'mobile-navigation'} textAlign={'center'} >
-                            <Button disabled={activeStep === 0} onClick={() => setActiveStep((prev)=> prev -1)}><Icon>chevron_left</Icon></Button>
-                            {activeStep === steps.length -1 &&                       
-                                <ActionButton type='submit' text='Crea Bando' color='secondary'>Submit</ActionButton>
-                            }
-                            <Button disabled={activeStep === steps.length -1} onClick={ValidateAndGoNext}><Icon>chevron_right</Icon></Button>
-                        </Box>
-                        {/* END Mobilie navigation */}
-
-                        {/* Navigation md -> xl */}
-                        <Box className='navigation' >
-                            <Box className='cancel-button'>
-                                <ActionButton color='error' text='Annulla' icon='cancel' onClick={() => close()}/>
+               
+                    <Box className={'form-container'} >
+                        {/* form con logica per visualizzare i form */}
+                        <Box component={'form'} noValidate onSubmit={handleSubmit(submitWizard)}>
+                            <Box className={'ms_form-group'}>
+                                {/* qui vanno renderizzati i vari form input in base agli steps */}
+                                <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control} setState={setTEsp}/>
+                                <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors} control={control} fn={watch} unregister={unregister}/>
+                                <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors} setArchivio={setArchivioCollegato}/>
+                                <FormStep4 className={`${activeStep !== 3 && 'd-none'}`} register={register} errors={errors} data={punteggi} setState={setPunteggi} TEspId={TEsp}/>
+                                <FormStep5 className={`${activeStep !== 4 && 'd-none'}`} register={register} errors={errors} control={control} data={procedimenti} setState={setProcedimenti} />
                             </Box>
-                            <Box display={'flex'} gap={'.5rem'} justifyContent={'flex-end'} width={'50%'}>
-                                <ActionButton  onClick={() => setActiveStep((prev) => prev -1)} disabled={activeStep === 0} color='primary' text='Indietro' icon='chevron_left' direction={'row-reverse'}/>
-                                {activeStep === steps.length -1 && 
-                                    <ActionButton type='submit' color='secondary' icon='save' text='Crea Bando' />
-                                }
 
-                                {activeStep !== steps.length -1 && 
-                                    <ActionButton onClick={ValidateAndGoNext} color='primary' text='avanti' icon='chevron_right'/>
+                            {/* mobile navigation xs -> md */}
+                            <Box sx={{padding:'.5rem 1rem', borderTop:'1px solid #efefef', backgroundColor:'#fafbffff'}} className={'mobile-navigation'} textAlign={'center'} >
+                                <Button disabled={activeStep === 0} onClick={() => setActiveStep((prev)=> prev -1)}><Icon>chevron_left</Icon></Button>
+                                {activeStep === steps.length -1 &&                       
+                                    <ActionButton type='submit' text='Crea Bando' color='secondary'>Submit</ActionButton>
                                 }
+                                <Button disabled={activeStep === steps.length -1} onClick={ValidateAndGoNext}><Icon>chevron_right</Icon></Button>
                             </Box>
+                            {/* END Mobilie navigation */}
+
+                            {/* Navigation md -> xl */}
+                            <Box className='navigation' >
+                                <Box className='cancel-button'>
+                                    <ActionButton color='error' text='Annulla' icon='cancel' onClick={() => close()}/>
+                                </Box>
+                                <Box display={'flex'} gap={'.5rem'} justifyContent={'flex-end'} width={'50%'}>
+                                    <ActionButton  onClick={() => setActiveStep((prev) => prev -1)} disabled={activeStep === 0} color='primary' text='Indietro' icon='chevron_left' direction={'row-reverse'}/>
+                                    {activeStep === steps.length -1 && 
+                                        <ActionButton type='submit' color='secondary' icon='save' text='Crea Bando' />
+                                    }
+
+                                    {activeStep !== steps.length -1 && 
+                                        <ActionButton onClick={ValidateAndGoNext} color='primary' text='avanti' icon='chevron_right'/>
+                                    }
+                                </Box>
+                            </Box>
+                            {/* End Navigation */}
                         </Box>
-                        {/* End Navigation */}
                     </Box>
-                </Box>
+                
                 {/*---------------------------------FINE FORM + NAVIGATION------------------------------------------------*/}    
             </Box>
             

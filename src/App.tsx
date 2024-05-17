@@ -1,11 +1,10 @@
-import Utility from './app/AXIOS_ENGINE/AxiosUTILS';
+
 import { useEffect } from 'react';
 //React Router e componenti
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { NotFound } from './pages/404Page/NotFound'
 import { PersistentLogin } from './components/App_Components/PersistentLogin';
 import  RequireAuth  from './components/App_Components/RequireAuth'
-import { useAppDispatch } from './app/ReduxTSHooks';
 import { Dashboard } from './pages/Dashboard/Dashboard';
 import ResponsiveDrawer from './components/partials/Drawer/Drawer';
 import { DrawerData } from './components/partials/Drawer/DrawerTypes';
@@ -16,42 +15,36 @@ import { ThemeProvider } from '@mui/material/styles';
 import { TipologiaEdit } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaEdit/TipologiaEdit';
 import {theme} from './ms_theme'
 import { BandiPage } from './pages/Bandi/BandiPage';
-import { Login } from './pages/LoginPage/Login';
 import { TipologiaShow } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaShow/TipologiaShow';
+import AXIOS_HTTP from './app/AXIOS_ENGINE/AXIOS_HTTP';
+import { selectOrganizzaDocumentoData, setOrganizzaDocumentoData } from './app/store/Slices/organizzaDocumentoSlice';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from './app/ReduxTSHooks';
 
 function App() {  
-  // tema personalizzato per 
+  const dispatch = useAppDispatch()
+  const organizzaDocumentoData = useSelector(selectOrganizzaDocumentoData)
+  //CHIAMATEPER INIZIALIZZARE L'APPLICAZIONE
 
-  useEffect(() => {
-    //appena renderizza il componente dobbiamo salvare accessToken e RefreshToken nello state di redux prendendolo dall app di lancio che ce li passa all'inizializzazione
-    //controllo se i dati che devo fetchare sono nello State di Redux
-      //se ci sono =>
-       //non faccio nulla
+  //CHIAMATA PER INIZIALIZZARE I DATI CHE VERRANNO DATI ALLE SELECT PER L APPLICAZIONE
+  async function GET_ORGANIZZA_DOCUMENTO_SELECT_DATA () {
+    await AXIOS_HTTP.Retrieve({url:'/api/launch/organizzaDocumento', sModule:'GET_ORGANIZZA_DOCUMENTO', sService:'READ_DOCUMENTI', body:{}})
+        .then((res) =>{
+            dispatch(setOrganizzaDocumentoData(res.response))
+        })
+        .catch((err) => console.error(err))
+  }
 
-      //se non ci sono =>
-        //apro il loader
-        //fetching dei dati per sidebar 
-        //salvo i dati nella catche e nello state di redux
-        //chiudo il loader
+  useEffect(()=>{
+      console.log('CHIAMATA PER PRENDERE I DATI DALLE SELECT PER WIZARD CREAZIONE BANDO')
+      GET_ORGANIZZA_DOCUMENTO_SELECT_DATA()
+  },[])
+  useEffect(()=>{
+   console.log('STATE REDUX organizza documento: ', organizzaDocumentoData)
+},[organizzaDocumentoData])
+  //altre chiamate di inizializzazione...
 
 
-
-
-
-
-    //Utility.Logger.disable()
-    //abilito / disabilito console.log()
-    /*
-      //per farlo funzionare si deve sviluppare EndPoint
-      //faccio chiamata al server su endpoint che risponde in base alla decisione di loggare o non
-      //se ritorna 0 non loggo se ritorna 1 loggo
-      const result = await AxiosHTTP('/api/Test/logger', method:'GET' ...etc)
-      if (result.data !== 0){
-        Utility.Logger.enable()
-        console.log('console log abilitato')
-    */
-    
-  }, [])
   const data:DrawerData = sidebar
   return (
     <>

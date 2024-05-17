@@ -60,7 +60,7 @@ export const FormStep5 = (props:FormStepProps) => {
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                     <Custom_Select2 
                         label='Responsabile del procedimento' 
-                        placeholder="Seleziona l'utente..." 
+                        placeholder="Seleziona il responsabile..." 
                         name={'responsabile'}
                         isRequired control={control} 
                         options={respList}

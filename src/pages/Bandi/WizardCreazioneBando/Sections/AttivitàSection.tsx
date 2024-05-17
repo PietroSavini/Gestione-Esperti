@@ -1,9 +1,12 @@
-import { Box, Icon, Typography } from '@mui/material'
+import { Box, Grid, Icon, Typography } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import { AttList, AttivitaObj, ModelloProcedimento, User, UserGroup } from '../WizardCreazioneBando';
 import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
 import { NoContentSvg } from '../../../../components/partials/svg/NoContentSvg';
+import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 
 type Props = {
@@ -65,9 +68,7 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
 
     function ActivityComponent ({index, activity}:{index:number, activity: AttivitaObj}){
        
-        const [style, setStyle] = useState<any>(undefined)
         // variabili di reset 
-        const resetOnPointerUpEvent = document.onpointerup;
         const resetrOnPointerMove = document.onpointermove;
         //funzione per verificare che il pulsante del mouse cliccato sia quello sinistro
         function detectLeftMouseClick(e:any){
@@ -82,6 +83,7 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
             if(!detectLeftMouseClick(e)) return;
             //evito il comportamento di default dell'evento (selezione del testo o elementi html)
             e.preventDefault();
+
             /* (HACK FIX) => sviluippo una funzione asincrona che mi permette di aspettare che l'index venga effettivamente messo sulla variabile di state di useState, 
             * in quanto se fosse sincrono andrei ad applicare lo syle inline, 
             * poi l'index si setta sull indice dell elemento selezionato applicando la classe "dragging" che sovrascriverebbe lo style inline in quanto stimolerebbe un nuovo rendering.
@@ -184,11 +186,8 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
                 async function dragEnd () {
                     setData(newData)
                     await removeIndexToisDragging()
-                    console.log('old data: ', data);
-                    console.log('newData: ', newData);
                     //reset degli eventi
                     document.onpointermove = resetrOnPointerMove;
-                    
                     //reset dello style dell elemento in dragging 
                     itemToDrag.style.position = "";
                     itemToDrag.style.zIndex = "";
@@ -203,9 +202,9 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
                     if(tempDivToEliminate){
                         tempDivToEliminate.remove();
                     };
-                    //rimuovo l'index dalla variabile useState
+                    
                 };
-            //eseguo dragEnd
+            //eseguo dragEnd al rilascio del mouse sx
             document.onpointerup = dragEnd;
         }
 
@@ -218,8 +217,24 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
                             drag_indicator
                         </Icon>
                     </Box>
-                    <Box  minHeight={'80px'} flexGrow={1} sx={{border:'1px solid green', cursor:'default'}}>
-                        {activity.actionDett}
+                    <Box  minHeight={'80px'} flexGrow={1} sx={{ cursor:'default'}}>
+                        <Grid container sx={{border: '1px solid black'}}>
+                            <Grid xs={12} md={12} lg={4} padding={'0 .5rem'} item>
+                                <Custom_Select2 options={[]} />
+                                <Custom_TextField backgroundColor='#fff' multiline maxRows={2} placeholder='descrizione attività' /> 
+                            </Grid>
+                            <Grid xs={12} md={6} lg={4} padding={'0 .5rem'} item>
+                                <Custom_Select2  options={[]} placeholder='selziona utente...' />
+                                <Custom_Select2 options={[]} placeholder='selziona gruppo...' />
+                            </Grid>
+                            <Grid xs={12} md={6} lg={4} padding={'0 .5rem'} item>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    {/* forse da sostituire con componente in AGD...da vedere */}
+                                    <DatePicker disablePast sx={{backgroundColor:'#fff', width:'100%'}}/>
+                                </LocalizationProvider>
+                                <Custom_TextField backgroundColor='#fff' type='number' placeholder='Stima' endAdornment={<Icon>access_time</Icon>}/>
+                            </Grid>
+                        </Grid>
                     </Box>
                     <Box minHeight={'80px'} width={'10%'} sx={{border:'1px solid purple', cursor:'default'}} display={'flex'} alignItems={'center'} justifyContent={'center'}>
                         <Icon sx={{cursor:'pointer'}} color='error'>
@@ -242,7 +257,7 @@ export const AttivitàSection = ({ data, setData, attList, userList, userGroup, 
                 {
                     data &&  data.length > 0 &&
                     data.map((activity, index) =>
-                        <ActivityComponent index={index} activity={activity} />
+                        <ActivityComponent key={index} index={index} activity={activity} />
                     )
                 }
             </Box>
