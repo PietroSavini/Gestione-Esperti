@@ -1,56 +1,20 @@
-import { Box, Grid, Paper } from '@mui/material';
-import React, { useState } from 'react'
-import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
-import { Label } from '@mui/icons-material';
-
+import { Grid, Paper } from '@mui/material';
+import { useState } from 'react'
+import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
 import { FormStepProps } from './FormStep1';
 import { AttivitàSection } from '../Sections/AttivitàSection';
 import { AttivitaObj } from '../WizardCreazioneBando';
+import { useSelector } from 'react-redux';
+import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 
 
-const activityData = [
-    {
-        Id:'1',
-        actionDett:'AZIONE 1',
-        delete:true,
-        posizione:0
-    },
-    {
-        Id:'2',
-        actionDett:'AZIONE 2',
-        delete:true,
-        posizione:1
-    },
-    {
-        Id:'3',
-        actionDett:'AZIONE 3',
-        delete:true,
-        posizione:2
-    }
-]
+
 
 export const FormStep5 = (props:FormStepProps) => {
     const { register, errors, className, control, fn , unregister} = props;
-    const [lstAttivita, setLstAttivita] = useState< [] | AttivitaObj[] >(activityData);
+    const [lstAttivita, setLstAttivita] = useState< [] | AttivitaObj[] >([]);
 
-    const respList : Option[] = [
-        {
-            value:'0',
-            label:'ABBALE VALENTINA',
-            icon:'account_circle'
-        },
-        {
-            value:'1',
-            label:'ADRIANI FRANCESCA',
-            icon:'account_circle'
-        },
-        {
-            value:'2',
-            label:'ARZEO ADELINA',
-            icon:'account_circle'
-        },
-    ]
-
+    const respProc = useSelector(selectOrganizzaDocumentoSelect)?.utenti
 
   return (
     <>
@@ -62,8 +26,9 @@ export const FormStep5 = (props:FormStepProps) => {
                         label='Responsabile del procedimento' 
                         placeholder="Seleziona il responsabile..." 
                         name={'responsabile'}
-                        isRequired control={control} 
-                        options={respList}
+                        isRequired 
+                        control={control} 
+                        options={respProc!}
                         validations={{required:'il responsabile è obbligatorio'}}
                         error={!! errors.responsabile}
                         errorMessage={errors.responsabile?.message as string}
@@ -71,7 +36,7 @@ export const FormStep5 = (props:FormStepProps) => {
                 </Grid>
             </Grid>
 
-            <AttivitàSection data={lstAttivita} setData={setLstAttivita} userList={[]} attList={[]} userGroup={[]} modelliProcedimento={[]}/>
+            <AttivitàSection data={lstAttivita} setData={setLstAttivita} />
         </Paper>
     </>
   )

@@ -1,57 +1,27 @@
 import { Box, Dialog, Grid, Icon, Paper, Typography } from '@mui/material'
 import { FormStepProps } from './FormStep1';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect,  useMemo,  useState } from 'react';
 import { CustomTreeview, Tview } from '../../../../components/partials/TreeView/Treeview';
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 import { OpenFolderSvg } from '../../../../components/partials/svg/OpenFolderSvg';
-import AsyncSelect from 'react-select/async';
-import { Custom_AsyncSelect, Option } from '../../../../components/partials/Inputs/Custom_AsyncSelect';
-import { GroupBase, OptionsOrGroups, SingleValue } from 'react-select';
+import { Custom_AsyncSelect } from '../../../../components/partials/Inputs/Custom_AsyncSelect';
+import {  SingleValue } from 'react-select';
 import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
 import { FascicoloSvg } from '../../../../components/partials/svg/FascicoloSvg';
-import { AutoFixHigh } from '@mui/icons-material';
-//data del treeView 
-const data: Tview[] = [
-    {
-        value: '0',
-        label: 'elemento 1',
-        children: [
-            {
-                value: '0.2',
-                label: 'elemento 1.2',
-                children: [
-                    {
-                        value: '0.2.1',
-                        label: 'elemento 1.2.1',
-                        children: [
-                            {
-                                value: '0.2.1.1',
-                                label: 'elemento 1.2.1.1'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                value: '0.1',
-                label: 'elemento 1.1',
+import { useSelector } from 'react-redux';
+import { selectOrganizzaDocumentoData, selectOrganizzaDocumentoTreeViewData } from '../../../../app/store/Slices/organizzaDocumentoSlice';
+import { convertTreeViewData } from '../../handlers';
+import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
+import { convertData } from '../../../SettingsPage/functions';
 
-            },
 
-        ]
-    },
 
-    {
-        value: '1',
-        label: 'elemento 2',
-    }
-]
 type SetArchivio = {
     setArchivio: React.Dispatch<React.SetStateAction<string | null>>
 }
 
-type FascicoloElettronico = {
+export type FascicoloElettronico = {
     id: string;
     fascicolo_nr: string;
     fascicolo_id: string;
@@ -59,53 +29,13 @@ type FascicoloElettronico = {
     date: string;
     value: string;
     label: string;
-    fascicoliInterni?: FascicoloElettronico[] | [];
+    fiEFNumberSottofascicolo?: number;
+    fiEFNumberInserto?: number;
+    childrens?:FascicoloElettronico[] | [];
 }
-
-const FascicoliData: FascicoloElettronico[] = [
-    {
-        id: '0',
-        fascicolo_nr: '34',
-        fascicolo_id: '10121',
-        title: 'AAA Prova',
-        date: '29/02/2024 11:00:00',
-        value: '1',
-        label: '34 del 29/02/2024 AAA Prova',
-        fascicoliInterni: [
-            {
-                id: '0.1',
-                fascicolo_nr: '34.1',
-                fascicolo_id: '10126',
-                title: 'Fascicolo Interno Prova',
-                date: '29/02/2024 11:00:00',
-                value: '1.1',
-                label: 'Fascicolo Interno del fascicolo n. 34',
-            },
-        ]
-    },
-    {
-        id: '1',
-        fascicolo_nr: '35',
-        fascicolo_id: '10122',
-        title: 'BBB Prova',
-        date: '29/02/2024 11:01:00',
-        value: '2',
-        label: '35 del 29/02/2024 BBB Prova',
-    },
-    {
-        id: '2',
-        fascicolo_nr: '36',
-        fascicolo_id: '10123',
-        title: 'CCC Prova',
-        date: '29/02/2024 11:02:00',
-        value: '3',
-        label: '36 del 29/02/2024 CCC Prova',
-    },
-]
 
 type FascicoloSelezionatoRowTypes = {
     item: FascicoloElettronico;
-    data: FascicoloElettronico[];
     displayFascicoliSelezionati: FascicoloElettronico[];
     setDisplayFascicoliSelezionati: React.Dispatch<React.SetStateAction<FascicoloElettronico[]>>;
     fascicoliSelezionati: string[];
@@ -114,33 +44,41 @@ type FascicoloSelezionatoRowTypes = {
 
 const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
     //riceverò in ingresso il data che passo per popolare le select async oppure la funzione che chiama per ricevere il data
-    const { data, displayFascicoliSelezionati, setDisplayFascicoliSelezionati, item, fascicoliSelezionati, setFascicoliSelezionati } = props
-    const fascicoloNr = item.fascicolo_id
-    const fascicoloDate = item.date
-    const [editMode, setEditMode] = useState<boolean>(false)
-    const [fascicoloSelezionato, setFascicoloSelezionato] = useState<FascicoloElettronico | null>(item)
-    const [sottoFascicoloSelezionato, setSottoFascicoloSelezionato] = useState<FascicoloElettronico | null>(null)
-    const [error, setError] = useState<string | undefined>(undefined)
+    const {  displayFascicoliSelezionati, setDisplayFascicoliSelezionati, item, fascicoliSelezionati, setFascicoliSelezionati } = props;
+    const fascicoloNr = item.fascicolo_id;
+    const fascicoloDate = item.date;
+    const [editMode, setEditMode] = useState<boolean>(false);
+    const [fascicoloSelezionato, setFascicoloSelezionato] = useState<FascicoloElettronico | null>(item);
+    const [sottoFascicoloSelezionato, setSottoFascicoloSelezionato] = useState<FascicoloElettronico | null>(null);
+    const [error, setError] = useState<string | undefined>(undefined);
+    const [ sottofascicoli, setSottofascicoli] = useState<FascicoloElettronico[]>([]);
 
-    const loadOptions = (searchValue: string, callBack: (options: FascicoloElettronico[]) => void) => {
-        setTimeout(() => {
-            const filteredOptions = data.filter((option) => option.label.toLowerCase().includes(searchValue.toLowerCase()));
-            callBack(filteredOptions)
-        }, 2000)
-    }
+    const loadOptions = (searchValue: string, callBack: (options: any) => void) => {
+        
+       
+        
+        // setTimeout(() => {
+        //     const filteredOptions = data.filter((option) => option.label.toLowerCase().includes(searchValue.toLowerCase()));
+        //     callBack(filteredOptions)
+        // }, 2000)
+    };
 
-    const onFascicoloChange = (newValue: SingleValue<any>) => {
-        setError(undefined)
-        const fascicolo: FascicoloElettronico = newValue
-        setSottoFascicoloSelezionato(null)
-        setFascicoloSelezionato(fascicolo)
-    }
+    const onFascicoloChange = async (newValue: SingleValue<any>) => {
+        
+        setError(undefined);
+        const fascicolo: FascicoloElettronico = newValue;
+        setSottoFascicoloSelezionato(null);
+        setFascicoloSelezionato(fascicolo);
+
+        
+            //setSottofascicoli(sottofascicoli)
+    };
 
     const onSottoFascicoloChange = (newValue: SingleValue<any>) => {
-        setError(undefined)
-        const fascicolo: FascicoloElettronico = newValue
-        setSottoFascicoloSelezionato(fascicolo)
-    }
+        setError(undefined);
+        const fascicolo: FascicoloElettronico = newValue;
+        setSottoFascicoloSelezionato(fascicolo);
+    };
 
     //funzione che gestisce la logica completa dell' aggiunta dell'archivio
     const replaceFascicoloSelezionato = (newFascicolo: FascicoloElettronico) => {
@@ -232,17 +170,16 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
                             loadOptions={loadOptions}
                             onChange={onFascicoloChange}
                             defaultValue={fascicoloSelezionato ? fascicoloSelezionato : undefined}
-
                         />
                     </Grid>
                     <Grid paddingRight={'1rem'} item xs={12} md={5} >
-                        {fascicoloSelezionato !== null && fascicoloSelezionato.fascicoliInterni ? (
+                        {fascicoloSelezionato !== null  ? (
                             <Custom_Select2
                                 isClearable
                                 label='sottofascicolo/inserto'
                                 placeholder='Seleziona un sottofascicolo'
                                 onChangeSelect={onSottoFascicoloChange}
-                                options={fascicoloSelezionato.fascicoliInterni}
+                                options={sottofascicoli}
                                 defaultValue={sottoFascicoloSelezionato ? sottoFascicoloSelezionato : undefined}
 
                             />
@@ -281,15 +218,12 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
     const [fascicoliSelezionati, setFascicoliSelezionati] = useState<string[]>([])
     const [displayFascicoliSelezionati, setDisplayFascicoliSelezionati] = useState<FascicoloElettronico[]>([]);
     const [errorFascicolo, setErrorFascicolo] = useState<string | undefined>(undefined);
-    
+    const [sottofascicoli, setSottofascicoli] = useState<FascicoloElettronico[]>([]);
 
-    //controllo l'array per pulire gli errori al cambio
-    useEffect(() => {
-      setErrorFascicolo(undefined)
-      console.log('fascicoli Selezionati: ',fascicoliSelezionati)
-    }, [fascicoliSelezionati])
-
-  
+    //treeViewData
+    const treeview = useSelector(selectOrganizzaDocumentoData)!.lista_archivi;
+    // uso useMomo per memorizzare i dati della treview che non dovrebbero cambiare ad ogni rerendering
+    const treeViewData = useMemo(() => convertTreeViewData(treeview), [treeview]);
     //funzione avviata al tasto 'Salva' contenuto nel modal della treeView
     function saveArchivio(param: Tview | null) {
         setArchivio(() => param ? param.value : null);
@@ -307,18 +241,41 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
             </>
         )
     }
-    //funzione per caricare options di asyncSelect
-    const loadOptions = (searchValue: string, callBack: (options: FascicoloElettronico[]) => void) => {
-        setTimeout(() => {
-            const filteredOptions = FascicoliData.filter((option) => option.label.toLowerCase().includes(searchValue.toLowerCase()));
-            callBack(filteredOptions);
-        }, 2000);
-    };
+
+    //controllo l'array per pulire gli errori al cambio
+    useEffect(() => {
+      setErrorFascicolo(undefined)
+      console.log('fascicoli Selezionati: ',fascicoliSelezionati)
+    }, [fascicoliSelezionati])
+
     //funzione passata al'async select per selezionare l'oggetto da salvare sulla variabile di state
-    const onFascicoloChange = (newValue: SingleValue<any>) => {
+    const onFascicoloChange = async (newValue: SingleValue<any>) => {
+        console.log('FASCICOLO IN SELEZIONE',newValue)
         setErrorFascicolo(undefined);
         const fascicolo: FascicoloElettronico = newValue;
         setFascicoloSelezionato(fascicolo);
+
+        //faccio chiamata per vedere se ci sono sottofascicoli/inserti per il fascicolo selezionato
+        const tempSottofascicoli = await AXIOS_HTTP.Retrieve({url:'/api/launch/organizzaDocumento', sModule:'GET_SOTTOFASCICOLI_INSERTI', sService:'READ_DOCUMENTI', body:{idFascicolo:newValue.value}})
+            .then((res)=> {
+                console.log(res)
+                //array temporaneo di sottofascicoli ed inserti che poi vanno processati dalla funzione che crea la struttura ad albero
+                const tempSottofascicoliAndInserti = res.response.lista_sottofascicoli_inserti;
+                convertData(tempSottofascicoliAndInserti);
+            })
+            .catch((err) => {
+                console.error(err);
+                return []
+            }
+        );
+
+        console.log(tempSottofascicoli)
+        
+        //converto l'array temporaneo nei dati type FascicoloElettronico[]
+        
+         
+           
+
     }
     //funzione per selezione di sottofascicolo 
     const onSottoFascicoloChange = (newValue: SingleValue<any>) => {
@@ -358,6 +315,35 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
             }
         }
     }
+    //funzione che chiama il webservice per fare la ricerca dei fascicoli fatti sulla stringa passata
+    async function GET_FASCICOLI (inputValue:string) {
+        return await AXIOS_HTTP.Retrieve({url:'/api/launch/organizzaDocumento', sModule:'GET_LISTA_FASCICOLI', sService:'READ_DOCUMENTI', body:{search:inputValue}})
+        .then((res) => {
+                const response:FascicoloElettronico[] = res.response.lista_fascicoli.map((item: any, index:number) => ({
+                    id: index,
+                    fascicolo_id: item.fiId,
+                    fascicolo_nr: item.fiEFNumber,
+                    date: item.fdEFDate,
+                    title: item.fsEFSubject,
+                    value: item.fiId,
+                    label: `n. ${item.fiEFNumber} del ${item.fdEFDate} - ${item.fsEFSubject}`
+                }));
+            return response;
+        })
+        .catch((err) => {
+            console.log(err)
+            return []
+        })
+    }
+    //funzione triggerata dalla select che ritorna un oggetto type = FascicoloElettronico
+    async function loadOptions(inputValue:string, callback:any) {
+        if(!inputValue || inputValue.length < 3){
+            callback([])
+            return
+        }
+        const data = await GET_FASCICOLI(inputValue);
+        callback(data);            
+    }
 
     return (
         <>
@@ -378,7 +364,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                             </Box>
                         </Box>
                         <Box flexGrow={1} sx={{ overflowY: 'auto' }}>
-                            <CustomTreeview data={data} setTreeItem={setSelectedTreeViewItem} selectedTreeItem={selectedTreeViewItem} />
+                            <CustomTreeview data={treeViewData} setTreeItem={setSelectedTreeViewItem} selectedTreeItem={selectedTreeViewItem} />
                         </Box>
                         <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'} padding={'.5rem 1rem'}>
                             <ActionButton onClick={() => setIsOpen(false)} color='error' text='annulla' iconComponent={<Icon>cancel</Icon>} />
@@ -407,14 +393,13 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                             />
                         </Grid>
                         <Grid paddingRight={'1rem'} item xs={12} md={5} >
-                            {fascicoloSelezionato !== null && fascicoloSelezionato.fascicoliInterni ? (
+                            {fascicoloSelezionato !== null  ? (
                                 <Custom_Select2
-                                 
                                     isClearable
                                     label='sottofascicolo/inserto'
                                     placeholder='Seleziona un sottofascicolo'
                                     onChangeSelect={(newValue) => onSottoFascicoloChange(newValue)}
-                                    options={fascicoloSelezionato.fascicoliInterni}
+                                    options={sottofascicoli}
                                     value={sottoFascicoloSelezionato}
 
                                 />
@@ -440,7 +425,6 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                         setFascicoliSelezionati={setFascicoliSelezionati}
                         displayFascicoliSelezionati={displayFascicoliSelezionati}
                         setDisplayFascicoliSelezionati={setDisplayFascicoliSelezionati}
-                        data={FascicoliData}
                         key={index}
                         item={fascicolo}
                     />))}

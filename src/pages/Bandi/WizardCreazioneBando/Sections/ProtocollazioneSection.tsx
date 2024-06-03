@@ -2,17 +2,22 @@ import { Grid, Paper, Typography } from '@mui/material';
 import React from 'react'
 import { SingleValue } from 'react-select';
 import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
+import { useSelector } from 'react-redux';
+import { OrganizzaDocumentoSelect, selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 
 type Params = {
     openSection : React.Dispatch<React.SetStateAction<boolean>>;
     isOpen : boolean;
     className: string;
     control:any;
+    options?:any[];
+    selectValues?: any
 }
 
 export const ProtocollazioneSection = (params:Params) => {
-    const {openSection, isOpen, className, control} = params;
-
+    const {openSection, isOpen, className, control, selectValues} = params;
+    
+    
     const handleProtocolloChange = (opt:SingleValue<Option>) => {
         if(opt?.value === '0'){
             openSection(true)
@@ -29,20 +34,12 @@ export const ProtocollazioneSection = (params:Params) => {
 
         ],
         tipoProtocollo: [
-            { value: '0', label: 'In Entrata' },
-            { value: '1', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
+            { value: 'PROT_E', label: 'In entrata' },
+            { value: 'PROT_U', label: 'In uscita' },
+            
         ],
-        gruppo: [
-           
-            { value: '0', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
-        ],
-        utente: [
-        
-            { value: '0', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
-        ],
+        gruppo:selectValues!.gruppo_utenti,
+        utente:selectValues!.utenti,
     }
 
   return (
@@ -75,6 +72,7 @@ export const ProtocollazioneSection = (params:Params) => {
                                 <Custom_Select2
                                     label={"Utente a cui assegnare l'attività"}
                                     options={ProtocollazioneOptions.utente}
+                                    placeholder='sleleziona utente...'
                                     control={control}
                                     name='protocollo-utente-assegnato'
                                 />
@@ -85,7 +83,8 @@ export const ProtocollazioneSection = (params:Params) => {
                                     label={"Gruppo di utenti a cui assegnare l'attività"}
                                     options={ProtocollazioneOptions.gruppo}
                                     control={control}
-                                    name='protocollo-gruppo-utenti-assegnati'  
+                                    name='protocollo-gruppo-utenti-assegnati' 
+                                    placeholder='seleziona gruppo utenti...' 
                                 />
                             </Grid>
                         </>

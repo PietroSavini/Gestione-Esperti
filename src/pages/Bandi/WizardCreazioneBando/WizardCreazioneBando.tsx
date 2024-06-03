@@ -11,20 +11,27 @@ import { convertData } from '../../SettingsPage/functions';
 import { FormStep4 } from './Steps/FormStep4';
 import { FormStep5 } from './Steps/FormStep5';
 
+
 type Params = {
     close: () => void;
     isOpen: boolean
 }
 
 export type AttivitaObj = {
-    Id:string
-    actionId?:string;
-    actionDett:string;
-    actionDesc?:string;
-    actionName?:string;
+    Id:string | number;
     delete:boolean; //true se è componente che è cancellabile 
-    fiProcessOwnerId?:number;
     posizione:number;
+    actionDett:string;
+    actionId:string|number;
+    actionDesc:string;
+    actionName:string;
+    fdMaxDateExecution?: string | number | null;
+    fiExtimatedDuration?: number | string | null;
+    fiGruppoId?: string | number | null;
+    fiUserId?: number | null;
+    fsDescriptionOfUserActivity?:string | null;
+    fiProcessOwnerId?: string |number | null;
+    fsOggetto?:string | null,
 }
 
 export type AttList = {
@@ -34,23 +41,6 @@ export type AttList = {
     actionName:string; // lable attività -> lable
 };
 
-export type User = {
-    user_id: number;
-    utente: string;
-};
-
-export type UserGroup = {
-    fiGroupId:number;
-    fsGroupExtDescription:string;
-    fsGroupName:string;
-}
-
-export type ModelloProcedimento = {
-    pm_id: number;
-    pm_subject:string;
-    pm_ext_desc:string;
-    iTotalRow:number;
-}
 
 export const WizardCreazioneBando = (params:Params) => {
     const {close, isOpen} = params
@@ -67,37 +57,30 @@ export const WizardCreazioneBando = (params:Params) => {
     const [punteggi, setPunteggi] = useState<Requisito_Table[]|[]>([]);
     //variabile di state per procedimenti (lista attività)
     const [procedimenti, setProcedimenti] = useState<AttivitaObj[]|[]>([])
-    //variabile di state per i valori delle select
-
+    // Dati contennuti nello store Redux, i dati sono raw e vanno processati per renderli compatibili con le selecttramite funzione apposita;
+   
     //funzione per chiamare i punteggi e salvarli nello state
     async function GET_ALL_PUNTEGGI_COLLEGATI (id:string|number) {
         await AXIOS_HTTP.Retrieve({url:'/api/launch/retrieve', sService:'READ_PUNTEGGI', sModule:'IMPOSTAZIONI_GET_ALL_PUNTEGGI', body:{TEspId:id}})
             .then((resp)=>{
-                const allPunteggi = convertData(resp.response) ;
-                console.log('PUNTEGGI COLLEGATI: ',allPunteggi);
-                setPunteggi(allPunteggi)
-                
+                const allPunteggi = convertData(resp.response ) ;
+                console.log('PUNTEGGI COLLEGATI: ',allPunteggi );
+                setPunteggi(allPunteggi);
             })
     };
-
-   
 
     //useEffect che utilizzo per chiamare i punteggi collegati alla tipologiaEsperto e salvarli per mostrarli nel 4o step
     useEffect(() => {
         if(TEsp){
-            GET_ALL_PUNTEGGI_COLLEGATI(TEsp)
-            
+            GET_ALL_PUNTEGGI_COLLEGATI(TEsp);
         }
         if(TEsp === undefined || null && punteggi.length > 0){
-            setPunteggi([])
-            console.log('punteggi cancellati', punteggi)
+            setPunteggi([]);
+            console.log('punteggi cancellati', punteggi);
         }
     }, [TEsp]);
-
-   
     
-    
-    //steps (stepper MUI)
+    //steps (x stepper MUI)
     const steps = [
         {
             label:'Dati Generali e metadati',
@@ -124,9 +107,8 @@ export const WizardCreazioneBando = (params:Params) => {
             isCurrentStep: false,
             isStepCompleted:false
         },
-    ]
+    ];
 
-    //funzione per popolare la select della tipologia esperto
 
     //funzione che gestisce validazione degli step e logica per prossimo step !**PULSANTE 'AVANTI', NON SUBMIT**!
     const handleNextStep = async (params:string[]) => {
@@ -152,11 +134,11 @@ export const WizardCreazioneBando = (params:Params) => {
         //******************** */
 
         //chiamata a WebService
-       // AXIOS_HTTP.Retrieve({url:'api/Retrieve/retrieve',sService:'GET_CLASSI_DOC', body:data, sModule:''})
     }
+
     //se si vuole si possono inserire gli array di stringhe 
-    const formStep1Validation: string[] = [];
-    const formStep2Validations: string[] = ['scadenza','pubblicazione_albo_richiedente','pubblicazione_albo_oggetto'];
+    const formStep1Validation: string[] = ['TEsp'];
+    const formStep2Validations: string[] = ['scadenza','pubblicazione_albo_richiedente','pubblicazione_albo_oggetto','bacheche_istituzionali_pubblica_documento','amministrazione_trasparente_pubblica_documento'];
     const formStep3Validations: string[] = ['responsabile']
 
     const ValidateAndGoNext = () => {
@@ -235,7 +217,7 @@ export const WizardCreazioneBando = (params:Params) => {
                         <Box component={'form'} noValidate onSubmit={handleSubmit(submitWizard)}>
                             <Box className={'ms_form-group'}>
                                 {/* qui vanno renderizzati i vari form input in base agli steps */}
-                                <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control} setState={setTEsp}/>
+                                <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control} setState={setTEsp} />
                                 <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors} control={control} fn={watch} unregister={unregister}/>
                                 <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors} setArchivio={setArchivioCollegato}/>
                                 <FormStep4 className={`${activeStep !== 3 && 'd-none'}`} register={register} errors={errors} data={punteggi} setState={setPunteggi} TEspId={TEsp}/>

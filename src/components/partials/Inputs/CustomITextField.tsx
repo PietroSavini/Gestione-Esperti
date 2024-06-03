@@ -19,18 +19,17 @@ export const Custom_TextField = forwardRef<HTMLInputElement, Props>((props, ref)
 
     return (
 
-        <FormControl className={`${disabled || readOnly ? 'ms_input-disabled' : ''}`} error={error} disabled={disabled} fullWidth sx={{ marginBottom: '.5rem', paddingTop:`${label ? '2rem' : 0}`, position: 'relative', ...sx }}>
+        <FormControl className={`${disabled || readOnly ? 'ms_input-disabled' : ''}`} error={error} disabled={disabled} fullWidth sx={{ marginBottom: '1rem', paddingTop:`${label ? '1.7rem' : 0}`, position: 'relative', ...sx }}>
             {/* messo per prevenire la selezione dell'input in caso in cui disabilitato o in readOnly */}
             {disabled || readOnly && <Box position={'absolute'} sx={{ top: '25px', right: '-5px', left: '-5px', bottom: '-5px', zIndex: '2' }}></Box>}
             {label && 
                 <InputLabel
-
                     shrink
-                    sx={{ zIndex: 0, top: '15px', left: '-15px', color: '#127aa3ff', fontWeight: 600, fontSize: '1.4rem', paddingLeft: '.5rem' }}
+                    sx={{ zIndex: 0, top: '15px', left: '-15px', color: '#127aa3ff', fontWeight: 600, fontSize: '1.2rem' }}
                     htmlFor={finalId}
                 >
                     {label}
-                    {isRequired && <Typography marginLeft={1} component={'span'} color={'error'} fontWeight={600} fontSize={20}>*</Typography>}
+                    {isRequired && <Typography marginLeft={'.1rem'} component={'span'} color={'error'} fontWeight={600} fontSize={16}>*</Typography>}
                 </InputLabel>
             
             }
@@ -39,7 +38,7 @@ export const Custom_TextField = forwardRef<HTMLInputElement, Props>((props, ref)
                 id={finalId}
                 ref={ref}
                 value={value}
-                sx={{ padding: '.5rem 1rem', borderRadius: '12px', boxShadow: '0px 0px 2px grey', border: '1px solid #ccccccff', backgroundColor:`${backgroundColor ? backgroundColor : 'inherit'}` }}
+                sx={{ padding: '0.1rem 0.5rem', borderRadius: '12px', boxShadow: '0px 0px 2px grey', border: '1px solid #ccccccff', backgroundColor:`${backgroundColor ? backgroundColor : 'inherit'}` }}
                 aria-describedby={`my-helper-text-${props.register ? props.register.name : label}`}
                 className="ms_custom-input"
                 {...rest}

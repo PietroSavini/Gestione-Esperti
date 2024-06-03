@@ -1,11 +1,12 @@
 import { Divider, Grid, Paper, Typography } from '@mui/material'
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
-
-import { FieldErrors, UseFormGetValues, UseFormRegister, UseFormUnregister } from 'react-hook-form';
+import { FieldErrors, UseFormRegister, UseFormUnregister } from 'react-hook-form';
 import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
 import { useEffect, useState } from 'react';
 import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import { TipologiaEspertoRow } from '../../../SettingsPage/types';
+import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
+import { useSelector } from 'react-redux';
 
 const validations={
 
@@ -14,29 +15,7 @@ const validations={
   }
 }
 
-const options = {
-    select1:[
-        {value:'0', label:'Bandi di Gara'}
-    ],
-    select2: [
-        { value: 'option1', label: 'Option 1', icon:'home' },
-        { value: 'option2', label: 'Option 2' }
-    ],
-    select3: [
-        { value: '0', label: '2024' },
-       
-    ],
-    aoo: [
-        { value: '1', label: 'NUOVA AOO' },
-    ],
-    adc: [
-        { value: '1', label: 'Archivio corrente' },
-    ],
-    ca: [
-      { value: '1', label: 'Archivio corrente' },
-  ],
-    
-}
+
 
 
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
@@ -51,14 +30,11 @@ export type FormStepProps = {
     data?:any
 }
 
-type SelectOptions = {
-    name:string,
-    options:Option[]
-}[]
+
 
 
 export const FormStep1 = (props: FormStepProps) => {
-    const { register, errors, className, control, setState } = props;
+    const { register, errors, className, control, setState} = props;
     //requisiti di validazione per campo
   
 const handleChange = (selectedOption:any) => {
@@ -69,12 +45,10 @@ const [TEspOptions, setTEspOptions] = useState<TipologiaEspertoRow[] | []>([])
 const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
 
     useEffect(() => {
-       retrieveTEspOptions()
+        if(TEspMenuItems.length === 0){
+            retrieveTEspOptions()
+        }
     }, [])
-
-    useEffect(() => {
-       console.log('menu items per tipologia esperto: ', TEspMenuItems)
-     }, [TEspMenuItems])
 
     const retrieveTEspOptions = async () => {
         await AXIOS_HTTP.Retrieve({ sService: 'READ_TIPOLOGIA_ESPERTO', sModule: 'IMPOSTAZIONI_GET_ALL_TIPOLOGIE_ESPERTO', url: '/api/launch/retrieve', body: null })
@@ -88,7 +62,7 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
             .catch((err) => console.log(err))
 
     }
-
+    const options = useSelector(selectOrganizzaDocumentoSelect);
 
     return (
         <>
@@ -97,9 +71,9 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                 <Grid container sx={{ marginBottom: '1rem' }}>
                     <Grid padding={'0 1rem'} item xs={12} md={6}>
                         <Custom_Select2
-                          options={options.select1}
+                          options={[{value:0, label:'Bandi di gara'}]}
                           disabled
-                          defaultValue={options.select1[0]}
+                          defaultValue={{value:0, label:'Bandi di gara'}}
                           control={control}
                           name='classe-documentale'
                           label='Classe Documentale'
@@ -135,10 +109,10 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
 
                     <Grid padding={'0 1rem'} item xs={12} md={3}>
                     <Custom_Select2
-                          options={options.select3}
+                          options={[{value:'2024', label:'2024'}]}
                           disabled
-                          defaultValue={options.select3[0]}
                           control={control}
+                          defaultValue={{value:'2024', label:'2024'}}
                           name='anno'
                           label='Anno di riferimento'
                         />
@@ -150,9 +124,8 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                             placeholder='Seleziona A.O.O...'
                             control={control}
                             name='a-o-o'
-                            options={options.aoo}
+                            options={options!.aoo}
                             label='A.O.O'
-                            defaultValue={options.aoo[0]}
                             isClearable
                         />
                     </Grid>
@@ -162,9 +135,9 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                             placeholder='Seleziona Archivio di Collocazione...'
                             control={control}
                             name='archivio-di-collocazione'
-                            options={options.adc}
+                            options={options!.archivi}
+                            defaultValue={options!.archivi[0]}
                             label='Archivio di Collocazione'
-                            defaultValue={options.adc[0]}
                         />
                     </Grid>
 
@@ -172,10 +145,10 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                         <Custom_Select2
                             control={control}
                             name='classe-addizionale'
-                            options={options.ca}
+                            options={options!.classi_documentali}
                             label='Classe Addizionale'
-                            defaultValue={options.adc[0]}
                             placeholder='Seleziona classe Addizionale...'
+
                         />
                     </Grid>
 
@@ -192,7 +165,7 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                     <Grid padding={'0 1rem'} item xs={12}>
                         <Custom_TextField 
                             {...register('tag-documento')} 
-                            label='Tag documento (min. 2 max. 20 caratteri)' 
+                            label='Tag documento (min 2 e max 20 caratteri)' 
                             placeholder='Inserisci tag...' 
                         />
                     </Grid>

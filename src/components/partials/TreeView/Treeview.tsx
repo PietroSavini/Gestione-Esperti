@@ -5,18 +5,19 @@ import { CloseFolderSvg } from '../svg/CloseFolderSvg';
 import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItem } from '@mui/x-tree-view/TreeItem';
 import clsx from 'clsx';
 import { TreeView } from '@mui/x-tree-view/TreeView';
-import './treeView.scss'
+import './treeView.scss';
+
 export type Tview = {
     value: string ;
     label: string;
     children?: Tview[];
-}
+};
 
 type Props = {
     data:Tview[];
     setTreeItem:React.Dispatch<React.SetStateAction<Tview| null>>;
     selectedTreeItem:Tview | null;
-}
+};
 
 export const CustomTreeview = (props:Props) => {
     const {data, setTreeItem, selectedTreeItem} = props;
@@ -28,7 +29,7 @@ export const CustomTreeview = (props:Props) => {
                 <OpenFolderSvg/>
             </Box>
         )
-    }
+    };
     //svg segno -
     function CollapseIcon(props: SvgIconProps) {
         return (
@@ -40,7 +41,7 @@ export const CustomTreeview = (props:Props) => {
                 <CloseFolderSvg/>
             </Box>
         );
-    }
+    };
     //svg segno +
     function ExpandIcon(props: SvgIconProps) {
         return (
@@ -53,7 +54,7 @@ export const CustomTreeview = (props:Props) => {
 
             </Box>
         );
-    }
+    };
     // componente custom che renderizza il treeItem MUI con comportamento personalizzato
     const CustomContent = React.forwardRef(function CustomContent(
         props: TreeItemContentProps,

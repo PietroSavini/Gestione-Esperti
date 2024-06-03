@@ -12,9 +12,10 @@ type Props = {
     unregister?: UseFormUnregister<any>;
     errors: FieldErrors<any>
     className?:string
+    selectValues?:any
 }
 export const BachecheIstituzionali_Section = (props: Props) => {
-    const {isOpen, setIsOpen, className, control, errors} = props;
+    const {isOpen, setIsOpen, className, control, errors, selectValues} = props;
 
   return (
     <>
@@ -28,31 +29,35 @@ export const BachecheIstituzionali_Section = (props: Props) => {
                         <Box padding={'0 1rem'}>
                             <Custom_Select2 
                                 placeholder='Scegli dove pubblicare il documento' 
-                                validations={{required:'il campo è obbligatorio'}} 
+                                validations={{required:'il documento è obbligatorio'}} 
                                 options={[]} 
                                 label='Pubblica documento in'
                                 isRequired
+                                control={control}
+                                name='bacheche_istituzionali_pubblica_documento'
+                                error={!!errors.bacheche_istituzionali_pubblica_documento}
+                                errorMessage={errors.bacheche_istituzionali_pubblica_documento?.message as string}
                                 
                             />
                         </Box>
 
                         <Box marginBottom={'1rem'} padding={'0 1rem'} >
-                            <Custom_TextField multiline minRows={2} label='Annotazioni visibili in pubblicazione' placeholder='Scrivi eventuali annotazioni...' />
+                            <Custom_TextField backgroundColor='#fff' multiline minRows={2} label='Annotazioni visibili in pubblicazione' placeholder='Scrivi eventuali annotazioni...' />
                         </Box>
                         <Grid container marginBottom={'1.5rem'}>
 
                             <Grid item padding={'0 1rem'} xs={12} md={6}>
-                                <Custom_Select2 label="Utente a cui assegnare l'attività" options={[]} placeholder='Seleziona utente ...'/>
+                                <Custom_Select2 label="Utente a cui assegnare l'attività" options={selectValues.utenti} placeholder='Seleziona utente ...'/>
                             </Grid>
 
                             <Grid item padding={'0 1rem'} xs={12} md={6}>
-                                <Custom_Select2 label="Grupo utenti a cui assegnare l'attività" options={[]} placeholder='Seleziona gruppo ...'/>
+                                <Custom_Select2 label="Grupo utenti a cui assegnare l'attività" options={selectValues.gruppo_utenti} placeholder='Seleziona gruppo ...'/>
                             </Grid>
 
 
                         </Grid>
                         <Box padding={'0 1rem'}>
-                            <Custom_TextField multiline minRows={1} label='note libere attività' placeholder='' />
+                            <Custom_TextField backgroundColor='#fff' multiline minRows={2} label='note libere attività' placeholder='Scrivi le note' />
                         </Box>
                         
                     </Box> 

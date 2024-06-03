@@ -3,6 +3,7 @@ import { SingleValue } from 'react-select'
 import { Custom_Select2, Option } from  '../../../../components/partials/Inputs/Custom_Select2';
 import { Grid, Paper, Typography } from '@mui/material';
 import { FieldErrors } from 'react-hook-form';
+import { OrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 
 
 type Params = {
@@ -11,11 +12,12 @@ type Params = {
     className: string;
     control:any;
     errors: FieldErrors<any>
+    selectValues?: any
 }
 
 export const FirmaSection = (params:Params) => {
 
-    const { openSection, isOpen, className, control, errors } = params;
+    const { openSection, isOpen, className, control, errors, selectValues } = params;
     
     const validations = {
         titolario: {
@@ -30,19 +32,13 @@ export const FirmaSection = (params:Params) => {
 
         ],
         tipoFirma: [
-            { value: '0', label: 'Firma Digitale Pades' },
-            { value: '1', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
+            { value: '0', label: 'Firma digitale Pades' },
+            { value: '1', label: 'Firma digitale Cades' },
+            { value: '2', label: 'Firma digitale Xades' },
+            { value: '3', label: 'Firma Grafometrica' }
         ],
-        gruppoFirmatario: [
-            { value: '0', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
-        ],
-        utenteFirmatario: [
-            { value: '0', label: 'Seleziona Utente' },
-            { value: '1', label: 'Option 1' },
-            { value: '2', label: 'Option 2' }
-        ],
+        gruppoFirmatario: selectValues!.gruppo_utenti,
+        utenteFirmatario: selectValues!.utenti,
         scadenza: [
             { value: '0', label: '12/01/2025' }
         ]
@@ -90,7 +86,6 @@ export const FirmaSection = (params:Params) => {
                             <Custom_Select2
                                 label={'Seleziona Gruppo Firmatario'}
                                 options={firmaOptions.gruppoFirmatario}
-                                defaultValue={firmaOptions.gruppoFirmatario[0]}
                                 control={control}
                                 placeholder='Seleziona gruppo firmatario...'
                                 name='firma-gruppo-firmatario'
@@ -103,7 +98,6 @@ export const FirmaSection = (params:Params) => {
                             <Custom_Select2
                                 label={'Seleziona utente Firmatario'}
                                 options={firmaOptions.utenteFirmatario}
-                                defaultValue={firmaOptions.utenteFirmatario[0]}
                                 control={control}
                                 name='firma-utente-firmatario'
                                 placeholder='seleziona utente firmatario...'

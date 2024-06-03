@@ -25,7 +25,8 @@ type SelectProps = {
     isClearable?:boolean;
     isRequired?:boolean
     onChange?: ((newValue: SingleValue<Option>, actionMeta: ActionMeta<Option>) => void) | undefined
-    loadOptions:(inputValue: string, callback: (options: OptionsOrGroups<Option, GroupBase<Option>>) => void) => void | Promise<OptionsOrGroups<Option, GroupBase<any>>>
+    loadOptions: any
+    //(inputValue: string, callback: (options: OptionsOrGroups<Option, GroupBase<Option>>) => void) => void | Promise<OptionsOrGroups<Option, GroupBase<any>>>
    
 } 
 export type Option ={

@@ -176,8 +176,8 @@ function processResponse (isAxiosJsonResponse:boolean | undefined, queryResult:a
 
 
 /*FUNZIONE DI REFRESH DELL ACCESTOKEN
-/ fn : baseQueryFn di RTKQuery
-/ api: oggetto comprendente le funzioni per interagire con lo store redux
+* fn : baseQueryFn di RTKQuery
+* api: oggetto comprendente le funzioni per interagire con lo store redux
 / extraOptions : oggetto comprendente opzioni extra
 / return => bool => true | false
 */
