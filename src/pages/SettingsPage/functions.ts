@@ -143,8 +143,8 @@ export const convertData = (rawData: RawData): any[] | [] => {
                 if(rawDataItem.fiEFNumberInserto === 0){
                     const sottoFascicolo:FascicoloElettronico = {
                         id: `${rawDataItem.id}`,
-                        fascicolo_nr: `${rawDataItem.fiEFNumberSottofascicolo}` ,
-                        fascicolo_id: `${rawDataItem.id}`,
+                        fascicolo_nr: rawDataItem.fiEFNumberSottofascicolo ,
+                        fascicolo_id: rawDataItem.id,
                         title: rawDataItem.fsEFSubject,
                         date: rawDataItem.fdEFDate,
                         value: `${rawDataItem.id}`,
@@ -164,13 +164,12 @@ export const convertData = (rawData: RawData): any[] | [] => {
 
                     //allora è un inserto (figlio di sottofascicolo)
                     //seleziono sottofascicolo padre
-                    //const parentSottofascicolo = sottoFascicoliArr.find(item => item.fascicolo_nr === rawDataItem.fiEFNumberSottofascicolo.toString());
                     if(parentSottofascicolo){
                        
                         const inserto:FascicoloElettronico = {
                             id: `${rawDataItem.id}`,
-                            fascicolo_nr: `${rawDataItem.fiEFNumberInserto}`,
-                            fascicolo_id: `${rawDataItem.id}`,
+                            fascicolo_nr: rawDataItem.fiEFNumberInserto,
+                            fascicolo_id: rawDataItem.id,
                             title: rawDataItem.fsEFSubject,
                             date: rawDataItem.fdEFDate,
                             value: `${rawDataItem.id}`,
@@ -179,9 +178,6 @@ export const convertData = (rawData: RawData): any[] | [] => {
                         };
                         const parentIndex = resultArr.findIndex(item => item.id === parentSottofascicolo.id);
                         resultArr.splice(parentIndex + 1, 0, inserto);
-                        
-
-
                     }else{
                         console.error('ConvertDataFn => accoppiata inserto / sottofascicolo non riuscita, è stato trovato un inserto non appartenente ad un sottofascicolo: ', rawDataItem)
                     };
