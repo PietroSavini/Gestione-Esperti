@@ -58,7 +58,7 @@ export const convertData = (rawData: RawData): any[] | [] => {
     console.log('CovertData() -- dati in ingresso: ', rawData);
     let requisitiMaster: Requisito_Table[] = [];
     let requisitiMasterWithotherRequisiti: Requisito_Table[] = [];
-    let requisitiTables: Requisito_Table[] = [];
+    let returnArr: any = [];
     // Verifica il tipo di dati in base alla struttura di rawData
     if (Array.isArray(rawData) && rawData.length > 0) {
         //prendo il primo item per riconosccere il tipo di Dati in ingresso
@@ -95,7 +95,7 @@ export const convertData = (rawData: RawData): any[] | [] => {
                 }
             });
 
-            requisitiTables = mergeRequisitiArrays(requisitiMaster, requisitiMasterWithotherRequisiti);
+            returnArr = mergeRequisitiArrays(requisitiMaster, requisitiMasterWithotherRequisiti);
             
         } else if ( 'ReqId' in firstItem && 'ReqDesc' in firstItem && 'MasterId' in firstItem && 'Valore' in firstItem && 'TEspId' in firstItem && 'fi_ee_punt_id' in firstItem && 'Progr' in firstItem) {
 
@@ -129,12 +129,15 @@ export const convertData = (rawData: RawData): any[] | [] => {
                 }
             });
             
-            requisitiTables = mergeRequisitiArrays(requisitiMaster, requisitiMasterWithotherRequisiti);
+            returnArr = mergeRequisitiArrays(requisitiMaster, requisitiMasterWithotherRequisiti);
      
         }else if ('fiEFNumberSottofascicolo' in firstItem && 'fiEFNumberInserto' in firstItem){
             console.log('DATI DA CONVERTIRE: SOTTOFASCICOLI ED INSERTI');
 
             let sottoFascicoliArr: FascicoloElettronico[] = [];
+            let resultArr: any[] = [];
+            let mappaSottofascicoli: { [key: string]: FascicoloElettronico } = {};
+
             //preparo i sottofascicoli padre
             (rawData as DataFour[]).forEach(rawDataItem => {
                 if(rawDataItem.fiEFNumberInserto === 0){
@@ -145,19 +148,23 @@ export const convertData = (rawData: RawData): any[] | [] => {
                         title: rawDataItem.fsEFSubject,
                         date: rawDataItem.fdEFDate,
                         value: `${rawDataItem.id}`,
-                        label: `n. ${rawDataItem.fiEFNumberSottofascicolo} del ${rawDataItem.fdEFDate} - ${rawDataItem.fsEFSubject}`,
-                        childrens:[]
-                    }
+                        label: rawDataItem.fsEFSubject,
+                        level:0
+                    };
                     sottoFascicoliArr.push(sottoFascicolo);
+                    resultArr.push(sottoFascicolo);
+                    mappaSottofascicoli[rawDataItem.fiEFNumberSottofascicolo.toString()] = sottoFascicolo;
                 }
             });
 
 
             (rawData as DataFour[]).forEach(rawDataItem => {
                 if(rawDataItem.fiEFNumberInserto !== 0){
+                    const parentSottofascicolo = mappaSottofascicoli[rawDataItem.fiEFNumberSottofascicolo.toString()];
+
                     //allora è un inserto (figlio di sottofascicolo)
                     //seleziono sottofascicolo padre
-                    const parentSottofascicolo = sottoFascicoliArr.find(item => item.fascicolo_nr === rawDataItem.fiEFNumberSottofascicolo.toString());
+                    //const parentSottofascicolo = sottoFascicoliArr.find(item => item.fascicolo_nr === rawDataItem.fiEFNumberSottofascicolo.toString());
                     if(parentSottofascicolo){
                        
                         const inserto:FascicoloElettronico = {
@@ -167,32 +174,32 @@ export const convertData = (rawData: RawData): any[] | [] => {
                             title: rawDataItem.fsEFSubject,
                             date: rawDataItem.fdEFDate,
                             value: `${rawDataItem.id}`,
-                            label: `n. ${rawDataItem.fiEFNumberInserto} del ${rawDataItem.fdEFDate} - ${rawDataItem.fsEFSubject}`
+                            label: rawDataItem.fsEFSubject,
+                            level: parentSottofascicolo.level! + 1
                         };
+                        const parentIndex = resultArr.findIndex(item => item.id === parentSottofascicolo.id);
+                        resultArr.splice(parentIndex + 1, 0, inserto);
+                        
 
-                        parentSottofascicolo!.childrens! = [...parentSottofascicolo!.childrens!, inserto ];
-                        sottoFascicoliArr.map((item => item.fascicolo_nr === parentSottofascicolo.fascicolo_nr ? parentSottofascicolo : item));
+
                     }else{
                         console.error('ConvertDataFn => accoppiata inserto / sottofascicolo non riuscita, è stato trovato un inserto non appartenente ad un sottofascicolo: ', rawDataItem)
                     };
                 };
             });
-            
-            return sottoFascicoliArr as FascicoloElettronico[]
-          
-
+            returnArr = resultArr;
         }else {
             console.error('Struttura dati non riconosciuta.');
-            return requisitiTables;
+            return returnArr;
         }
        
     } else {
         console.error('Dati non validi o vuoti.');
-        return requisitiTables;
+        return returnArr;
     }
 
-    console.log('requisiti formattati: ', requisitiTables);
-    return requisitiTables;
+    console.log('Dati Convertiti: ', returnArr);
+    return returnArr;
 };
 
 export const createOptionArray = ({arr, value, label}: {arr: any[], value:string, label:string}) => {

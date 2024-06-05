@@ -32,13 +32,14 @@ export type Option ={
     value: string | number;
     label: string;
     icon?: string;
-    id?: string | number
-    children?: Option[] | [];
+    id?: string | number;
+    childrens?: Option[] | [];
+    level?: number;
 }
 
 
 export const Custom_Select2 = (props:Props) => {
-    const {id, name, control, label, error, errorMessage,  defaultValue, readOnly, disabled, options, placeholder, validations, isMulti, isClearable, onChangeSelect, isRequired, value, marginBottom} = props
+    const {id, name, control, label, error, errorMessage,  defaultValue, readOnly, disabled, options, placeholder, validations, isMulti, isClearable, onChangeSelect, isRequired, value, marginBottom} = props;
     const rndId = uuidv4()
   return (
     <>
@@ -102,12 +103,18 @@ export const Custom_Select2 = (props:Props) => {
                             id={id? id : rndId}
                             aria-labelledby={`${name}-select-label`}
                             styles={{ 
-                                control:(provided:CSSObjectWithLabel,state) => ({
+
+                                control:(provided: CSSObjectWithLabel, state) => ({
                                     ...provided,
                                     borderRadius:'10px',
                                     border: `${error ? '1px solid red' : provided.border}`,
                                     boxShadow:'0px 0px 2px grey'
+                                }),
+                                option:(provided: CSSObjectWithLabel, state) =>({
+                                    ...provided,
+                                    paddingLeft: state.data.level && state.data.level !== 0 ? `${state.data.level * 40}px` : undefined  // aggiungo 40 * livello indentazione al padding sx in modo da creare la struttura ad albero solo se la proprietà level di Option esiste ed è diversa da 0
                                 })
+                                    
                             }}
                             //@ts-ignore
                             getOptionLabel={e => (
@@ -146,12 +153,16 @@ export const Custom_Select2 = (props:Props) => {
                     id={id? id : rndId}
                     aria-labelledby={`${name ? name : rndId}-select-label`}
                     styles={{ 
-                        control:(provided:CSSObjectWithLabel,state) => ({
+                        control:(provided: CSSObjectWithLabel,state) => ({
                             ...provided,
                             borderRadius:'10px',
                             border: `${error ? '1px solid red' : provided.border}`,
                             boxShadow:'0px 0px 2px grey',
                             marginBottom:`${marginBottom ? marginBottom : '1rem'}`
+                        }),
+                        option:(provided: CSSObjectWithLabel, state) =>({
+                            ...provided,
+                            paddingLeft: state.data.level && state.data.level !== 0 ? `${state.data.level * 40}px` : undefined  // aggiungo 40 * livello indentazione al padding sx in modo da creare la struttura ad albero solo se la proprietà level di Option esiste ed è diversa da 0
                         })
                     }}
                     //@ts-ignore

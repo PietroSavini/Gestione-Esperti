@@ -32,6 +32,8 @@ export type FascicoloElettronico = {
     fiEFNumberSottofascicolo?: number;
     fiEFNumberInserto?: number;
     childrens?:FascicoloElettronico[] | [];
+    level?:number;
+    isSottofascicolo?:boolean;
 }
 
 type FascicoloSelezionatoRowTypes = {
@@ -40,44 +42,82 @@ type FascicoloSelezionatoRowTypes = {
     setDisplayFascicoliSelezionati: React.Dispatch<React.SetStateAction<FascicoloElettronico[]>>;
     fascicoliSelezionati: string[];
     setFascicoliSelezionati: React.Dispatch<React.SetStateAction<string[]>>;
+    defaultOptionsSottoFascicoli:FascicoloElettronico[] | [];
+    fascicoloElettronicoSelezionato: FascicoloElettronico | null;
+}
+
+ //funzione che chiama il webservice per fare la ricerca dei fascicoli fatti sulla stringa passata
+ async function GET_FASCICOLI (inputValue:string) {
+    return await AXIOS_HTTP.Retrieve({url:'/api/launch/organizzaDocumento', sModule:'GET_LISTA_FASCICOLI', sService:'READ_DOCUMENTI', body:{search:inputValue}})
+    .then((res) => {
+            const response:FascicoloElettronico[] = res.response.lista_fascicoli.map((item: any, index:number) => ({
+                id: index,
+                fascicolo_id: item.fiId,
+                fascicolo_nr: item.fiEFNumber,
+                date: item.fdEFDate,
+                title: item.fsEFSubject,
+                value: item.fiId,
+                label: `n. ${item.fiEFNumber} del ${item.fdEFDate} - ${item.fsEFSubject}`
+            }));
+        return response;
+    })
+    .catch((err) => {
+        console.log(err)
+        return []
+    })
+}
+//funzione triggerata dalla select che ritorna un oggetto type = FascicoloElettronico
+async function loadOptions(inputValue:string, callback:any) {
+    if(!inputValue || inputValue.length < 3){
+        callback([])
+        return
+    }
+    const data = await GET_FASCICOLI(inputValue);
+    callback(data);            
 }
 
 const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
-    //riceverò in ingresso il data che passo per popolare le select async oppure la funzione che chiama per ricevere il data
-    const {  displayFascicoliSelezionati, setDisplayFascicoliSelezionati, item, fascicoliSelezionati, setFascicoliSelezionati } = props;
+    const { displayFascicoliSelezionati, setDisplayFascicoliSelezionati, item, fascicoliSelezionati, setFascicoliSelezionati, defaultOptionsSottoFascicoli, fascicoloElettronicoSelezionato } = props;
+    const fascicoloElettronicoInitialState = fascicoloElettronicoSelezionato; // in ogni caso prendo il fascicolo elettronico selezionato in quanto servirà sia in caso l'item è un fascicolo elettronico che se un sottofascicolo o inserto
+    const sottofascicoloInitialState = item.isSottofascicolo ? item : null;
     const fascicoloNr = item.fascicolo_id;
     const fascicoloDate = item.date;
     const [editMode, setEditMode] = useState<boolean>(false);
-    const [fascicoloSelezionato, setFascicoloSelezionato] = useState<FascicoloElettronico | null>(item);
-    const [sottoFascicoloSelezionato, setSottoFascicoloSelezionato] = useState<FascicoloElettronico | null>(null);
+    const [fascicoloSelezionato, setFascicoloSelezionato] = useState<FascicoloElettronico | null>( fascicoloElettronicoInitialState );
+    const [sottoFascicoloSelezionato, setSottoFascicoloSelezionato] = useState<FascicoloElettronico | null>( sottofascicoloInitialState );
     const [error, setError] = useState<string | undefined>(undefined);
-    const [ sottofascicoli, setSottofascicoli] = useState<FascicoloElettronico[]>([]);
+    const [ sottofascicoli, setSottofascicoli] = useState<FascicoloElettronico[]>(defaultOptionsSottoFascicoli);
 
-    const loadOptions = (searchValue: string, callBack: (options: any) => void) => {
-        
-       
-        
-        // setTimeout(() => {
-        //     const filteredOptions = data.filter((option) => option.label.toLowerCase().includes(searchValue.toLowerCase()));
-        //     callBack(filteredOptions)
-        // }, 2000)
-    };
-
+    
     const onFascicoloChange = async (newValue: SingleValue<any>) => {
-        
+        console.log('FASCICOLO IN SELEZIONE',newValue)
         setError(undefined);
         const fascicolo: FascicoloElettronico = newValue;
-        setSottoFascicoloSelezionato(null);
         setFascicoloSelezionato(fascicolo);
 
+        //faccio chiamata per vedere se ci sono sottofascicoli/inserti per il fascicolo selezionato
+        const tempSottofascicoli = await AXIOS_HTTP.Retrieve({url:'/api/launch/organizzaDocumento', sModule:'GET_SOTTOFASCICOLI_INSERTI', sService:'READ_DOCUMENTI', body:{idFascicolo:newValue.value}})
+            .then((res)=> {
+                console.log(res)
+                //array temporaneo di sottofascicoli ed inserti che poi vanno processati dalla funzione che crea la struttura ad albero
+                const tempSottofascicoliAndInserti = res.response.lista_sottofascicoli_inserti;
+                const convertedData = convertData(tempSottofascicoliAndInserti);
+                return convertedData;
+            })
+            .catch((err) => {
+                console.error(err);
+                return []
+            }
+        );
         
-            //setSottofascicoli(sottofascicoli)
+        setSottofascicoli(tempSottofascicoli);
     };
 
     const onSottoFascicoloChange = (newValue: SingleValue<any>) => {
         setError(undefined);
         const fascicolo: FascicoloElettronico = newValue;
         setSottoFascicoloSelezionato(fascicolo);
+       
     };
 
     //funzione che gestisce la logica completa dell' aggiunta dell'archivio
@@ -173,25 +213,15 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
                         />
                     </Grid>
                     <Grid paddingRight={'1rem'} item xs={12} md={5} >
-                        {fascicoloSelezionato !== null  ? (
-                            <Custom_Select2
-                                isClearable
-                                label='sottofascicolo/inserto'
-                                placeholder='Seleziona un sottofascicolo'
-                                onChangeSelect={onSottoFascicoloChange}
-                                options={sottofascicoli}
-                                defaultValue={sottoFascicoloSelezionato ? sottoFascicoloSelezionato : undefined}
-
-                            />
-                        ) : (
-                            <Custom_Select2
-                                label='sottofascicolo/inserto'
-                                placeholder='Nessun sottofascicolo/inserto selezionabile'
-                                disabled
-                                options={[]}
-                                value={'.'}
-                            />
-                        )}
+                                <Custom_Select2
+                                    isClearable
+                                    disabled={sottofascicoli.length === 0}
+                                    label='sottofascicolo/inserto'
+                                    placeholder={`${sottofascicoli.length > 0 ? 'seleziona un sottofascicolo' : 'nessun sottofascicolo/inserto presente nel fascicolo'}`}
+                                    onChangeSelect={(newValue) => onSottoFascicoloChange(newValue)}
+                                    options={sottofascicoli}
+                                    value={sottoFascicoloSelezionato}
+                                />
                     </Grid>
                     <Grid item xs={12} md={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'}>
                         <ActionButton sx={{ marginRight: '.5rem' }} icon='save' color='warning' onClick={save} />
@@ -261,7 +291,8 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                 console.log(res)
                 //array temporaneo di sottofascicoli ed inserti che poi vanno processati dalla funzione che crea la struttura ad albero
                 const tempSottofascicoliAndInserti = res.response.lista_sottofascicoli_inserti;
-                convertData(tempSottofascicoliAndInserti);
+                const convertedData = convertData(tempSottofascicoliAndInserti);
+                return convertedData;
             })
             .catch((err) => {
                 console.error(err);
@@ -269,19 +300,21 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
             }
         );
 
-        console.log(tempSottofascicoli)
-        
-        //converto l'array temporaneo nei dati type FascicoloElettronico[]
-        
-         
-           
+        setSottofascicoli(tempSottofascicoli)
 
     }
     //funzione per selezione di sottofascicolo 
     const onSottoFascicoloChange = (newValue: SingleValue<any>) => {
-        setErrorFascicolo(undefined);
-        const sottoFascicolo = newValue;
-        setSottoFascicoloSelezionato(sottoFascicolo);
+        if(newValue){
+            setErrorFascicolo(undefined);
+            const sottoFascicolo:FascicoloElettronico = {...newValue, isSottofascicolo:true};
+            setSottoFascicoloSelezionato(sottoFascicolo);
+            console.log('sottofascicolo selezionato: ',sottoFascicolo)
+
+        }else{
+            setSottoFascicoloSelezionato(newValue)
+        }
+
     }
     // funzione che gestisce logica di aggiunta del fascicolo selezionato, aggiunge fascicolo_id del fascicoloselezionato/sottoFascicoloSelezionato all'array fascicoliSelezionati[] 
     // e l'intero oggetto all' array displayFascicoliCollegati[] per il display in UI delle rows FascicoliSelezionatiRows
@@ -292,6 +325,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
             return
         }
         if (sottoFascicoloSelezionato !== null) {
+            console.log('AGGIUNGO SOTTOFASCICOLO')
             if (!fascicoliSelezionati.includes(sottoFascicoloSelezionato.fascicolo_id)) {
                 setFascicoliSelezionati((prev) => [...prev, sottoFascicoloSelezionato.fascicolo_id]);
                 setDisplayFascicoliSelezionati((prev) => [...prev, sottoFascicoloSelezionato])
@@ -315,35 +349,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
             }
         }
     }
-    //funzione che chiama il webservice per fare la ricerca dei fascicoli fatti sulla stringa passata
-    async function GET_FASCICOLI (inputValue:string) {
-        return await AXIOS_HTTP.Retrieve({url:'/api/launch/organizzaDocumento', sModule:'GET_LISTA_FASCICOLI', sService:'READ_DOCUMENTI', body:{search:inputValue}})
-        .then((res) => {
-                const response:FascicoloElettronico[] = res.response.lista_fascicoli.map((item: any, index:number) => ({
-                    id: index,
-                    fascicolo_id: item.fiId,
-                    fascicolo_nr: item.fiEFNumber,
-                    date: item.fdEFDate,
-                    title: item.fsEFSubject,
-                    value: item.fiId,
-                    label: `n. ${item.fiEFNumber} del ${item.fdEFDate} - ${item.fsEFSubject}`
-                }));
-            return response;
-        })
-        .catch((err) => {
-            console.log(err)
-            return []
-        })
-    }
-    //funzione triggerata dalla select che ritorna un oggetto type = FascicoloElettronico
-    async function loadOptions(inputValue:string, callback:any) {
-        if(!inputValue || inputValue.length < 3){
-            callback([])
-            return
-        }
-        const data = await GET_FASCICOLI(inputValue);
-        callback(data);            
-    }
+   
 
     return (
         <>
@@ -393,25 +399,17 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                             />
                         </Grid>
                         <Grid paddingRight={'1rem'} item xs={12} md={5} >
-                            {fascicoloSelezionato !== null  ? (
+                            
                                 <Custom_Select2
                                     isClearable
+                                    disabled={sottofascicoli.length === 0}
                                     label='sottofascicolo/inserto'
-                                    placeholder='Seleziona un sottofascicolo'
+                                    placeholder={`${sottofascicoli.length > 0 ? 'seleziona un sottofascicolo' : 'nessun sottofascicolo/inserto presente nel fascicolo'}`}
                                     onChangeSelect={(newValue) => onSottoFascicoloChange(newValue)}
                                     options={sottofascicoli}
                                     value={sottoFascicoloSelezionato}
 
                                 />
-                            ) : (
-                                <Custom_Select2
-                                    label='sottofascicolo/inserto'
-                                    placeholder='Nessun sottofascicolo/inserto selezionabile'
-                                    disabled
-                                    options={[]}
-                                    value={'.'}
-                                />
-                            )}
                         </Grid>
                         <Grid item xs={12} md={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} >
                             <ActionButton onClick={addToFascicoliSelezionati} sx={{ marginTop: '10px' }} text='Aggiungi' icon='add' color='secondary' />
@@ -421,6 +419,8 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
                 </Box>
                 {displayFascicoliSelezionati.map((fascicolo, index) => (
                     <FascicoloSelezionatoRow
+                        fascicoloElettronicoSelezionato={fascicoloSelezionato}
+                        defaultOptionsSottoFascicoli={sottofascicoli}
                         fascicoliSelezionati={fascicoliSelezionati}
                         setFascicoliSelezionati={setFascicoliSelezionati}
                         displayFascicoliSelezionati={displayFascicoliSelezionati}

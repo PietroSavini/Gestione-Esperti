@@ -63,7 +63,7 @@ export const WizardCreazioneBando = (params:Params) => {
     async function GET_ALL_PUNTEGGI_COLLEGATI (id:string|number) {
         await AXIOS_HTTP.Retrieve({url:'/api/launch/retrieve', sService:'READ_PUNTEGGI', sModule:'IMPOSTAZIONI_GET_ALL_PUNTEGGI', body:{TEspId:id}})
             .then((resp)=>{
-                const allPunteggi = convertData(resp.response ) ;
+                const allPunteggi = convertData(resp.response) ;
                 console.log('PUNTEGGI COLLEGATI: ',allPunteggi );
                 setPunteggi(allPunteggi);
             })
