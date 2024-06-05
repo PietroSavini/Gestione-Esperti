@@ -6,7 +6,7 @@ type RawData = DataOne[] | DataTwo[] | [];
 type DataOne = {
     fi_ee_req_id: number | string;
     fs_ee_req_desc: string;
-    fi_ee_req_master_id: number | null ;
+    fi_ee_req_master_id: number | null;
     fi_ee_req_punteggio?: number | undefined;
     fi_ee_punt_id?: number | undefined;
 }
@@ -18,21 +18,21 @@ type DataTwo = {
     ReqSys: number;
 }
 
-type DataThree ={
+type DataThree = {
     ReqId: string | number;
     ReqDesc: string;
     MasterId: number | null;
     Valore: number;
     fi_ee_punt_id: number;
-    progr:number
+    progr: number
 }
 
 type DataFour = {
     id: number;
     fdEFDate: string;
     fiEFNumberSottofascicolo: number;
-    fiEFNumberInserto : number;
-    fsEFSubject : string;
+    fiEFNumberInserto: number;
+    fsEFSubject: string;
 }
 
 function mergeRequisitiArrays(array1: Requisito_Table[], array2: Requisito_Table[]): Requisito_Table[] {
@@ -63,7 +63,7 @@ export const convertData = (rawData: RawData): any[] | [] => {
     if (Array.isArray(rawData) && rawData.length > 0) {
         //prendo il primo item per riconosccere il tipo di Dati in ingresso
         const firstItem = rawData[0];
-        
+
         if ('ReqId' in firstItem && 'ReqDesc' in firstItem && 'ReqMstId' in firstItem && 'ReqSys' in firstItem) {
             console.log('DATI DA CONVERTIRE: REQUISITI');
             (rawData as DataTwo[]).forEach(RawDataItem => {
@@ -89,15 +89,15 @@ export const convertData = (rawData: RawData): any[] | [] => {
                             fi_ee_req_customerid: RawDataItem.ReqSys,
                             fi_ee_mst_id: parentRequisito.fi_ee_req_id,
                         };
-                        parentRequisito.requisiti_list = [...parentRequisito.requisiti_list, requisitoFiglio];      
+                        parentRequisito.requisiti_list = [...parentRequisito.requisiti_list, requisitoFiglio];
                         requisitiMasterWithotherRequisiti = [...requisitiMasterWithotherRequisiti, parentRequisito];
                     }
                 }
             });
 
             returnArr = mergeRequisitiArrays(requisitiMaster, requisitiMasterWithotherRequisiti);
-            
-        } else if ( 'ReqId' in firstItem && 'ReqDesc' in firstItem && 'MasterId' in firstItem && 'Valore' in firstItem && 'TEspId' in firstItem && 'fi_ee_punt_id' in firstItem && 'Progr' in firstItem) {
+
+        } else if ('ReqId' in firstItem && 'ReqDesc' in firstItem && 'MasterId' in firstItem && 'Valore' in firstItem && 'TEspId' in firstItem && 'fi_ee_punt_id' in firstItem && 'Progr' in firstItem) {
 
             console.log('DATI DA CONVERTIRE: PUNTEGGI');
             (rawData as DataThree[]).forEach(RawDataItem => {
@@ -123,15 +123,15 @@ export const convertData = (rawData: RawData): any[] | [] => {
                             fi_ee_req_punteggio: RawDataItem.Valore,
                             fi_ee_punt_id: RawDataItem.fi_ee_punt_id,
                         };
-                        parentRequisito.requisiti_list = [...parentRequisito.requisiti_list, requisitoFiglio];      
+                        parentRequisito.requisiti_list = [...parentRequisito.requisiti_list, requisitoFiglio];
                         requisitiMasterWithotherRequisiti = [...requisitiMasterWithotherRequisiti, parentRequisito];
                     }
                 }
             });
-            
+
             returnArr = mergeRequisitiArrays(requisitiMaster, requisitiMasterWithotherRequisiti);
-     
-        }else if ('fiEFNumberSottofascicolo' in firstItem && 'fiEFNumberInserto' in firstItem){
+
+        } else if ('fiEFNumberSottofascicolo' in firstItem && 'fiEFNumberInserto' in firstItem) {
             console.log('DATI DA CONVERTIRE: SOTTOFASCICOLI ED INSERTI');
 
             let sottoFascicoliArr: FascicoloElettronico[] = [];
@@ -140,16 +140,16 @@ export const convertData = (rawData: RawData): any[] | [] => {
 
             //preparo i sottofascicoli padre
             (rawData as DataFour[]).forEach(rawDataItem => {
-                if(rawDataItem.fiEFNumberInserto === 0){
-                    const sottoFascicolo:FascicoloElettronico = {
+                if (rawDataItem.fiEFNumberInserto === 0) {
+                    const sottoFascicolo: FascicoloElettronico = {
                         id: `${rawDataItem.id}`,
-                        fascicolo_nr: rawDataItem.fiEFNumberSottofascicolo ,
+                        fascicolo_nr: rawDataItem.fiEFNumberSottofascicolo,
                         fascicolo_id: rawDataItem.id,
                         title: rawDataItem.fsEFSubject,
                         date: rawDataItem.fdEFDate,
                         value: `${rawDataItem.id}`,
                         label: rawDataItem.fsEFSubject,
-                        level:0
+                        level: 0
                     };
                     sottoFascicoliArr.push(sottoFascicolo);
                     resultArr.push(sottoFascicolo);
@@ -159,14 +159,13 @@ export const convertData = (rawData: RawData): any[] | [] => {
 
 
             (rawData as DataFour[]).forEach(rawDataItem => {
-                if(rawDataItem.fiEFNumberInserto !== 0){
+                if (rawDataItem.fiEFNumberInserto !== 0) {
                     const parentSottofascicolo = mappaSottofascicoli[rawDataItem.fiEFNumberSottofascicolo.toString()];
 
                     //allora è un inserto (figlio di sottofascicolo)
                     //seleziono sottofascicolo padre
-                    if(parentSottofascicolo){
-                       
-                        const inserto:FascicoloElettronico = {
+                    if (parentSottofascicolo) {
+                        const inserto: FascicoloElettronico = {
                             id: `${rawDataItem.id}`,
                             fascicolo_nr: rawDataItem.fiEFNumberInserto,
                             fascicolo_id: rawDataItem.id,
@@ -178,31 +177,29 @@ export const convertData = (rawData: RawData): any[] | [] => {
                         };
                         const parentIndex = resultArr.findIndex(item => item.id === parentSottofascicolo.id);
                         resultArr.splice(parentIndex + 1, 0, inserto);
-                    }else{
+                    } else {
                         console.error('ConvertDataFn => accoppiata inserto / sottofascicolo non riuscita, è stato trovato un inserto non appartenente ad un sottofascicolo: ', rawDataItem)
                     };
                 };
             });
             returnArr = resultArr;
-        }else {
+        } else {
             console.error('Struttura dati non riconosciuta.');
             return returnArr;
         }
-       
     } else {
         console.error('Dati non validi o vuoti.');
         return returnArr;
     }
-
     console.log('Dati Convertiti: ', returnArr);
     return returnArr;
 };
 
-export const createOptionArray = ({arr, value, label}: {arr: any[], value:string, label:string}) => {
-    if(arr && arr.length > 0){
-        const newArr = arr.map((item) => ({value:item[value] , label:item[label]}))
+export const createOptionArray = ({ arr, value, label }: { arr: any[], value: string, label: string }) => {
+    if (arr && arr.length > 0) {
+        const newArr = arr.map((item) => ({ value: item[value], label: item[label] }))
         return newArr;
-    }else{
+    } else {
         return []
     }
 }
