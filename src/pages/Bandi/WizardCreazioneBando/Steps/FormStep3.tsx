@@ -282,10 +282,11 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
     //funzione passata al'async select per selezionare l'oggetto da salvare sulla variabile di state
     const onFascicoloChange = async (newValue: SingleValue<any>) => {
         console.log('FASCICOLO IN SELEZIONE', newValue)
+        //cleanup sottofascicoli necessario se no potrebbe rimanere il value del sottofascicolo incastrato nella select in disabled quando dopo aver inserito un sottofascicolo si cerca un fascicolo senza sottofascicoli
+        setSottofascicoli([])
         setErrorFascicolo(undefined);
         const fascicolo: FascicoloElettronico = newValue;
         setFascicoloSelezionato(fascicolo);
-
         //faccio chiamata per vedere se ci sono sottofascicoli/inserti per il fascicolo selezionato
         const tempSottofascicoli = await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_SOTTOFASCICOLI_INSERTI', sService: 'READ_DOCUMENTI', body: { idFascicolo: newValue.value } })
             .then((res) => {
@@ -298,8 +299,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
             .catch((err) => {
                 console.error(err);
                 return []
-            }
-            );
+            });
         setSottofascicoli(tempSottofascicoli)
     }
     //funzione per selezione di sottofascicolo 
