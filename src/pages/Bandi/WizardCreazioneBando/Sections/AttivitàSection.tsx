@@ -1,5 +1,5 @@
 import { Box, Grid, Icon, IconButton, Typography } from '@mui/material'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AttivitaObj } from '../WizardCreazioneBando';
 import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
@@ -96,7 +96,7 @@ export const AttivitàSection = ({ data, setData }: Props) => {
         const currentUserGroupValue = selectOptions!.gruppo_utenti.find((user) => user.value === activity.fiGruppoId);
         const currentDescriptionValue = activity.fsDescriptionOfUserActivity;
         const currentStimaValue = activity.fiExtimatedDuration;
-
+        const descriptionRef = useRef<HTMLInputElement | null>(null);
         //states
         const [activityValue, setActivityValue] = useState<Option | null>(currentActivityValue!)
         const [user, setUser] = useState<Option | null>(currentUserValue!);
@@ -104,6 +104,27 @@ export const AttivitàSection = ({ data, setData }: Props) => {
         const [description, setDescription] = useState<string | null | undefined>(currentDescriptionValue);
         const [stima, setStima] = useState<number | string |null >(currentStimaValue? currentStimaValue : 0);
         
+
+        //funzione con debounce applicata al campo descrizione per salvare i dati in origine
+        //TODO: cercare di ripristinare il focus una volta cambiati i dati, si stimola un nuovo render una volta aggiornato il campo e per questo va ripristinato il focus
+        useEffect(() => {
+
+            if(description !== currentDescriptionValue ){
+                const updateActivityDescription = setTimeout(() => {
+                    const tempObj: AttivitaObj = {
+                        ...activity,
+                        fsDescriptionOfUserActivity: description,
+                    }
+                    setData(prev => prev.map((item) => item.Id === activity.Id ? tempObj : item));
+                    if (descriptionRef.current) {
+                        descriptionRef.current.focus();
+                    }
+                }, 2000);
+                return () => clearTimeout(updateActivityDescription)
+            }
+
+        }, [description]);
+   
         
         //FUNZIONALITA' DRAG AND DROP DEGLI ELEMENTI--------------------------------------------------------------------------------------------------------------------------------------
         // variabili di reset 
@@ -145,15 +166,13 @@ export const AttivitàSection = ({ data, setData }: Props) => {
             const items = Array.from(container!.childNodes).filter(
                 (node): node is HTMLElement => node instanceof HTMLElement
             );
+
             const itemsBelowDragItem = items.slice(index + 1);
             const notDragItems = items.filter((_, i) => i !== index)
             const draggedElementData = data[index];
-
             let newData = data;
-            //console.log('newData: ',newData)
             //seleziono l'HTMLElement sul quale eseguire il dragging
             const itemToDrag = items[index];
-
             //ottengo l'oggetto comprendente i valori della posizione dell' elemento selezionato
             const dragBoundingClientRect = itemToDrag.getBoundingClientRect();
             //setto lo style inline dell' elemento in dragging
@@ -164,17 +183,14 @@ export const AttivitàSection = ({ data, setData }: Props) => {
             itemToDrag.style.top = `${dragBoundingClientRect.top}px`;
             itemToDrag.style.left = `${dragBoundingClientRect.left}px`;
             itemToDrag.style.cursor = 'grabbing'
-
             //creo un div temporaneo quando l'itemToDrag passa a position Fixed
             const tempDiv = document.createElement('div');
             tempDiv.id = "div-temp";
             tempDiv.style.width = `${dragBoundingClientRect.width}px`;
             tempDiv.style.height = `${dragBoundingClientRect.height}px`;
             tempDiv.style.pointerEvents = "none";
-
             // appendo il div temporaneo al container 
             container!.appendChild(tempDiv);
-
             //muovo gli elmenti sotto a dragItem
             //distanza da muovere
             const distance = dragBoundingClientRect.height;
@@ -296,39 +312,41 @@ export const AttivitàSection = ({ data, setData }: Props) => {
                 return newData;
             });
         };
-       
-
+        
         return (
             <>
                 <div className={`draggable-container ${isDragging === index ? 'dragging' : ''}`} >
-                    <Box component={'div'} className='grab-icon' minHeight={'80px'} onPointerDown={(e) => dragStart(e, index)} display={'flex'} alignItems={'center'} justifyContent={'center'} width={'10%'} >
-                        <Icon  >
+                    <Box component={'div'} className='grab-icon'  onPointerDown={(e) => dragStart(e, index)} display={'flex'} alignItems={'center'} justifyContent={'center'} width={'30px'} >
+                        <Icon sx={{marginTop:'5px'}} >
                             drag_indicator
                         </Icon>
                     </Box>
-                    <Box minHeight={'80px'} flexGrow={1} sx={{ cursor: 'default' }}>
+                    <Box  flexGrow={1} sx={{ cursor: 'default' }}>
                         <Grid container>
-                            <Grid xs={12} md={12} lg={4} padding={'0 .5rem'} item>
+                            <Grid xs={12} md={12} lg={4} padding={'0 .5rem'} item display={'flex'} flexDirection={'column'} justifyContent={'center'}>
                                 <Custom_Select2
                                     options={selectOptions!.tipi_attivita}
                                     //defaultValue={currentActivityValue}
                                     value={activityValue}
                                     onChangeSelect={newValue => onActivityChange(newValue as Option)}
+                                    marginBottom='.2rem'
                                 />
 
                                 <Custom_TextField
                                     backgroundColor='#fff'
-                                    multiline maxRows={2}
-                                    minRows={2}
+                                    multiline 
+                                    maxRows={2}
+                                    minRows={1.4}
                                     placeholder='descrizione attività'
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
+                                    sx={{marginBottom:'0px'}}
                                 />
 
                             </Grid>
-                            <Grid xs={12} md={6} lg={4} padding={'0 .5rem'} item>
+                            <Grid xs={12} md={6} lg={4} padding={'0 .5rem'} display={'flex'} flexDirection={'column'} justifyContent={'center'} item>
                                 <Custom_Select2
-                                    marginBottom='1.15rem'
+                                    marginBottom='0px'
                                     options={selectOptions!.utenti}
                                     defaultValue={currentUserValue}
                                     value={user}
@@ -342,17 +360,19 @@ export const AttivitàSection = ({ data, setData }: Props) => {
                                     value={userGroup}
                                     onChangeSelect={newValue => handleSelectChange(newValue as Option, 'fiGruppoId', setUserGroup)}
                                     defaultValue={currentUserGroupValue}
+                                    marginBottom='0px'
                                 />
 
                             </Grid>
-                            <Grid xs={12} md={6} lg={4} padding={'0 .5rem'} item>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    {/* forse da sostituire con componente in AGD...da vedere */}
-                                    <DatePicker
-                                        disablePast
-                                        sx={{ width: '100%', marginBottom: '.6rem', backgroundColor: '#fff' }}
+                            <Grid xs={12} md={6} lg={4} padding={'0 .5rem'} display={'flex'} flexDirection={'column'} justifyContent={'center'} item>
+                                <Custom_TextField
+                                        backgroundColor='#fff'
+                                        type='text'
+                                        placeholder='DATEPICKER '
+                                        endAdornment={<Icon>access_time</Icon>}
+                                        sx={{marginBottom:'3px', marginTop:'5px'}}
                                     />
-                                </LocalizationProvider>
+                                
                                 <Custom_TextField
                                     backgroundColor='#fff'
                                     type='number'
@@ -360,12 +380,13 @@ export const AttivitàSection = ({ data, setData }: Props) => {
                                     value={stima}
                                     onChange={(e) => setStima(e.target.value)}
                                     endAdornment={<Icon>access_time</Icon>}
+                                    sx={{marginBottom:'0px', marginTop:'3px'}}
                                 />
                             </Grid>
                         </Grid>
                     </Box>
-                    <Box minHeight={'80px'} width={'10%'} sx={{ cursor: 'default' }} display={'flex'} alignItems={'center'} justifyContent={'center'}>
-                        <IconButton size='large'>
+                    <Box  width={'45px'} sx={{ cursor: 'default' }} display={'flex'} alignItems={'center'} justifyContent={'center'}>
+                        <IconButton sx={{marginRight:'10px', marginTop:'5px'}} size='large'>
                             <Icon color='error'>
                                 delete
                             </Icon>
@@ -379,10 +400,9 @@ export const AttivitàSection = ({ data, setData }: Props) => {
     return (
         <>
             <Box className={'attivita-container'} sx={{ minHeight: '250px' }}>
-                <Box component={'div'} ref={containerRef} border={'1px solid red'} position={'relative'} minHeight={'300px'} padding={'.5rem 0rem'} display={'flex'} flexDirection={'column'} justifyContent={'center'} gap={1}>
+                <Box component={'div'} ref={containerRef} position={'relative'} minHeight={'300px'} padding={'.5rem 0rem'} display={'flex'} flexDirection={'column'} justifyContent={'center'} gap={1}>
                     {data && data.length === 0 &&
                         <NoActivityComponent />
-
                     }
                     {
                         data && data.length > 0 &&
