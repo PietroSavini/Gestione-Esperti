@@ -346,12 +346,12 @@ export const AttivitàSection = ({ data, setData }: Props) => {
                             </Grid>
                             <Grid xs={12} md={6} lg={4} padding={'0 .5rem'} display={'flex'} flexDirection={'column'} justifyContent={'center'} item>
                                 <Custom_Select2
-                                    marginBottom='0px'
                                     options={selectOptions!.utenti}
                                     defaultValue={currentUserValue}
                                     value={user}
                                     onChangeSelect={newValue => handleSelectChange(newValue as Option, 'fiProcessOwnerId', setUser)}
                                     placeholder='selziona utente...'
+                                    marginBottom='1px'
                                 />
 
                                 <Custom_Select2 
@@ -370,7 +370,7 @@ export const AttivitàSection = ({ data, setData }: Props) => {
                                         type='text'
                                         placeholder='DATEPICKER '
                                         endAdornment={<Icon>access_time</Icon>}
-                                        sx={{marginBottom:'3px', marginTop:'5px'}}
+                                        sx={{marginBottom:'5px', marginTop:'5px'}}
                                     />
                                 
                                 <Custom_TextField
