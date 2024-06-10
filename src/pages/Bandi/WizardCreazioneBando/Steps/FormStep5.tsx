@@ -1,5 +1,5 @@
 import { Grid, Paper } from '@mui/material';
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
 import { FormStepProps } from './FormStep1';
 import { AttivitàSection } from '../Sections/AttivitàSection';
@@ -13,9 +13,8 @@ import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/org
 export const FormStep5 = (props:FormStepProps) => {
     const { register, errors, className, control, fn , unregister} = props;
     const [lstAttivita, setLstAttivita] = useState< [] | AttivitaObj[] >([]);
-
-    const respProc = useSelector(selectOrganizzaDocumentoSelect)?.utenti
-
+    const respProc = useSelector(selectOrganizzaDocumentoSelect)?.utenti;
+    const listaAttivitaSelezionate = useMemo(() => lstAttivita, [lstAttivita])
   return (
     <>
         <Paper className={className} sx={{ padding: ' 1rem 1rem' }}>
@@ -36,7 +35,7 @@ export const FormStep5 = (props:FormStepProps) => {
                 </Grid>
             </Grid>
 
-            <AttivitàSection data={lstAttivita} setData={setLstAttivita} />
+            <AttivitàSection data={listaAttivitaSelezionate} setData={setLstAttivita} />
         </Paper>
     </>
   )

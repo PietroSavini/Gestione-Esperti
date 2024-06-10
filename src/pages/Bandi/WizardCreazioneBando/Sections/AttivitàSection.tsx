@@ -1,15 +1,14 @@
 import { Box, Grid, Icon, IconButton, Typography } from '@mui/material'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { AttList, AttivitaObj } from '../WizardCreazioneBando';
+import React, { useEffect, useRef, useState } from 'react'
+import { AttivitaObj } from '../WizardCreazioneBando';
 import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
 import { NoContentSvg } from '../../../../components/partials/svg/NoContentSvg';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { selectOrganizzaDocumentoData, selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
+import { lista_tipi_attivita, selectOrganizzaDocumentoData, selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { useSelector } from 'react-redux';
-import { SingleValue } from 'react-select';
 import { v4 as uuid } from 'uuid';
 
 type Props = {
@@ -19,19 +18,17 @@ type Props = {
 
 export const AttivitàSection = ({ data, setData }: Props) => {
 
-
     //states
     const [isDragging, setIsDragging] = useState<number | undefined>(undefined);
     //lista delle attività selezionabili
     const listaAttivitaData = useSelector(selectOrganizzaDocumentoData)?.lista_tipi_attivita;
     const selectOptions = useSelector(selectOrganizzaDocumentoSelect);
     const modelliProcedimentoSelect = useSelector(selectOrganizzaDocumentoSelect)!.modelli_procedimento
-
-
     //ref per stabilire l'elemento da draggare
     const containerRef = useRef<HTMLDivElement>(null);
 
     function SelectActivityComponent({ selectOptions }: { selectOptions: Option[] | [] }) {
+
         const [modelliProcedimento, setModelliProcedimento] = useState<string | undefined>(undefined);
 
         function addAttivitaToList(value: string | number | undefined) {
@@ -57,13 +54,10 @@ export const AttivitàSection = ({ data, setData }: Props) => {
             };
         }
 
-        useEffect(() => { console.log(data) }, [data])
+        useEffect(() => { console.log('DATA: ',data) }, [data])
 
         const [value, setValue] = useState<string | number | undefined>(undefined);
 
-        useEffect(() => {
-
-        }, [value])
         return (
             <>
                 <Box sx={{ backgroundColor: '#e9eaf7', borderRadius: '13px' }} display={'flex'} alignItems={'center'} >
@@ -82,6 +76,7 @@ export const AttivitàSection = ({ data, setData }: Props) => {
         )
     }
 
+    //componente che si visualizza quando non ci sono attività selezionate
     function NoActivityComponent() {
         return (
             <>
@@ -93,10 +88,26 @@ export const AttivitàSection = ({ data, setData }: Props) => {
         )
     }
 
-    function ActivityComponent({ index, activity }: { index: number, activity: AttivitaObj }) {
+    function ActivityComponent({ index, activity, activityList }: { index: number, activity: AttivitaObj, activityList:lista_tipi_attivita[] | []}) {
 
+        //trovo i valori delle select che utilizzo come default value
+        const currentActivityValue = selectOptions!.tipi_attivita.find((item) => item.value === activity.actionId);
+        const currentUserValue = selectOptions!.utenti.find((user) => user.value === activity.fiProcessOwnerId);
+        const currentUserGroupValue = selectOptions!.gruppo_utenti.find((user) => user.value === activity.fiGruppoId);
+        const currentDescriptionValue = activity.fsDescriptionOfUserActivity;
+        const currentStimaValue = activity.fiExtimatedDuration;
+
+        //states
+        const [activityValue, setActivityValue] = useState<Option | null>(currentActivityValue!)
+        const [user, setUser] = useState<Option | null>(currentUserValue!);
+        const [userGroup, setUserGroup] = useState<Option | null>(currentUserGroupValue!);
+        const [description, setDescription] = useState<string | null | undefined>(currentDescriptionValue);
+        const [stima, setStima] = useState<number | string |null >(currentStimaValue? currentStimaValue : 0);
+        
+        
+        //FUNZIONALITA' DRAG AND DROP DEGLI ELEMENTI--------------------------------------------------------------------------------------------------------------------------------------
         // variabili di reset 
-        const resetrOnPointerMove = document.onpointermove;
+        const resetOnPointerMove = document.onpointermove;
         //funzione per verificare che il pulsante del mouse cliccato sia quello sinistro
         function detectLeftMouseClick(e: any) {
             if ("buttons" in e) {
@@ -105,7 +116,10 @@ export const AttivitàSection = ({ data, setData }: Props) => {
             let button = e.which || e.button;
             return button === 1;
         }
+
         async function dragStart(e: React.PointerEvent<HTMLDivElement>, index: number) {
+            let dragStart = true;
+            console.log('dragStart')
             //controllo che sia un click con il pulsante sinistro del mouse
             if (!detectLeftMouseClick(e)) return;
             //evito il comportamento di default dell'evento (selezione del testo o elementi html)
@@ -121,7 +135,7 @@ export const AttivitàSection = ({ data, setData }: Props) => {
             async function removeIndexToisDragging() {
                 setIsDragging(undefined);
             }
-
+           
             //assegno l'index ad 'isDragging' in modo da assegnare la classe "dragging" all elemento che sto draggando
             await addIndexToisDragging(index);
             //definisco il container attuale sfruttando il ref
@@ -136,7 +150,7 @@ export const AttivitàSection = ({ data, setData }: Props) => {
             const draggedElementData = data[index];
 
             let newData = data;
-
+            //console.log('newData: ',newData)
             //seleziono l'HTMLElement sul quale eseguire il dragging
             const itemToDrag = items[index];
 
@@ -206,14 +220,16 @@ export const AttivitàSection = ({ data, setData }: Props) => {
             }
 
             //performo all'hover
-            document.onpointermove = dragMove;
+            container!.onpointermove = dragMove;
 
             //definisco la funzione di dragEnd che si esegue al rilascio del pulsante sinistro del mouse
             async function dragEnd() {
+                if(!dragStart) return;
+                console.log('dragEnd')
                 setData(newData)
                 await removeIndexToisDragging()
                 //reset degli eventi
-                document.onpointermove = resetrOnPointerMove;
+                document.onpointermove = resetOnPointerMove;
                 //reset dello style dell elemento in dragging 
                 itemToDrag.style.position = "";
                 itemToDrag.style.zIndex = "";
@@ -228,48 +244,58 @@ export const AttivitàSection = ({ data, setData }: Props) => {
                 if (tempDivToEliminate) {
                     tempDivToEliminate.remove();
                 };
-
+                dragStart = false;
             };
             //eseguo dragEnd al rilascio del mouse sx
             document.onpointerup = dragEnd;
         }
+        //END FUNZIONALITA' DRAG AND DROP DEGLI ELEMENTI--------------------------------------------------------------------------------------------------------------------------------------
 
-        //trovo i valori delle select che utilizzo come default value
-        const currentActivityValue = selectOptions!.tipi_attivita.find((item) => item.value === activity.actionId);
-        const currentUserValue = selectOptions!.utenti.find((user) => user.value === activity.fiProcessOwnerId);
-        const currentUserGroupValue = selectOptions!.gruppo_utenti.find((user) => user.value === activity.fiProcessOwnerId);
-        const currentDescriptionValue = activity.fsDescriptionOfUserActivity;
-        const currentStimaValue = activity.fiExtimatedDuration;
+        
 
-        const [activityValue, setActivityValue] = useState<Option | null>(currentActivityValue!)
-        const [user, setUser] = useState<Option | null>(currentUserValue!);
-        const [userGroup, setUserGroup] = useState<Option | null>(currentUserGroupValue!);
-        const [description, setDescription] = useState<string | null | undefined>(currentDescriptionValue);
-        const [stima, setStima] = useState<number | string |null >(currentStimaValue? currentStimaValue : 0);
+        //funzioni per salvataggio dei campi e  cambio valori.
+        function onActivityChange(newValue:Option) {
 
-       
-        async function saveDataOnChange() {
-            const tempObj: AttivitaObj={
-                Id: activity.Id,
-                actionDesc: activity.actionDesc,
-                actionDett: activity.actionDett,
-                actionId: activity.actionId,
-                actionName: activity.actionName,
-                delete: activity.delete,
-                posizione: activity.posizione,
-                fiExtimatedDuration: stima ,
-                fiGruppoId: userGroup? userGroup.value : userGroup,
-                fiProcessOwnerId: user? user.value : user,
-                fsDescriptionOfUserActivity:description,
+            //seleziono l'attività dalla lista attività per prendere i valori del nuovo oggetto
+            const newActivity = activityList.find((item) => item.fiActionId === newValue.value)
+            setActivityValue(newValue);
+
+            if(newActivity){
+                //salvo tutto l oggeto sostituendolo all'oggetto originale
+                const tempObj: AttivitaObj={
+                    Id: activity.Id,
+                    actionDesc: newActivity.fsActionDescription,
+                    actionDett: newActivity.fsAction,
+                    actionId: newActivity.fiActionId,
+                    actionName: newActivity.fsActionName,
+                    delete: activity.delete,
+                    posizione: activity.posizione,
+                    fiExtimatedDuration: stima ,
+                    fiGruppoId: userGroup? userGroup.value : userGroup,
+                    fiProcessOwnerId: user? user.value : user,
+                    fsDescriptionOfUserActivity:description,
+                }
+
+                const newData = data.map((item) => item.Id !== tempObj.Id ? item : tempObj);
+                setData(newData);
             }
             
-            const newData = data.map((item) => item.Id !== tempObj.Id ? item : tempObj);
-
-            setData(newData);
-            console.log(tempObj);
+           
         }
 
+        const handleSelectChange = (option: Option, field: string, setState:React.SetStateAction<any>) => {
+            setState(option);
 
+            const tempObj:AttivitaObj ={ 
+                ...activity,
+                [field]: option.value
+            };
+
+            setData(prevData => {
+                const newData = prevData.map((item) => item.Id === tempObj.Id ? tempObj : item);
+                return newData;
+            });
+        };
        
 
         return (
@@ -285,9 +311,9 @@ export const AttivitàSection = ({ data, setData }: Props) => {
                             <Grid xs={12} md={12} lg={4} padding={'0 .5rem'} item>
                                 <Custom_Select2
                                     options={selectOptions!.tipi_attivita}
-                                    defaultValue={currentActivityValue}
+                                    //defaultValue={currentActivityValue}
                                     value={activityValue}
-                                    onChangeSelect={newValue => setActivityValue(newValue as Option)}
+                                    onChangeSelect={newValue => onActivityChange(newValue as Option)}
                                 />
 
                                 <Custom_TextField
@@ -306,7 +332,7 @@ export const AttivitàSection = ({ data, setData }: Props) => {
                                     options={selectOptions!.utenti}
                                     defaultValue={currentUserValue}
                                     value={user}
-                                    onChangeSelect={newValue => setUser(newValue as Option)}
+                                    onChangeSelect={newValue => handleSelectChange(newValue as Option, 'fiProcessOwnerId', setUser)}
                                     placeholder='selziona utente...'
                                 />
 
@@ -314,7 +340,7 @@ export const AttivitàSection = ({ data, setData }: Props) => {
                                     options={selectOptions!.gruppo_utenti}
                                     placeholder='selziona gruppo...'
                                     value={userGroup}
-                                    onChangeSelect={newValue => setUserGroup(newValue as Option)}
+                                    onChangeSelect={newValue => handleSelectChange(newValue as Option, 'fiGruppoId', setUserGroup)}
                                     defaultValue={currentUserGroupValue}
                                 />
 
@@ -361,7 +387,7 @@ export const AttivitàSection = ({ data, setData }: Props) => {
                     {
                         data && data.length > 0 &&
                         data.map((activity, index) =>
-                            <ActivityComponent key={index} index={index} activity={activity} />
+                            <ActivityComponent key={index} index={index} activity={activity} activityList={listaAttivitaData!}/>
                         )
                     }
                 </Box>

@@ -7,6 +7,7 @@ import { Controller } from 'react-hook-form';
 import  { ActionMeta, CSSObjectWithLabel,  GroupBase,  OptionsOrGroups, SingleValue } from 'react-select';
 
 import AsyncSelect from 'react-select/async';
+import { Value } from 'sass';
 
 
 type SelectProps = {
@@ -26,6 +27,7 @@ type SelectProps = {
     isRequired?:boolean
     onChange?: ((newValue: SingleValue<Option>, actionMeta: ActionMeta<Option>) => void) | undefined
     loadOptions: any
+    noOptionMessage?:string
     //(inputValue: string, callback: (options: OptionsOrGroups<Option, GroupBase<Option>>) => void) => void | Promise<OptionsOrGroups<Option, GroupBase<any>>>
    
 } 
@@ -38,7 +40,7 @@ export type Option ={
 
 
 export const Custom_AsyncSelect = (props:SelectProps) => {
-    const {id, name, control, label, error, errorMessage,  defaultValue, readOnly, disabled,  placeholder, validations, isMulti, isClearable, onChange, isRequired, loadOptions} = props
+    const {id, name, control, label, error, errorMessage,  defaultValue, readOnly, disabled,  placeholder, validations, isMulti, isClearable, onChange, isRequired, loadOptions, noOptionMessage} = props
     const rndId = uuidv4()
   return (
     <>
@@ -77,7 +79,7 @@ export const Custom_AsyncSelect = (props:SelectProps) => {
                             
                             //implementare isMulti
                             loadOptions={loadOptions}
-                            components={{NoOptionsMessage:()=><Typography marginLeft={'1rem'} component={'span'} fontSize={'.8rem'} textAlign={'center'}>Nessun elemento trovato</Typography>}}
+                            components={{NoOptionsMessage:()=><Typography marginLeft={'1rem'} component={'span'} fontSize={'.8rem'} textAlign={'center'}>{noOptionMessage ? noOptionMessage : 'nessun elemento trovato - digita almeno 3 caratteri'}</Typography>}}
                             defaultValue={defaultValue}
                             isDisabled={disabled}
                             isClearable={isClearable}
@@ -128,7 +130,7 @@ export const Custom_AsyncSelect = (props:SelectProps) => {
                   
                     //implementare isMulti
                     loadingMessage={()=>'Ricerca in corso...'}
-                    components={{NoOptionsMessage:()=><Typography marginLeft={'1rem'} component={'span'} fontSize={'.8rem'} textAlign={'center'}>Nessun elemento trovato</Typography>}}
+                    components={{NoOptionsMessage:()=><Typography marginLeft={'1rem'} component={'span'} fontSize={'.8rem'} textAlign={'center'}>{noOptionMessage ? noOptionMessage : 'nessun elemento trovato - digita almeno 3 caratteri'}</Typography>}}
                     isDisabled={disabled}
                     isClearable={isClearable}
                     isSearchable
