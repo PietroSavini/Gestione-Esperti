@@ -114,6 +114,7 @@ export const Login = () => {
                                 error={!!errors.fsCF}
                                 helperText={errors.fsCF?.message as string}
                                 {...register('fsCF', { required: 'username obbligatorio' })}
+                                value={"00000000001"}
                             />
                             {/* username */}
                             <TextField
@@ -123,6 +124,7 @@ export const Login = () => {
                                 error={!!errors.fsUser}
                                 helperText={errors.fsUser?.message as string}
                                 {...register('fsUser', { required: 'username obbligatorio' })}
+                                value={"0001"}
                             />
                             
                             {/* password */}
@@ -134,6 +136,7 @@ export const Login = () => {
                                 error={!!errors.fsPsw}
                                 helperText={errors.fsPsw?.message as string}
                                 {...register('fsPsw', { required: 'password obbligatoria' })}
+                                value={"3D1234axios"}
                             />
                         
                             {/* //messaggio di errore generico */}

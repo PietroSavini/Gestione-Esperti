@@ -9,11 +9,12 @@ import { BachecheIstituzionali_Section } from '../Sections/BachecheIstituzionali
 import { useSelector } from 'react-redux';
 import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { selectPubblicazioniSelect } from '../../../../app/store/Slices/pubblicazioneSlice';
+import { useWizardBandoContext } from '../WizardBandoContext';
 
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
 
 export const FormStep2 = (props: FormStepProps) => {
-    const { register, errors, className, control, fn , unregister} = props;
+    const { register, errors, className, control, unregister} = props;
     const [isFirmaExpanded, setFirmaExpanded] = useState(false);
     const [isProtocolloExpanded, setProtocolloExpanded] = useState(false);
     const [isPubblicaAlboSelected, setIsPubblicaAlboSelected] = useState<boolean>(false);
@@ -23,6 +24,11 @@ export const FormStep2 = (props: FormStepProps) => {
     const pubblicazioniSelectOptions = useSelector(selectPubblicazioniSelect);
     const selectOptions = {...organizzaDocumentoSelectOptions, ...pubblicazioniSelectOptions};
     
+
+    const attivita = useWizardBandoContext().attivita;
+    const setAttivita = attivita.setListaAttivita;
+    const listaAttivita = attivita.listaAttivita;
+
     //LOGICA PER ESCLUSIONE DEI CAMPI DI INPUT QUANDO I FORM NON SONO APERTI / SELEZIONATI
     //FIRMA
     useEffect(()=>{
@@ -31,7 +37,7 @@ export const FormStep2 = (props: FormStepProps) => {
     
     //PROTOCOLLAZIONE
     useEffect(() => {   
-        if(unregister && !isProtocolloExpanded) unregister(['protocollo-tipo', 'protocollo-utente-assegnato','protocollo-gruppo-utenti-assegnati']);
+        if(unregister && !isProtocolloExpanded) unregister(['protocollo-tipo', 'protocollo-utente-assegnato','protocollo-gruppo-utenti-assegnati',"protocollazione_oggetto"]);
     },[isProtocolloExpanded]);
 
     //PUBBLICA SU ALBO ONLINE
@@ -44,7 +50,7 @@ export const FormStep2 = (props: FormStepProps) => {
             {/* -------------------------------FIRMA--------------------------------------------------------- */}
             <FirmaSection selectValues={selectOptions} openSection={setFirmaExpanded} isOpen={isFirmaExpanded} className={className} control={control} errors={errors}/>
             {/* -------------------------------------PROTOCOLLO---------------------------------------------- */}
-            <ProtocollazioneSection selectValues={selectOptions} openSection={setProtocolloExpanded} isOpen={isProtocolloExpanded} className={className} control={control} />
+            <ProtocollazioneSection selectValues={selectOptions} openSection={setProtocolloExpanded} isOpen={isProtocolloExpanded} className={className} control={control} register={register} errors={errors} />
             {/* -------------------------------------SEZIONI CON SWITCHES------------------------------------------------ */}
             {/* Pubblica su albo online */}
             <PubblicaAlbo_Section selectValues={selectOptions} register={register} className={className} isOpen={isPubblicaAlboSelected} setIsOpen={setIsPubblicaAlboSelected} control={control} errors={errors}/>

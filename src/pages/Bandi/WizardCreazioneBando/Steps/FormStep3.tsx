@@ -15,6 +15,7 @@ import { convertTreeViewData } from '../../handlers';
 import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import { convertData } from '../../../SettingsPage/functions';
 import dayjs from 'dayjs';
+import { useWizardBandoContext } from '../WizardBandoContext';
 
 
 
@@ -246,7 +247,7 @@ export const FormStep3 = (props: FormStepProps & SetArchivio) => {
     // variabili di stato per Fascicoli elettronici collegati
     const [fascicoloSelezionato, setFascicoloSelezionato] = useState<FascicoloElettronico | null>(null);
     const [sottoFascicoloSelezionato, setSottoFascicoloSelezionato] = useState<FascicoloElettronico | null>(null);
-    const [fascicoliSelezionati, setFascicoliSelezionati] = useState<number[]>([])
+    const {fascicoliSelezionati, setFascicoliSelezionati} = useWizardBandoContext().fascicoli
     const [displayFascicoliSelezionati, setDisplayFascicoliSelezionati] = useState<FascicoloElettronico[]>([]);
     const [errorFascicolo, setErrorFascicolo] = useState<string | undefined>(undefined);
     const [sottofascicoli, setSottofascicoli] = useState<FascicoloElettronico[]>([]);

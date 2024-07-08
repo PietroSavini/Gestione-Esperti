@@ -13,7 +13,7 @@ type Props = {
     label?:string;
     error?:boolean;
     errorMessage?:string;
-    defaultValue?: Option
+    defaultValue?: Option | null
     readOnly?:boolean;
     disabled?:boolean;
     options:Option[] | [];
@@ -28,7 +28,7 @@ type Props = {
     
 }
 
-export type Option ={
+export type Option = {
     value: string | number;
     label: string;
     icon?: string;

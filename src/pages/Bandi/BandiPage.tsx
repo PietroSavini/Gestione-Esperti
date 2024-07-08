@@ -4,6 +4,7 @@ import { Box } from '@mui/material'
 import './BandiPage.scss'
 import AXIOS_HTTP from '../../app/AXIOS_ENGINE/AXIOS_HTTP'
 import { WizardCreazioneBando } from './WizardCreazioneBando/WizardCreazioneBando'
+import WizardBandoContextProvider from './WizardCreazioneBando/WizardBandoContext'
 
 
 export const BandiPage = () => {
@@ -27,7 +28,9 @@ export const BandiPage = () => {
         <ActionButton color='secondary' text='Crea nuovo Bando' onClick={() => setOpenModal(true)}  />
         
         {/* MODAL CON WIZARD CREAZIONE DEL BANDO */}
-        <WizardCreazioneBando close={closeModal} isOpen={isOpen}/>
+        <WizardBandoContextProvider>
+          <WizardCreazioneBando close={closeModal} isOpen={isOpen}/>
+        </WizardBandoContextProvider>
     </>
     
   )
