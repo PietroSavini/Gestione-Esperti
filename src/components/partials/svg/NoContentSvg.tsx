@@ -1,5 +1,4 @@
 import { SvgIcon} from '@mui/material'
-import React from 'react'
 
 export const NoContentSvg = ({width, height}:{width:string, height:string}) => {
   return (

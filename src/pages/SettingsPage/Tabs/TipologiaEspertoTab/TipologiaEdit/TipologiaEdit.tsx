@@ -192,7 +192,6 @@ export const TipologiaEdit = () => {
                             <Custom_TextField
                                 sx={{minHeight:'50px', paddingLeft:'.5rem'}}
                                 label={'Descrizione Lunga'}
-                                
                                 error={!!errors.TEspDesc || genErr !== ''}
                                 maxRows={4}
                                 fullWidth

@@ -9,7 +9,6 @@ import { BachecheIstituzionali_Section } from '../Sections/BachecheIstituzionali
 import { useSelector } from 'react-redux';
 import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { selectPubblicazioniSelect } from '../../../../app/store/Slices/pubblicazioneSlice';
-import { useWizardBandoContext } from '../WizardBandoContext';
 
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
 
@@ -24,10 +23,6 @@ export const FormStep2 = (props: FormStepProps) => {
     const pubblicazioniSelectOptions = useSelector(selectPubblicazioniSelect);
     const selectOptions = {...organizzaDocumentoSelectOptions, ...pubblicazioniSelectOptions};
     
-
-    const attivita = useWizardBandoContext().attivita;
-    const setAttivita = attivita.setListaAttivita;
-    const listaAttivita = attivita.listaAttivita;
 
     //LOGICA PER ESCLUSIONE DEI CAMPI DI INPUT QUANDO I FORM NON SONO APERTI / SELEZIONATI
     //FIRMA

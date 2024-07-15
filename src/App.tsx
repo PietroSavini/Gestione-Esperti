@@ -16,7 +16,7 @@ import {theme} from './ms_theme'
 import { BandiPage } from './pages/Bandi/BandiPage';
 import { TipologiaShow } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaShow/TipologiaShow';
 import AXIOS_HTTP from './app/AXIOS_ENGINE/AXIOS_HTTP';
-import {  setOrganizzaDocumentoData, setOrganizzaDocumentoSelect, setOrganizzaDocumentoTreeViewData } from './app/store/Slices/organizzaDocumentoSlice';
+import {  setOrganizzaDocumentoData, setOrganizzaDocumentoSelect } from './app/store/Slices/organizzaDocumentoSlice';
 import { useAppDispatch } from './app/ReduxTSHooks';
 import { createOptionArray } from './pages/SettingsPage/functions';
 import { setPubblicazioniData, setPubblicazioniSelect } from './app/store/Slices/pubblicazioneSlice';
@@ -38,6 +38,7 @@ function App() {
   async function GET_PUBBLICAZIONI_SELECT_DATA () {
     await AXIOS_HTTP.Retrieve({url:'/api/launch/organizzaDocumento', sModule:'GET_PUBBLICAZIONE', sService:'READ_DOCUMENTI', body:{}})
         .then((res) =>{
+          console.log('sto a usci matto',res.response)
           dispatch(setPubblicazioniData(res.response));
           saveSelectPubblicazioni(res.response);
           
@@ -49,18 +50,18 @@ function App() {
   function saveSelectPubblicazioni (data:any) {
     const listaUffici = data.uffici_list;
     const listaTipiAtto = data.tipi_atto_list;
-    const listaTipiAttoBacheche = data.tipi_atto_bacheche_list;
+    const listaTipiAttoBacheche = data.tipo_atto_bacheche_list;
     const listaAnagrafiche = data.tipi_anagraficha_list;
     const listaSezioniTrasparenza = data.sezioni_trasparenza_list;
 
     const newSelectValuesObject = {
-      trasparenza: createOptionArray({arr:listaSezioniTrasparenza, value:'', label:''}),
+      trasparenza: createOptionArray({arr:listaSezioniTrasparenza, value:'IDMENU', label:'MENU_NAME'}),
       uffici: createOptionArray({arr:listaUffici, value:'fiUfficiId', label:'fsDescrizione'}),
-      atti: createOptionArray({arr:listaTipiAtto, value:'', label:''}),
-      bacheche: createOptionArray({arr:listaTipiAttoBacheche, value:'', label:''}),
+      atti: createOptionArray({arr:listaTipiAtto, value:'ID', label:'DESCRIZIONE'}),
+      bacheche: createOptionArray({arr:listaTipiAttoBacheche, value:'Key', label:'Value'}),
       anagrafiche: createOptionArray({arr:listaAnagrafiche, value:'fiAnagraficaTypeId', label:'fsName'}),
     };
-
+    console.log(newSelectValuesObject)
     dispatch(setPubblicazioniSelect(newSelectValuesObject));
   }
   
@@ -81,16 +82,16 @@ function App() {
     const utentiFirmatari = data.lista_utenti_firmatari;
 
     const newSelectValuesObject = {
-      aoo : createOptionArray({arr:aoo, value:'fiId', label:'fsDescrizione'}),
-      archivi : createOptionArray({arr:listaArchivi, value:'fiDossierId', label:'fsDossierName'}),
+      aoo : createOptionArray({arr:aoo, value:'id', label:'descrizione'}),
+      archivi : createOptionArray({arr:listaArchivi, value:'dossier_id', label:'dossier_name'}),
       assegnatari : createOptionArray({arr:assegnatari, value:'fgId', label:'fsAssigneeUser'}),
-      classi_documentali : createOptionArray({arr:classiDocumentali, value:'fiTypeId', label:'fsTypeName'}),
-      gruppo_utenti : createOptionArray({arr:gruppoUtenti, value:'fiGroupId', label:'fsGroupName'}),
-      modelli_procedimento : createOptionArray({arr:modelliProcedimento, value:'fiProcessModelId', label:'fsProcessModelDescription'}),
-      tipi_attivita : createOptionArray({arr:listaAttivita, value:'fiActionId', label:'fsActionName'}),
-      titolari : createOptionArray({arr:titolari, value:'fiMasterId', label:'fsDescrizione'}),
-      utenti : createOptionArray({arr:utenti , value:'fiUserId', label:'fsUtente'}),
-      utenti_firmatari : createOptionArray({arr:utentiFirmatari, value:'fiUserId', label:'fsUtente'}),
+      classi_documentali : createOptionArray({arr:classiDocumentali, value:'type_id', label:'type_name'}),
+      gruppo_utenti : createOptionArray({arr:gruppoUtenti, value:'id', label:'groupName'}),
+      modelli_procedimento : createOptionArray({arr:modelliProcedimento, value:'pm_id', label:'pm_ext_desc'}),
+      tipi_attivita : createOptionArray({arr:listaAttivita, value:'actionId', label:'actionName'}),
+      titolari : createOptionArray({arr:titolari, value:'id', label:'descrizione'}),
+      utenti : createOptionArray({arr:utenti , value:'user_id', label:'user'}),
+      utenti_firmatari : createOptionArray({arr:utentiFirmatari, value:'user_id', label:'user'}),
     };
 
     dispatch(setOrganizzaDocumentoSelect(newSelectValuesObject));

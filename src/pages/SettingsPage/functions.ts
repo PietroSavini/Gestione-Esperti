@@ -1,4 +1,4 @@
-import { FascicoloElettronico } from "../Bandi/WizardCreazioneBando/Steps/FormStep3";
+import { FascicoloElettronico } from "../Bandi/WizardCreazioneBando/Sections/FascicoliElettroniciSection";
 import { Requisito_Table } from "./types";
 
 type RawData = DataOne[] | DataTwo[] | [];

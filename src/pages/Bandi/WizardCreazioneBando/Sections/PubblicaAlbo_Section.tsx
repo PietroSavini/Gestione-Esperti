@@ -8,6 +8,7 @@ import { OrganizzaDocumentoSelect, selectOrganizzaDocumentoData } from '../../..
 import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
 import { v4 as uuid } from 'uuid';
 import { useSelector } from 'react-redux';
+import useDebounce from '../../../../app/Hooks/useDebounceHook';
 
 type Props = {
     isOpen: boolean;
@@ -68,7 +69,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
         }
     }, [isOpen])
 
-    function handleChange( newValue:any,  field:string, ) {
+    const handleChange = useDebounce(( newValue:any,  field:string, ) => {
         const value = newValue.value; 
         const activity = listaAttivita.find(item => item.Id === id);
         switch (field) {
@@ -154,7 +155,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
                 break;
         }
 
-    };
+    }, 300);
 
     return (
         <>
@@ -170,7 +171,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
                                 <Custom_Select2
                                     placeholder='Scegli dove pubblicare il documento'
                                     validations={{ required: 'il campo è obbligatorio' }}
-                                    options={[]}
+                                    options={selectValues.atti}
                                     label='Pubblica Documento in'
                                     isRequired
 

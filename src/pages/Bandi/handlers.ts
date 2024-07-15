@@ -40,9 +40,9 @@ function convertArchivitreeView (data:lista_archivi[]): Tview[] {
 
     // Step 1: creare tutti i nodi e inserirli nella mappa
     data.forEach(item => {
-        idToNodeMap[item.fiDossierId] = {
-            value: item.fiDossierId.toString(),
-            label: item.fsDossierName,
+        idToNodeMap[item.dossier_id] = {
+            value: item.dossier_id.toString(),
+            label: item.dossier_name,
             children: [],
         };
     });
@@ -51,12 +51,12 @@ function convertArchivitreeView (data:lista_archivi[]): Tview[] {
     let counter = 0;
     // Step 2: Iterare su data per costruire l'albero
     data.forEach(item => {
-        const node = idToNodeMap[item.fiDossierId];
-        if (item.fiDossierIdRef === 0) {
+        const node = idToNodeMap[item.dossier_id];
+        if (item.dossier_ref_id === 0) {
             // Nessun genitore, quindi è un nodo radice
             tree.push(node);
         } else {
-            const parentNode = idToNodeMap[item.fiDossierIdRef];
+            const parentNode = idToNodeMap[item.dossier_ref_id];
             if (parentNode) {
                 // Aggiungere il nodo corrente come figlio del genitore
                 parentNode.children!.push(node);

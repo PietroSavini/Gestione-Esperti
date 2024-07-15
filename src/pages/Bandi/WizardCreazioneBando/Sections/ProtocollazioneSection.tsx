@@ -8,6 +8,7 @@ import { v4 as uuid } from 'uuid';
 import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
+import useDebounce from '../../../../app/Hooks/useDebounceHook';
 type Params = {
     openSection : React.Dispatch<React.SetStateAction<boolean>>;
     isOpen : boolean;
@@ -88,7 +89,7 @@ export const ProtocollazioneSection = (params:Params) => {
         
     }
 
-    function handleChange( newValue:any,  field:string, ) {
+    const  handleChange= useDebounce(( newValue:any,  field:string, ) => {
         const value = newValue.value;
         const activity = listaAttivita.find(item => item.Id === id);
         switch (field) {
@@ -147,7 +148,7 @@ export const ProtocollazioneSection = (params:Params) => {
 
         }
 
-    };
+    },300);
 
   return (
     <>
@@ -206,11 +207,13 @@ export const ProtocollazioneSection = (params:Params) => {
                                     errorMessage={errors.protocollazione_oggetto?.message as string}
                                     {...register('protocollazione_oggetto',{required:"l'oggetto della protocollazione è obbligatorio"})}
                                     onChange={(e) => handleChange( e.target.value, 'fsOggetto')}
+                                    backgroundColor='#fff'
                                 />
                             </Grid>
 
                             <Grid padding={'0 1rem'} item xs={12} >
                                 <Custom_TextField 
+                                    backgroundColor='#fff'
                                     label={'note libere attività'}
                                     onChange={(e) => handleChange( e.target.value, 'fsDescriptionOfUserActivity')}
                                 />

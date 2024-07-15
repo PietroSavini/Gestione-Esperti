@@ -21,7 +21,7 @@ type SelectOption = {
 }
 
 //dataTable -------------------------------------------------------------------------------------------------------------------------
-export default function Table_RequisitiSelect({ data, setData, tespId,  }: { data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>, tespId: string | number}) {
+export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>, tespId: string | number}) {
 
   const requisiti = data.requisiti_list;
   // variabili del requisito master
@@ -129,6 +129,7 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
             return
           };
           console.log('PUNTEGGIO Cancellato con successo')
+          setRows((prevData) => [])
           setData((prevData) => [...prevData.filter((data) => data.fi_ee_req_id !== masterId)])
         })
         .catch((err) => console.log('errore durante la cancellazione del PUNTEGGIO', masterRequisitoId, ':', err))
@@ -196,7 +197,7 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }: { dat
 
     if (oldRow.fi_ee_req_id === 'newRow') {
       //INSERT PUNTEGGIO
-      await AXIOS_HTTP.Execute({ sService: 'WRITE_PUNTEGGI', sModule: 'IMPOSTAZIONI_INSERT_PUNTEGGIO', body: { tespId: tespId, reqId: reqId, punt: punteggio }, url: '/api/launch/execute' })
+      await AXIOS_HTTP.Execute({ sService: 'WRITE_PUNTEGGI', sModule: 'IMPOSTAZIONI_INSERT_PUNTEGGIO', body: { tespId: tespId, reqId: reqId, punt: punteggio}, url: '/api/launch/execute' })
         .then((resp) => {
           console.log('CREAZIONE PUNTEGGIO')
           const newPuntId = resp.response.fi_ee_punt_id;

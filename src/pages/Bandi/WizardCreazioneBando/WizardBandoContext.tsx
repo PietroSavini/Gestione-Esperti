@@ -8,6 +8,10 @@ type WizardBandoContext = {
     fascicoli:{
         fascicoliSelezionati: number[];
         setFascicoliSelezionati: React.Dispatch<React.SetStateAction<number[]>>;
+    };
+    archivi:{
+        archivioCollegato: number | null;
+        setArchivioCollegato: React.Dispatch<React.SetStateAction<number | null>>;
     }
 };
 
@@ -71,6 +75,8 @@ export const WizardBandoContext = createContext<WizardBandoContext | null>(null)
 export default function WizardBandoContextProvider ({children}: WizardBandoContextProvider) {
     const [listaAttivita, setListaAttivita] = useState<AttivitaObj[] | []>([]);
     const [fascicoliSelezionati, setFascicoliSelezionati] = useState<number[] | []>([]);
+    const [archivioCollegato, setArchivioCollegato] = useState<number|null>(null);
+
     useEffect(() => {
         console.log("Procedimento: ",listaAttivita)
     }, [listaAttivita])
@@ -85,6 +91,10 @@ export default function WizardBandoContextProvider ({children}: WizardBandoConte
                 fascicoli:{
                     fascicoliSelezionati,
                     setFascicoliSelezionati
+                },
+                archivi:{
+                    archivioCollegato,
+                    setArchivioCollegato
                 }
                 //aggiungere anche qui...
             }}

@@ -4,7 +4,7 @@ import { setCredentials, logOut } from '../store/Slices/authSlice';
 import AxiosUtils from './AxiosUTILS';
 import { store } from '../store/store';
 
-type Options = {
+export type Options = {
     baseUrl?: string;
     url: string;
     method?: string;

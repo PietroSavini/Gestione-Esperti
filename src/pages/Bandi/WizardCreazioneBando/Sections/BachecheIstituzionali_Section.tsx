@@ -7,6 +7,7 @@ import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
 import { useSelector } from 'react-redux';
 import { selectOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { v4 as uuid } from 'uuid';
+import useDebounce from '../../../../app/Hooks/useDebounceHook';
 
 type Props = {
     isOpen: boolean;
@@ -25,7 +26,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
     const {listaAttivita, setListaAttivita} = attivita;
     const bachecheIstituzionaliAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.fsAction === "BACIST");
     
-    function handleChange( newValue: any,  field: string ) {
+    const handleChange = useDebounce(( newValue: any,  field: string ) => {
         const value = newValue.value; 
         const activity = listaAttivita.find(item => item.Id === id);
         switch (field) {
@@ -71,7 +72,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
                 break;
         }
 
-    };
+    },300);
 
     useEffect(() => {
         if(isOpen){
@@ -115,7 +116,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
                             <Custom_Select2 
                                 placeholder='Scegli dove pubblicare il documento' 
                                 validations={{required:'il documento è obbligatorio'}} 
-                                options={[]} 
+                                options={selectValues.bacheche} 
                                 label='Pubblica documento in'
                                 isRequired
                                 control={control}

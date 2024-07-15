@@ -1,26 +1,11 @@
 import { Box, Grid } from '@mui/material'
 import './Dashboard.scss'
-import { useAppDispatch } from '../../app/ReduxTSHooks'
-import { useEffect } from 'react';
 import { Widget } from '../../components/Widget/Widget';
 import { DashboardSection } from '../../components/DashboardSection/DashboardSection';
 import { data, otherData } from '../../components/SectionRows/data';
-import { openLoader, closeLoader } from '../../app/store/Slices/loaderSlice';
-import AXIOS_HTTP from '../../app/AXIOS_ENGINE/AXIOS_HTTP';
-import { Requisito_Table, convertData } from '../SettingsPage/Tabs/RequisitiTab/RequisitiTab';
-
-
 
 export const Dashboard = () => {
-  
-  const dispatch = useAppDispatch();
-  
-  
-   
-    useEffect(() => {
-      //fetching dei dati che servono allo stato dell applicazione
-    }, [])
-    
+
   
   return (
     <>

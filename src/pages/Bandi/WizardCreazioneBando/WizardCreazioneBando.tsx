@@ -37,7 +37,7 @@ export const WizardCreazioneBando = (params:Params) => {
     const [activeStep, setActiveStep] = useState(0);    
     //-----------------------variabili di state che servono per invio form finale.-----------------------------------------//
     //variabile di State per sezione "archivio collegato"
-    const [archivioCollegato, setArchivioCollegato] = useState<string|null>(null)
+    const {archivioCollegato} = useWizardBandoContext().archivi
     //variabile di State per TipologiaEsperto
     const [TEsp, setTEsp] = useState<string|number|undefined>(undefined);
     //variabile di State per salvataggio punteggi (già formattati)
@@ -118,7 +118,8 @@ export const WizardCreazioneBando = (params:Params) => {
             documento : {...data},
             requisiti: punteggi,
             procedimento:[...procedimento],
-            linkFascicoliId:[...fascicoliSelezionati]
+            linkFascicoliId:[...fascicoliSelezionati],
+            archivioCollegato: archivioCollegato 
         } 
         console.log('form Inviato: ', submittedData)
         //******************** */
@@ -209,7 +210,7 @@ export const WizardCreazioneBando = (params:Params) => {
                             {/* qui vanno renderizzati i vari form input in base agli steps */}
                             <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control} setState={setTEsp} />
                             <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors} control={control} fn={watch} unregister={unregister}/>
-                            <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors} setArchivio={setArchivioCollegato}/>
+                            <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors} />
                             <FormStep4 className={`${activeStep !== 3 && 'd-none'}`} register={register} errors={errors} data={punteggi} setState={setPunteggi} TEspId={TEsp}/>
                             <FormStep5 className={`${activeStep !== 4 && 'd-none'}`} register={register} errors={errors} control={control} 
                     

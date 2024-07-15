@@ -4,16 +4,17 @@ import { Option } from '../../../components/partials/Inputs/Custom_Select2';
 import { Tview } from '../../../components/partials/TreeView/Treeview';
 
 export type lista_aoo = {
-    fiId:number;
-    fsDescrizione:string;
-    fsCognomeResponsabile:string;
-    fsNomeResponsabile:string;
+    id:number;
+    descrizione:string;
+    cognomeResp:string;
+    nomeResp:string;
+    default: boolean; //se true è defaultSelected
 }
 
 export type lista_archivi ={
-    fiDossierId:number;
-    fiDossierIdRef:number;
-    fsDossierName:string;
+    dossier_id:number;
+    dossier_ref_id:number;
+    dossier_name:string;
 }
 
 export type lista_assegnatari = {
@@ -28,53 +29,53 @@ export type lista_assegnatari = {
 }
 
 export type lista_classi_documentali = {
-    fiTypeId:number;
-    fsTypeName:string;
-    fsCSClass:string;
-    fjAttributi: string;
+    type_id:number;
+    type_name:string;
+    csc:string;
+    attributi: string;
 }
 
 export type lista_gruppo_utenti = {
-    fiGroupId:number;
-    fsGroupName:string;
-    fsGroupExtDescription:string;
+    id:number;
+    groupName:string;
+    groupDescription:string;
 }
 
 export type lista_modelli_procedimento = {
-    iTotalRow:number;
-    fiProcessModelId:number;
-    fsProcessModelSubject:string;
-    fsProcessModelDescription:string;
+    row:number;
+    pm_id:number;
+    pm_subject:string;
+    pm_ext_desc:string;
 }
 
 export type lista_tipi_attivita = {
-    fiActionId:number;
-    fsActionName:string;
-    fsActionDescription:string;
-    fsAction:string;
+    actionId:number;
+    actionName:string;
+    actionDesc:string;
+    actionDett:string;
 }
 
 export type lista_titolari = {
-    fiMasterId:number;
-    fiDetailId:number;
+    id:number;
+    detailId:number;
     rif:string;
-    fiRifDetailId:number;
-    fsDescrizione:string;
-    Codice:string;
-    CodiceTitolo:string;
-    Codicec:string;
-    DesConCodice: string;
-}
+    rifDetailId:number;
+    descrizione:string;
+    codice:string;
+    codTitolo:string;
+    codC:string;
+    descCodice: string;
+};
 
 export type lista_utenti = {
-    fiUserId:number;
-    fsUtente:string;
-}
+    user_id:number;
+    utente:string;
+};
 
 export type lista_utenti_firmatari = {
-    fiUserId:number;
-    fsUtente:string;
-}
+    user_id:number;
+    utente:string;
+};
 
 export type Liste = {
     lista_aoo: lista_aoo[]|[];
@@ -87,7 +88,7 @@ export type Liste = {
     lista_titolari:lista_titolari[]|[];
     lista_utenti:lista_utenti[]|[];
     lista_utenti_firmatari:lista_utenti_firmatari[]|[];
-}
+};
 
 export type OrganizzaDocumentoSelect= {
     aoo: Option[]|[];
@@ -100,27 +101,27 @@ export type OrganizzaDocumentoSelect= {
     titolari: Option[]|[];
     utenti: Option[]|[];
     utenti_firmatari: Option[]|[];
-}
+};
 
 type OrganizzaDocumentoSlice = {
     liste: Liste | undefined;
     selectOptions: OrganizzaDocumentoSelect | undefined
     treeViewData: Tview[] | []
-}
+};
 
 //initialState
 const initialState: OrganizzaDocumentoSlice = {
     liste:undefined,
     selectOptions:undefined,
     treeViewData:[],
-}
+};
 
 const organizzaDocumentoSlice = createSlice({
     name:'organizzaDocumento',
     initialState,
     reducers:{
         //action/reducer per settaggio delle liste
-        setOrganizzaDocumentoData :(state, action: PayloadAction<Liste>) => {
+        setOrganizzaDocumentoData: (state, action: PayloadAction<Liste>) => {
             state.liste = action.payload;
         },
         //action/reducer per il settaggio dei valori delle select

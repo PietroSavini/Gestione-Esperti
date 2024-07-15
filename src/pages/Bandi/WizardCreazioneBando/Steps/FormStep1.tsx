@@ -8,12 +8,6 @@ import { TipologiaEspertoRow } from '../../../SettingsPage/types';
 import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { useSelector } from 'react-redux';
 
-const validations={
-
-  select2:{
-    required:'il campo è obbligatorio'
-  }
-}
 
 
 
@@ -37,11 +31,8 @@ export const FormStep1 = (props: FormStepProps) => {
     const { register, errors, className, control, setState} = props;
     //requisiti di validazione per campo
   
-const handleChange = (selectedOption:any) => {
-  console.log('handleChange',selectedOption);
-}
+
 //valori per select Tipologia Esperto select
-const [TEspOptions, setTEspOptions] = useState<TipologiaEspertoRow[] | []>([])
 const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
 
     useEffect(() => {

@@ -3,12 +3,13 @@ import { SingleValue } from 'react-select'
 import { Custom_Select2, Option } from  '../../../../components/partials/Inputs/Custom_Select2';
 import { Grid, Paper, Typography } from '@mui/material';
 import { FieldErrors } from 'react-hook-form';
-import { OrganizzaDocumentoSelect, selectOrganizzaDocumentoData, setOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice';
+import { selectOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { useAppSelector } from '../../../../app/ReduxTSHooks';
 import { v4 as uuid } from 'uuid';
 import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
 import dayjs from 'dayjs';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
+import useDebounce from '../../../../app/Hooks/useDebounceHook';
 
 type Params = {
     openSection : React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,13 +22,7 @@ type Params = {
 
 export const FirmaSection = (params:Params) => {
 
-    const { openSection, isOpen, className, control, errors, selectValues } = params;
-    
-    const validations = {
-        titolario: {
-            required: 'il titolario è obbligatorio'
-        }
-    };
+    const { openSection, isOpen, className, control, selectValues } = params;
 
     const firmaOptions = {
         daFirmare: [
@@ -46,12 +41,12 @@ export const FirmaSection = (params:Params) => {
        
     };
 
-    const FIRMA_D = useAppSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find((item) => item.fsAction === "FIRMA_D");
-    const FIRMA_G = useAppSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find((item) => item.fsAction === "FIRMA_G");
+    const FIRMA_D = useAppSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find((item) => item.actionDett === "FIRMA_D");
+    const FIRMA_G = useAppSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find((item) => item.actionDett === "FIRMA_G");
     const newId = uuid();
     const today = dayjs().format('DD/MM/YYYY');
-    const [id, setId] = useState<string>(newId);
-    const [tipoFirma, setTipoFirma] = useState<Option>(firmaOptions.tipoFirma[0]);
+    const [id] = useState<string>(newId);
+    const [tipoFirma] = useState<Option>(firmaOptions.tipoFirma[0]);
 
     //dati WizardBandoContext
     const attivita = useWizardBandoContext().attivita;
@@ -69,14 +64,11 @@ export const FirmaSection = (params:Params) => {
                 delete: false,
                 fbDaFirmare: true,
                 fdMaxDateExecution: `${today} 23:59`,
-                fiActionId: FIRMA_D!.fiActionId,
-                fsActionDesc: FIRMA_D!.fsActionDescription,
-                fsAction: FIRMA_D!.fsAction,
-                fsActionName: FIRMA_D!.fsActionName,
                 fiTipoFirma: tipoFirma.value as number,
                 fiGruppoId: null, //gruppo firmatario
                 fiUserId: null, //utente firmatario
                 posizione: listaAttivita.length,
+                ...FIRMA_D
             }
             setListaAttivita(prev => [...prev, initialObj])
         }
@@ -96,8 +88,8 @@ export const FirmaSection = (params:Params) => {
         };
         openSection(false);
     };
-
-    function handleChange( newValue:any,  field:string, ) {
+    
+    const handleChange = useDebounce(( newValue:any,  field:string, ) => {
         const value = newValue.value;
         const activity = listaAttivita.find(item => item.Id === id);
         switch (field) {
@@ -113,10 +105,7 @@ export const FirmaSection = (params:Params) => {
                     const newActivity: AttivitaObj ={
                         ...activity!,
                         fiTipoFirma: value as number,
-                        actionDett: FIRMA_G!.fsAction,
-                        actionDesc: FIRMA_G!.fsActionDescription,
-                        actionId: FIRMA_G!.fiActionId,
-                        actionName: FIRMA_G!.fsActionName,
+                        ...FIRMA_G
                     };
                     setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item))
                 };
@@ -147,7 +136,7 @@ export const FirmaSection = (params:Params) => {
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity2 : item));
         }
 
-    };
+    },300);
 
   return (
     <>
@@ -212,6 +201,7 @@ export const FirmaSection = (params:Params) => {
                         </Grid>
                         <Grid item  padding={'0 1rem'} xs={12}>
                             <Custom_TextField
+                                backgroundColor='#fff'
                                 multiline
                                 minRows={1.4}
                                 maxRows={2}
