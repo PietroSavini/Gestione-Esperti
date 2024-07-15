@@ -90,8 +90,8 @@ function App() {
       modelli_procedimento : createOptionArray({arr:modelliProcedimento, value:'pm_id', label:'pm_ext_desc'}),
       tipi_attivita : createOptionArray({arr:listaAttivita, value:'actionId', label:'actionName'}),
       titolari : createOptionArray({arr:titolari, value:'id', label:'descrizione'}),
-      utenti : createOptionArray({arr:utenti , value:'user_id', label:'user'}),
-      utenti_firmatari : createOptionArray({arr:utentiFirmatari, value:'user_id', label:'user'}),
+      utenti : createOptionArray({arr:utenti , value:'user_id', label:'utente'}),
+      utenti_firmatari : createOptionArray({arr:utentiFirmatari, value:'user_id', label:'utente'}),
     };
 
     dispatch(setOrganizzaDocumentoSelect(newSelectValuesObject));
