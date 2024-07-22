@@ -19,7 +19,10 @@ type Params = {
     isOpen: boolean
 }
 
-
+type PunteggiFinali = {
+    reqId: number | null;
+    puntVal:number | null;
+}
 
 export type AttList = {
     actionId:number, // -> id
@@ -39,17 +42,22 @@ export const WizardCreazioneBando = (params:Params) => {
     //variabile di State per sezione "archivio collegato"
     const {archivioCollegato} = useWizardBandoContext().archivi
     //variabile di State per TipologiaEsperto
-    const [TEsp, setTEsp] = useState<string|number|undefined>(undefined);
+    const [TEsp, setTEsp] = useState<number | null>(null);
     //variabile di State per salvataggio punteggi (già formattati)
     const [punteggi, setPunteggi] = useState<Requisito_Table[]|[]>([]);
+    //punteggi da inviare alla fine 
+    const [punteggiFinali, setPunteggiFinali] = useState<PunteggiFinali[] | []>([])
     //dati nel conext wizardBando
     const context = useWizardBandoContext()
     const procedimento = context.attivita.listaAttivita;
     const fascicoliSelezionati = context.fascicoli.fascicoliSelezionati;
+
     //funzione per chiamare i punteggi e salvarli nello state
-    async function GET_ALL_PUNTEGGI_COLLEGATI (id:string|number) {
+    async function GET_ALL_PUNTEGGI_COLLEGATI (id:number) {
+        console.log(id)
         await AXIOS_HTTP.Retrieve({url:'/api/launch/retrieve', sService:'READ_PUNTEGGI', sModule:'IMPOSTAZIONI_GET_ALL_PUNTEGGI', body:{TEspId:id}})
             .then((resp)=>{
+                console.log(resp)
                 const allPunteggi = convertData(resp.response) ;
                 console.log('PUNTEGGI COLLEGATI: ',allPunteggi );
                 setPunteggi(allPunteggi);
@@ -66,6 +74,29 @@ export const WizardCreazioneBando = (params:Params) => {
             console.log('punteggi cancellati', punteggi);
         }
     }, [TEsp]);
+
+    useEffect(() => {
+        //funzione che prende i punteggi e li traduce in array di oggetti da mandare con form
+        let resultArr: any= [];
+        punteggi.map((item) => {
+            const firstItem = {
+                reqId: item.fi_ee_req_id,
+                puntVal: 0
+            }
+            resultArr.push(firstItem)
+            if(item.requisiti_list.length > 0){
+                item.requisiti_list.map((sottoItem) => {
+                    const sottoReq = { 
+                        reqId: sottoItem.fi_ee_req_id,
+                        puntVal: sottoItem.fi_ee_req_punteggio
+                    }
+                    resultArr.push(sottoReq)
+                })
+            }
+        })
+        console.log('PUNTEGGI DA INVIARE CON CREAZIONE DEL BANDO: ',resultArr)
+        setPunteggiFinali(resultArr)
+    },[punteggi])
     
     //steps (x stepper MUI)
     const steps = [
@@ -115,8 +146,10 @@ export const WizardCreazioneBando = (params:Params) => {
         //********************* */
         //struttura dati da inviare a BE
         const submittedData = {
-            documento : {...data},
-            requisiti: punteggi,
+            documento : {
+                ...data
+            },
+            requisiti: punteggiFinali,
             procedimento:[...procedimento],
             linkFascicoliId:[...fascicoliSelezionati],
             archivioCollegato: archivioCollegato 
@@ -246,10 +279,7 @@ export const WizardCreazioneBando = (params:Params) => {
                         {/* End Navigation */}
                     </Box>
                 </Box>
-                
-                    
-                
-                {/*---------------------------------FINE FORM + NAVIGATION------------------------------------------------*/}    
+                {/*---------------------------------FINE FORM -----------------------------------------------*/}    
             </Box>
             
         </Dialog>

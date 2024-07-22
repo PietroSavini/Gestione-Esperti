@@ -22,7 +22,7 @@ export type Options = {
     value: string,
     label: string,
     id?: string | number
-}
+};
 
 export const TipologiaEdit = () => {
 
@@ -150,7 +150,7 @@ export const TipologiaEdit = () => {
             })
             .catch((err) => console.log(err))
     };
-
+    
     const [genErr, setGenErr] = useState<string>('');
     return (
         <>
@@ -246,8 +246,6 @@ export const TipologiaEdit = () => {
                 {/* Rendering tabelle con map in base ad array: Tables */}
                 {formattedData && formattedData.map((table, index) => (
                     <div key={index} >
-                        <span>Tabella {index}</span>
-                        <span>{JSON.stringify(table)}</span>
                         <Table_RequisitiSelect  data={table} setData={setFormattedData} tespId={id} />
                     </div>
                 ))}

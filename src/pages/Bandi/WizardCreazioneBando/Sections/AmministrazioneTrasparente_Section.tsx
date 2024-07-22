@@ -27,7 +27,7 @@ export const AmministrazioneTrasparente_Section = (props : Props) => {
     //dati WizardBandoContext
     const attivita = useWizardBandoContext().attivita;
     const {listaAttivita, setListaAttivita} = attivita;
-    const amministrazioneTrasparenteAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.fsAction === "AT");
+    const amministrazioneTrasparenteAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "AT");
 
     //watcher per creare l'oggetto attività firma e modificarlo in live
     useEffect(() => {

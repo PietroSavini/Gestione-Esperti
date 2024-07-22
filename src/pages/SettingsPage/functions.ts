@@ -55,7 +55,6 @@ function mergeRequisitiArrays(array1: Requisito_Table[], array2: Requisito_Table
 };
 
 export const convertData = (rawData: RawData): any[] | [] => {
-    console.log('CovertData() -- dati in ingresso: ', rawData);
     let requisitiMaster: Requisito_Table[] = [];
     let requisitiMasterWithotherRequisiti: Requisito_Table[] = [];
     let returnArr: any = [];
@@ -97,7 +96,7 @@ export const convertData = (rawData: RawData): any[] | [] => {
 
             returnArr = mergeRequisitiArrays(requisitiMaster, requisitiMasterWithotherRequisiti);
 
-        } else if ('ReqId' in firstItem && 'ReqDesc' in firstItem && 'MasterId' in firstItem && 'Valore' in firstItem && 'TEspId' in firstItem && 'fi_ee_punt_id' in firstItem && 'Progr' in firstItem) {
+        } else if ('ReqId' in firstItem && 'ReqDesc' in firstItem && 'MasterId' in firstItem && 'Valore' in firstItem && 'TEspId' in firstItem && 'fi_ee_punt_id' in firstItem ) {
 
             console.log('DATI DA CONVERTIRE: PUNTEGGI');
             (rawData as DataThree[]).forEach(RawDataItem => {
@@ -106,7 +105,7 @@ export const convertData = (rawData: RawData): any[] | [] => {
                         fi_ee_req_id: RawDataItem.ReqId,
                         fs_ee_req_desc: RawDataItem.ReqDesc,
                         fi_ee_punt_id: RawDataItem.fi_ee_punt_id,
-                        progr: RawDataItem.progr,
+                        //progr: RawDataItem.progr,
                         requisiti_list: []
                     };
                     requisitiMaster.push(requisitoToInsert);

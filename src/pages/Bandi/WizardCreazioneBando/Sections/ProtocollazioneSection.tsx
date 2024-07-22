@@ -45,8 +45,8 @@ export const ProtocollazioneSection = (params:Params) => {
         utente:selectValues!.utenti,
     }
 
-    const protocolloInUscitaAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.fsAction === "PROT_U");
-    const protocolloInEntrataAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.fsAction === "PROT_E");
+    const protocolloInUscitaAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "PROT_U");
+    const protocolloInEntrataAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett=== "PROT_E");
     
 
     //watcher per creare l'oggetto attività firma e modificarlo in live
@@ -59,17 +59,14 @@ export const ProtocollazioneSection = (params:Params) => {
                 Id: id,
                 fiDaProtocollare:true,
                 delete: false,
-                fiGruppoId: null, //gruppo firmatario
-                fiUserId: null, //utente firmatario
+                gruppoUtenti: null, //gruppo firmatario
+                utente: null, //utente firmatario
                 posizione: listaAttivita.length,
-                fsDescriptionOfUserActivity: '',
-                fsOggetto:'',
-                fsActionDesc: protocolloInEntrataAction?.fsActionDescription,
-                ...protocolloInEntrataAction
+                descrizioneAttivitaUtente: '',
+                oggetto:'',
+                
             }
             setListaAttivita(prev => [...prev, initialObj])
-            
-            
         }
         
         if(!isOpen){
@@ -114,7 +111,7 @@ export const ProtocollazioneSection = (params:Params) => {
 
                 const newActivity: AttivitaObj = {
                     ...activity!,
-                    fiGruppoId:value
+                    gruppoUtenti:value
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item));
                 break;
@@ -123,7 +120,7 @@ export const ProtocollazioneSection = (params:Params) => {
 
                 const newActivity1: AttivitaObj = {
                     ...activity!,
-                    fiUserId: value
+                    utente: value
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity1 : item));
                 break;
@@ -132,7 +129,7 @@ export const ProtocollazioneSection = (params:Params) => {
                 
                 const newActivity2: AttivitaObj = {
                     ...activity!,
-                    fsOggetto: newValue
+                    oggetto: newValue
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity2 : item));
                 break;
@@ -141,7 +138,7 @@ export const ProtocollazioneSection = (params:Params) => {
             
             const newActivity3: AttivitaObj = {
                 ...activity!,
-                fsDescriptionOfUserActivity: newValue
+                descrizioneAttivitaUtente: newValue
             };
             setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity3 : item));
             break;

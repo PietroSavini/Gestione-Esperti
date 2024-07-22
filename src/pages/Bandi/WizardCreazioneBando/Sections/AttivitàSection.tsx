@@ -4,20 +4,12 @@ import { Custom_Select2, Option } from '../../../../components/partials/Inputs/C
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
 import { NoContentSvg } from '../../../../components/partials/svg/NoContentSvg';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { lista_tipi_attivita, selectOrganizzaDocumentoData, selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { useSelector } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
 
-// type Props = {
-//     data: AttivitaObj[] | [];
-//     setData: React.Dispatch<React.SetStateAction<AttivitaObj[]>>;
-// }
-
 export const AttivitàSection = () => {
-
     //states
     const [isDragging, setIsDragging] = useState<number | undefined>(undefined);
     //lista delle attività selezionabili
@@ -26,16 +18,12 @@ export const AttivitàSection = () => {
     const modelliProcedimentoSelect = useSelector(selectOrganizzaDocumentoSelect)!.modelli_procedimento
     //ref per stabilire l'elemento da draggare
     const containerRef = useRef<HTMLDivElement>(null);
-
     //prendo i dati dal contextprovider
     const attivitaData = useWizardBandoContext().attivita;
     const data = attivitaData.listaAttivita;
     const setData = attivitaData.setListaAttivita;
-
     const nonEditableData = data.filter((item) => item.delete === false);
     const editableData = data.filter((item) => item.delete === true);
-
-    
 
     return (
         <>
@@ -71,15 +59,15 @@ export const AttivitàSection = () => {
 const NonEditableActivityComponent = ({ activity }: {activity: AttivitaObj}) => {
 
     const selectOptions = useSelector(selectOrganizzaDocumentoSelect);
-    const assignedUser = selectOptions?.utenti.find( (item) => item.value === activity.fiUserId)?.label
-    const assignedGroup = selectOptions?.gruppo_utenti.find((item) => item.value === activity.fiGruppoId)?.label
-    
+    const assignedUser = selectOptions?.utenti.find( (item) => item.value === activity.utente)?.label
+    const assignedGroup = selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti)?.label;
+
     return (
         <Box className='non-editable-activity' sx={{border:'1px solid rgba(196, 194, 194, 0.641)', borderRadius:'10px' }} >
             <Box sx={{backgroundColor:'#fff', padding:'.5rem .5rem', borderTopLeftRadius:'10px', borderTopRightRadius:'10px'}}>
                 <Grid container>
                     <Grid item padding={'.2rem .3rem'} lg={3} md={6} xs={5} display={'flex'} alignItems={'center'}>
-                        <Typography fontSize={'.8rem'}>{activity.fsActionName}</Typography>
+                        <Typography fontSize={'.8rem'}>{activity.actionName}</Typography>
                     </Grid>
                     <Grid item padding={'.2rem .3rem'}  lg={3} md={6} xs={5} display={'flex'} alignItems={'center'}>
                         { assignedUser && <Icon sx={{marginRight:'10px'}}>account_circle</Icon>} 
@@ -104,26 +92,26 @@ const NonEditableActivityComponent = ({ activity }: {activity: AttivitaObj}) => 
                 
             </Box>
             <Box sx={{backgroundColor:'aliceblue', padding:'1rem .7rem', borderBottomLeftRadius:'10px', borderBottomRightRadius:'10px'}}>
-                <Typography fontSize={'.8rem'}>{activity.fsDescriptionOfUserActivity}</Typography>
+                <Typography fontSize={'.8rem'}>{activity.descrizioneAttivitaUtente}</Typography>
             </Box>
         </Box>
     )
-}
+};
 
 const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDragging, containerRef, data, setData, otherData }: { index: number, activity: AttivitaObj, activityList: lista_tipi_attivita[] | [], isDragging: number | undefined, setIsDragging: React.Dispatch<React.SetStateAction<number | undefined>>, containerRef: React.RefObject<HTMLDivElement>, data: AttivitaObj[], setData: React.Dispatch<React.SetStateAction<AttivitaObj[]>> , otherData:AttivitaObj[]}) => {
 
     const selectOptions = useSelector(selectOrganizzaDocumentoSelect);
     //trovo i valori delle select che utilizzo come default value
     useEffect(() => {
-        setUser(selectOptions!.utenti.find((user) => user.value === activity.fiUserId)!)
+        setUser(selectOptions!.utenti.find((user) => user.value === activity.utente)!)
         setActivityValue(selectOptions!.tipi_attivita.find((item) => item.value === activity.actionId)!);
-        setUserGroup(selectOptions!.gruppo_utenti.find((user) => user.value === activity.fiGruppoId)!);
-        setDescription(activity.fsDescriptionOfUserActivity);
+        setUserGroup(selectOptions!.gruppo_utenti.find((user) => user.value === activity.gruppoUtenti)!);
+        setDescription(activity.descrizioneAttivitaUtente);
         setStima(activity.fiExtimatedDuration ? activity.fiExtimatedDuration : 0)
-    }, [activity])
+    }, [activity]);
 
     //states
-    const [activityValue, setActivityValue] = useState<Option | null>(null)
+    const [activityValue, setActivityValue] = useState<Option | null>(null);
     const [user, setUser] = useState<Option | null>(null);
     const [userGroup, setUserGroup] = useState<Option | null>(null);
     const [description, setDescription] = useState<string | null | undefined>('');
@@ -139,12 +127,12 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
         }
         let button = e.which || e.button;
         return button === 1;
-    }
+    };
 
     async function dragStart(e: React.PointerEvent<HTMLDivElement>, index: number) {
 
         let dragStart = true;
-        console.log('dragStart')
+        console.log('dragStart');
         //controllo che sia un click con il pulsante sinistro del mouse
         if (!detectLeftMouseClick(e)) return;
         //evito il comportamento di default dell'evento (selezione del testo o elementi html)
@@ -160,7 +148,7 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
         );
 
         const itemsBelowDragItem = items.slice(index + 1);
-        const notDragItems = items.filter((_, i) => i !== index)
+        const notDragItems = items.filter((_, i) => i !== index);
         const draggedElementData = data[index];
         let newData = data;
         //seleziono l'HTMLElement sul quale eseguire il dragging
@@ -189,7 +177,7 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
         //applico la distanza agli altri elementi nell array
         itemsBelowDragItem.forEach((item) => {
             item.style.transform = `translateY(${distance + 8}px )`
-        })
+        });
 
         //coordinate originale del mouse
         let x = e.clientX;
@@ -220,10 +208,9 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                     newData = data.filter(item => item.Id !== draggedElementData.Id);
                     newData.splice(index, 0, draggedElementData);
                     newData.map((item, index) => item.posizione = index);
-                }
-            })
-        }
-
+                };
+            });
+        };
         //performo all'hover
         document.onpointermove = dragMove;
         //definisco la funzione di dragEnd che si esegue al rilascio del pulsante sinistro del mouse
@@ -253,76 +240,62 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
         };
         //eseguo dragEnd al rilascio del mouse sx
         document.onpointerup = dragEnd;
-    }
+    };
+
     //END FUNZIONALITA' DRAG AND DROP DEGLI ELEMENTI--------------------------------------------------------------------------------------------------------------------------------------
-
-
-
     //funzioni per salvataggio dei campi e  cambio valori.
     function onActivityChange(newValue: Option) {
 
         //seleziono l'attività dalla lista attività per prendere i valori del nuovo oggetto
-        const newActivity = activityList.find((item) => item.fiActionId === newValue.value)
+        const newActivity = activityList.find((item) => item.actionId === newValue.value);
         setActivityValue(newValue);
 
         if (newActivity) {
             //salvo tutto l oggeto sostituendolo all'oggetto originale
             const tempObj: AttivitaObj = {
                 Id: activity.Id,
-                actionDesc: newActivity.fsActionDescription,
-                actionDett: newActivity.fsAction,
-                actionId: newActivity.fiActionId,
-                actionName: newActivity.fsActionName,
                 delete: activity.delete,
                 posizione: activity.posizione,
                 fiExtimatedDuration: stima,
-                fiGruppoId: userGroup ? userGroup.value : userGroup,
-                fiUserId: user ? user.value as number : user,
-                fsDescriptionOfUserActivity: description,
-            }
-
+                gruppoUtenti: userGroup ? userGroup.value : userGroup,
+                utente: user ? user.value as number : user,
+                descrizioneAttivitaUtente: description,
+                ...newActivity
+            };
             const newData = data.map((item) => item.Id !== tempObj.Id ? item : tempObj);
             setData([...otherData,...newData]);
-        }
-
-
-    }
+        };
+    };
 
     const handleSelectChange = (option: Option, field: string, setState: React.SetStateAction<any>) => {
         setState(option);
-
         const tempObj: AttivitaObj = {
             ...activity,
             [field]: option.value
         };
-
         const newData = data.map((item) => item.Id === tempObj.Id ? tempObj : item);
         setData([...otherData,...newData]);
     };
 
     const handleInputChange = (e: any, field: string) => {
         const value = e.target.value;
-
         const tempObj: AttivitaObj = {
             ...activity,
             [field]: value
         };
 
         const newData = data.map((item) => item.Id === tempObj.Id ? tempObj : item);
-        setData([...otherData,...newData]);;
-        setDescription(value)
-
+        setData([...otherData,...newData]);
+        setDescription(value);
     };
 
     function handleActivityDelete(id: string | number) {
         const newData = data.filter((item) => item.Id !== id);
         setData([...otherData, ...newData]);
-    }
+    };
 
     return (
         <>
-
-
             <Box className={`draggable-container ${isDragging === index ? 'dragging' : ''}`} >
                 <Box component={'div'} className='grab-icon' onPointerDown={(e) => dragStart(e, index)} display={'flex'} alignItems={'center'} justifyContent={'center'} width={'30px'} >
                     <Icon sx={{ marginTop: '5px', marginLeft: '5px' }} >
@@ -401,46 +374,35 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                     </IconButton>
                 </Box>
             </Box>
-            
         </>
     )
-}
-
+};
 
 function SelectActivityComponent({ selectOptions, data, setData }: { selectOptions: Option[] | [], data: AttivitaObj[], setData: React.Dispatch<React.SetStateAction<AttivitaObj[]>> }) {
 
     const [modelliProcedimento, setModelliProcedimento] = useState<string | undefined>(undefined);
     const listaAttivitaData = useSelector(selectOrganizzaDocumentoData)?.lista_tipi_attivita;
-
-    // const attivitaData = useWizardBandoContext().attivita;
-    // const data = attivitaData.listaAttivita;
-    // const setData = attivitaData.setListaAttivita;
+    const [value, setValue] = useState<string | number | undefined>(undefined);
 
     function addAttivitaToList(value: string | number | undefined) {
         //se undefined non faccio nulla
         if (!value) return
         const uniqueId = uuid()
         //prendo l'oggetto attività alla lista delle attività nel redux state
-        const selectedActivity = listaAttivitaData?.find((item) => item.fiActionId === value);
+        const selectedActivity = listaAttivitaData?.find((item) => item.actionId === value);
 
         if (selectedActivity) {
             const newActivityObj: AttivitaObj = {
                 Id: uniqueId,
-                actionId: selectedActivity.fiActionId,
-                actionDett: selectedActivity.fsAction,
-                actionDesc: selectedActivity.fsActionDescription,
-                actionName: selectedActivity.fsActionName,
                 delete: true,
-                posizione: data.length
+                posizione: data.length,
+                ...selectedActivity
             };
 
             setData(prev => [...prev, newActivityObj])
             setValue(undefined)
         };
-    }
-
-
-    const [value, setValue] = useState<string | number | undefined>(undefined);
+    };
 
     return (
         <>
@@ -458,7 +420,7 @@ function SelectActivityComponent({ selectOptions, data, setData }: { selectOptio
             </Box>
         </>
     )
-}
+};
 
 //componente che si visualizza quando non ci sono attività selezionate
 function NoActivityComponent() {
@@ -470,6 +432,5 @@ function NoActivityComponent() {
             </Box>
         </>
     )
-}
+};
 
-//componente per attivtà non editabili

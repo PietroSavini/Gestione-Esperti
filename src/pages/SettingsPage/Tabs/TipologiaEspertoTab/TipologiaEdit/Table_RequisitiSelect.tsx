@@ -21,7 +21,7 @@ type SelectOption = {
 }
 
 //dataTable -------------------------------------------------------------------------------------------------------------------------
-export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>, tespId: string | number}) {
+export default function Table_RequisitiSelect({ data, setData, tespId, }: { data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>, tespId: string | number }) {
 
   const requisiti = data.requisiti_list;
   // variabili del requisito master
@@ -37,34 +37,24 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data
   //variabili per le select
   const [selectValues, setSelectValues] = useState<SelectOption[] | []>([])
 
-  useEffect(()=>{
-    console.log('renderizzo la dataTable')
+  useEffect(() => {
     setIsLoading(true)
-    if(data && data.requisiti_list){
+    if (data && data.requisiti_list) {
       setRows(data.requisiti_list)
+      GET_SELECTABLE_ITEMS();
     }
 
-    //  const fetchData = async () => {
-    //    await GET_SELECTABLE_ITEMS()
-    //  }
-    //  fetchData()
-
     setIsLoading(false)
-  },[data])
+  }, [data])
 
-
- useEffect(()=>{
+  useEffect(() => {
     GET_SELECTABLE_ITEMS();
-  },[])
- 
+  }, [])
 
-  
-  
   //appena renderizza la table esegue la chiamata per popolare i campi della select
   async function GET_SELECTABLE_ITEMS() {
     await AXIOS_HTTP.Retrieve({ body: { masterId: masterRequisitoId }, url: '/api/launch/retrieve', sModule: 'IMPOSTAZIONI_GET_SOTTOREQUISITI', sService: 'READ_REQUISITI' })
       .then((resp) => {
-        console.log('SOTTOREQUISITI DEL MASTER', masterRequisitoTitle, ':', resp)
         const rawArr: InboundSelectData = resp.response;
         const outputArr: any = []
         rawArr.forEach(element => {
@@ -81,8 +71,6 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data
       })
       .catch(err => console.log(err))
   }
-
-
   //custom toolBar con logica del pulsante "+ Aggiungi requisito"-------------------------------------------------------------------------------------------------------------------
   interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -120,7 +108,7 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data
     };
 
     const deleteMasterPunteggio = (masterId: string | number, punteggioId: number | undefined) => {
-    
+
       setIsLoading(true)
       AXIOS_HTTP.Execute({ sService: 'WRITE_PUNTEGGI', sModule: 'IMPOSTAZIONI_DELETE_PUNTEGGIO', body: { puntId: punteggioId }, url: '/api/launch/execute' })
         .then((response) => {
@@ -134,7 +122,7 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data
         })
         .catch((err) => console.log('errore durante la cancellazione del PUNTEGGIO', masterRequisitoId, ':', err))
 
-        setIsLoading(false)
+      setIsLoading(false)
     }
 
     return (
@@ -184,7 +172,7 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data
 
     console.log('handleRowSave')
     setIsLoading(true)
-    let updatedRequisiti_list: Requisiti_List = []
+    let updatedRequisiti_list: Requisiti_List = rows
     let outputRow: RequisitoType_RequisitoTab = {
       fi_ee_req_id: 0,
       fs_ee_req_desc: '',
@@ -197,7 +185,7 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data
 
     if (oldRow.fi_ee_req_id === 'newRow') {
       //INSERT PUNTEGGIO
-      await AXIOS_HTTP.Execute({ sService: 'WRITE_PUNTEGGI', sModule: 'IMPOSTAZIONI_INSERT_PUNTEGGIO', body: { tespId: tespId, reqId: reqId, punt: punteggio}, url: '/api/launch/execute' })
+      await AXIOS_HTTP.Execute({ sService: 'WRITE_PUNTEGGI', sModule: 'IMPOSTAZIONI_INSERT_PUNTEGGIO', body: { tespId: tespId, reqId: reqId, punt: punteggio }, url: '/api/launch/execute' })
         .then((resp) => {
           console.log('CREAZIONE PUNTEGGIO')
           const newPuntId = resp.response.fi_ee_punt_id;
@@ -222,7 +210,7 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data
           .then((resp) => {
             console.log('UPDATE DEL PUNTEGGIO')
             console.log(resp)
-            console.log('newRow',newRow)
+            console.log('newRow', newRow)
             outputRow = {
               fi_ee_req_id: reqId,
               fs_ee_req_desc: newRow.fs_ee_req_desc,
@@ -233,36 +221,36 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data
             console.log('outputRow', outputRow)
             updatedRequisiti_list = requisiti.map((requisito) => {
               //con l operatore ternario non funziona, con l' if si..boh
-              if(requisito.fi_ee_req_id === newRow.fi_ee_req_id){
+              if (requisito.fi_ee_req_id === newRow.fi_ee_req_id) {
                 return newRow
               } else {
                 return requisito
               }
             })
-      
+
           })
           .catch((err) => console.log(err))
       }
     }
     //PROCESSO DI AGGIORNAMENTO DATI DEL GENITORE
     console.log('SOTTOREQUISITO DA AGGIUNGERE: ', outputRow);
-    
+
     console.log('REQUISITI_LIST AGGIORNATA: ', updatedRequisiti_list);
 
     const updatedTable: Requisito_Table = {
       fi_ee_req_id: data.fi_ee_req_id,
-      fs_ee_req_desc:data.fs_ee_req_desc,
-      fi_ee_punt_id:data.fi_ee_punt_id,
+      fs_ee_req_desc: data.fs_ee_req_desc,
+      fi_ee_punt_id: data.fi_ee_punt_id,
       requisiti_list: updatedRequisiti_list,
     };
 
-    console.log('TABLE AGGIORNATA DA AGGIUNGERE: ', updatedTable)
+    console.log('TABLE AGGIORNATA: ', updatedTable)
 
-    setData((prev) =>{  
+    setData((prev) => {
       const newTables = prev.map((table) => table.fi_ee_req_id === updatedTable.fi_ee_req_id ? updatedTable : table);
       return [...newTables];
     })
-    
+
     setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
     setIsLoading(false);
     return outputRow
@@ -383,7 +371,7 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data
     const Custom_select = React.forwardRef(function Custom_Select(props, ref) {
 
       return (
-      
+
         <Select
           id={key}
           fullWidth
@@ -508,10 +496,6 @@ export default function Table_RequisitiSelect({ data, setData, tespId,  }:{ data
   return (
     <>
       <Box className='requisiti-table' sx={{ backgroundColor: '#fff' }} >
-        <Typography fontWeight={600}>Requisiti selezionabili del requisito Master: {masterRequisitoTitle}</Typography>
-        <Typography>
-          {JSON.stringify(selectValues)}
-        </Typography>
         <DataGrid
           slots={{
             pagination: CustomPagination,

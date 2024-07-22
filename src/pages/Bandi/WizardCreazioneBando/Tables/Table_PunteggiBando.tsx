@@ -158,7 +158,7 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
 
     console.log('handleRowSave');
     setIsLoading(true);
-    let updatedRequisiti_list: Requisiti_List = [];
+    let updatedRequisiti_list: Requisiti_List = rows;
     let outputRow = {};
     const reqId = selectValues.find((req) => newRow.fs_ee_req_desc === req.label)!.id; //id requisito
     const punteggio = newRow.fi_ee_req_punteggio; // valore punteggio
@@ -169,10 +169,24 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
         fi_ee_req_punteggio: punteggio,
         fi_ee_mst_id: masterRequisitoId
     };
-   
-    setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
-
-    updatedRequisiti_list = [...requisiti, outputRow as RequisitoType_RequisitoTab];
+    
+    if (oldRow.fi_ee_req_id === 'newRow'){
+      //INSERT NUOVA ROW
+      updatedRequisiti_list = [...requisiti, outputRow as RequisitoType_RequisitoTab];
+    }else{
+      //UPDATE ROW
+      //Row non deve essere aggiornata 
+      if(oldRow.fi_ee_req_id === newRow.fi_ee_req_id && oldRow.fi_ee_req_punteggio === newRow.fi_ee_req_punteggio){
+        console.log('LA ROW NON HA BISOGNO DI UPDATE')
+        outputRow = oldRow;
+      }else{
+        console.log('UPDATE ROW')
+        outputRow = newRow;
+        updatedRequisiti_list = updatedRequisiti_list.map((row) => row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row);
+      }
+    }
+    
+    
 
     const updatedTable: Requisito_Table = {
       fi_ee_req_id: data.fi_ee_req_id,
@@ -180,11 +194,13 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
       fi_ee_punt_id:data.fi_ee_punt_id,
       requisiti_list: updatedRequisiti_list,
     };
-    // aggiorno i dati madre
+    //aggiorno i dati madre
     setData((prev) =>{ 
       const newTables = prev.map((table) => table.fi_ee_req_id === updatedTable.fi_ee_req_id ? updatedTable : table);
       return newTables;
     })
+    //aggiorno tabella
+    setRows(prevRows => prevRows.map((row) => (row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row)));
     setIsLoading(false);
     return outputRow
   };
@@ -194,8 +210,20 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
   //--------------------------------------------------------------------------------------------------------------------------------
   const handleDeletePunteggio = (id: GridRowId, puntId: number | undefined) => () => {
     console.log('handleDeleteCLick')
-    setRows(rows?.filter((row) => row.fi_ee_req_id !== id));
-  
+    const filteredRows = rows?.filter((row) => row.fi_ee_req_id !== id);
+    setRows(filteredRows);
+    
+    //aggiorno i dati madre
+    const updatedTable: Requisito_Table = {
+      fi_ee_req_id: data.fi_ee_req_id,
+      fs_ee_req_desc: data.fs_ee_req_desc,
+      fi_ee_punt_id: data.fi_ee_punt_id,
+      requisiti_list: filteredRows,
+    };
+    setData((prev) =>{ 
+      const newTables = prev.map((table) => table.fi_ee_req_id === updatedTable.fi_ee_req_id ? updatedTable : table);
+      return newTables;
+    })
   };
   //-----------------------------------------------------------------------------------------------------------------------------------
   //funzioni per gestire comportamenti delle rows
@@ -242,9 +270,6 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
   //FUNZIONI TRIGGERATE AL CHANGE DI UNO DEI X CAMPI EDITABILI DELLA ROW
   const preProcessRequisitoEditCellProp = async (params: GridPreProcessEditCellProps) => {
     console.log('preProcessRequisitoEditCellProp')
-    console.log(params)
-
-
     const row: RequisitoType_RequisitoTab = params.row;
     const value = params.props.value;
     //aggiungo il valore selezionato all'array che esclude i campi selezionabili della select
@@ -273,6 +298,8 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
     if (rowHasBeenCorrected) {
       setRowsInError((prev) => prev.filter((rowInError) => rowInError.id !== rowId));
     }
+
+   
     return result;
   };
 
@@ -314,17 +341,15 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
                 )
               }
               return (
-                <MenuItem sx={{ maxHeight: 0, padding: 0 }} disabled></MenuItem>
+                <MenuItem disabled></MenuItem>
               )
             }
 
             return (
               <MenuItem value={option.value}>{option.label}</MenuItem>
             )
-          }
-
-          )}
-
+          })}
+       
           {selectValues.length === 0 && <MenuItem disabled sx={{ color: 'black', fontWeight: 600 }} >Non esistono requisiti selezionabili per la sezione: "{masterRequisitoTitle}" ...</MenuItem>}
         </Select>
       )

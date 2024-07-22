@@ -2,14 +2,12 @@ import { AxiosHTTP } from "./AxiosHTTP";
 
 class AXIOS_HTTP {
     // le funzioni non sono async in quanto l'asincronicità è gestita dalla funzione AxiosHTTP() che è il cuore del sistema chiamate
-
     public static async Execute ({url, body, sModule, sService}:{url:'/api/launch/execute', sModule:string, sService:string, body:any}){
         
         //genero il nuovo JSON
         const newJson = this.generateJSON(65, sService, sModule, body);
         //faccio la chiamata al WebService con il nuovo body
         const result = await AxiosHTTP({url:url, body:newJson, encode:false});
-  
         return result;
     };
 
@@ -24,7 +22,6 @@ class AXIOS_HTTP {
         //genero il nuovo JSON
         //faccio la chiamata al WebService con il nuovo body
         const result = await AxiosHTTP({url:url, body:newJson, encode:false});
-
         return result;
     };
 
@@ -39,7 +36,6 @@ class AXIOS_HTTP {
             "sModule":module,
             "sData":body
         };
-
         return Json;
     };
 };

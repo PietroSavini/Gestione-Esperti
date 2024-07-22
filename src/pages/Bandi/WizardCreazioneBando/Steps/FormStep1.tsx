@@ -47,7 +47,7 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                 let optionsArr: any = []
                 const TEspArr: TipologiaEspertoRow[] = res.response;
                 const onlyVisTEsp = TEspArr.filter((tipologia) => tipologia.TEspVis === true);
-                onlyVisTEsp.forEach(element => optionsArr.push({value:element.TEspBr, label:element.TEspBr, id:element.TEspId}));
+                onlyVisTEsp.forEach(element => optionsArr.push({value:element.TEspId, label:element.TEspBr, id:element.TEspId}));
                 setTEspMenuItems(optionsArr)
             })
             .catch((err) => console.log(err))
@@ -66,7 +66,7 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                           disabled
                           defaultValue={{value:0, label:'Bandi di gara'}}
                           control={control}
-                          name='classe-documentale'
+                          name='classeDocumentale'
                           label='Classe Documentale'
                         />
                     </Grid>
@@ -86,7 +86,9 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                           errorMessage={errors.TEsp?.message as string} 
                           options={TEspMenuItems}
                           validations={{required:'il campo è obbligatorio'}}
-                          onChangeSelect={(newValue) => setState!(newValue?.id)}
+                          onChangeSelect={(newValue) => { 
+                            console.log(newValue)
+                            setState!(newValue ? newValue.id : null)}}
                           isRequired
                         />
                     </Grid>
@@ -114,7 +116,7 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                         <Custom_Select2
                             placeholder='Seleziona A.O.O...'
                             control={control}
-                            name='a-o-o'
+                            name='aoo'
                             options={options!.aoo}
                             label='A.O.O'
                             isClearable
@@ -125,7 +127,7 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                         <Custom_Select2
                             placeholder='Seleziona Archivio di Collocazione...'
                             control={control}
-                            name='archivio-di-collocazione'
+                            name='archivioCollocazione'
                             options={options!.archivi}
                             defaultValue={options!.archivi[0]}
                             label='Archivio di Collocazione'
@@ -135,7 +137,7 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
                     <Grid padding={'0 1rem'} item xs={12} md={3}>
                         <Custom_Select2
                             control={control}
-                            name='classe-addizionale'
+                            name='classeAddizionale'
                             options={options!.classi_documentali}
                             label='Classe Addizionale'
                             placeholder='Seleziona classe Addizionale...'
@@ -145,19 +147,21 @@ const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
 
                     <Grid padding={'0 1rem'} item xs={12}>
                         <Custom_TextField
-                            {...register('descrizione-estesa')}
+                            {...register('descrizioneEstesa')}
                             multiline
                             minRows={4}
                             label='Descrizione estesa/oggetto'
                             placeholder='Scrivi un eventuale descrizione estesa...'
+                            backgroundColor='#fff'
                         />
                     </Grid>
 
                     <Grid padding={'0 1rem'} item xs={12}>
                         <Custom_TextField 
-                            {...register('tag-documento')} 
+                            {...register('tagDocumento')} 
                             label='Tag documento (min 2 e max 20 caratteri)' 
                             placeholder='Inserisci tag...' 
+                            backgroundColor='#fff'
                         />
                     </Grid>
 

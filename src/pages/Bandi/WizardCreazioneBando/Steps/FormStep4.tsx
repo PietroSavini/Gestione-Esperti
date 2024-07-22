@@ -1,6 +1,5 @@
 
 import { FormStepProps } from './FormStep1'
-import Table_RequisitiPunteggiShow from '../../../SettingsPage/Tabs/RequisitiTab/Tables/Table_RequisitiPunteggiShow';
 import { Requisito_Table } from '../../../SettingsPage/types';
 import { Box, Dialog, Icon, Paper, Typography } from '@mui/material';
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
@@ -12,7 +11,7 @@ import { v4 as uuid } from 'uuid';
 import Table_PunteggiBando from '../Tables/Table_PunteggiBando';
 
 type FormStep4Props = FormStepProps & {
-  TEspId: string | number | undefined;
+  TEspId:number | null;
 }
 
 export const FormStep4 = (props: FormStep4Props) => {
@@ -40,7 +39,7 @@ export const FormStep4 = (props: FormStep4Props) => {
                 finalArray.push(newFormat);
             });
             setSelectableItems(finalArray)
-            console.log('MENUITEM PER SELECT: ', selectableItems);
+            
         })
   };
 
@@ -53,20 +52,18 @@ export const FormStep4 = (props: FormStep4Props) => {
   }, [TEspId])
 
   useEffect(()=>{
-   
-  },[])
+    console.log(data)
+  },[data])
 
 
 
   const addNewSection = () => {
     if (!selectedItem) {
-      console.log('form in errore')
       setIsError(true)
       setErrorMessage('Seleziona almeno un requisito da associare alla tipologia esperto')
       return
     }
     setIsError(false)
-    console.log('REQUISITO DA AGGIUNGERE',selectedItem)
     //processo che aggiunge il master all array di oggetti per i requisiti
     const newSection: Requisito_Table = {
       fi_ee_req_id: selectedItem.id,
@@ -74,6 +71,7 @@ export const FormStep4 = (props: FormStep4Props) => {
       requisiti_list: []
     }
     setData!((prev: Requisito_Table[]) => [...prev, newSection])
+    setOpenSectionDialog(false)
     //setto selectedItem ad undefined se no si creano errori
     setSelectedItem(undefined)
   }

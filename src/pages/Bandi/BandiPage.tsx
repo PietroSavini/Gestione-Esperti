@@ -6,18 +6,18 @@ import AXIOS_HTTP from '../../app/AXIOS_ENGINE/AXIOS_HTTP'
 import { WizardCreazioneBando } from './WizardCreazioneBando/WizardCreazioneBando'
 import WizardBandoContextProvider from './WizardCreazioneBando/WizardBandoContext'
 
-
 export const BandiPage = () => {
-    const [isOpen, setOpenModal] = useState<boolean>(false)
-    const closeModal = () => {
-        setOpenModal(false)
-    }
-    
-    const GET_ALL_BANDI =  async () => {
-      AXIOS_HTTP.Retrieve({sModule:'GET_ALL_BANDI',sService:'READ_BANDI',url:'/api/launch/retrieve', body:{}})
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err))
-    }
+
+  const [isOpen, setOpenModal] = useState<boolean>(false);
+  const closeModal = () => {
+      setOpenModal(false);
+  };
+
+  const GET_ALL_BANDI =  async () => {
+    AXIOS_HTTP.Retrieve({sModule:'GET_ALL_BANDI',sService:'READ_BANDI',url:'/api/launch/retrieve', body:{}})
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err))
+  };
 
   return (
     <>
@@ -34,4 +34,4 @@ export const BandiPage = () => {
     </>
     
   )
-}
+};

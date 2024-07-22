@@ -10,6 +10,7 @@ import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
 import dayjs from 'dayjs';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 import useDebounce from '../../../../app/Hooks/useDebounceHook';
+import { Custom_DatePicker } from '../../../../components/partials/Inputs/Custom_DatePicker';
 
 type Params = {
     openSection : React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,11 +19,11 @@ type Params = {
     control:any;
     errors: FieldErrors<any>
     selectValues?: any
-}
+};
 
 export const FirmaSection = (params:Params) => {
 
-    const { openSection, isOpen, className, control, selectValues } = params;
+    const { openSection, isOpen, className, selectValues } = params;
 
     const firmaOptions = {
         daFirmare: [
@@ -51,7 +52,6 @@ export const FirmaSection = (params:Params) => {
     //dati WizardBandoContext
     const attivita = useWizardBandoContext().attivita;
     const {listaAttivita, setListaAttivita} = attivita;
-
     
     //watcher per creare l'oggetto attività firma e modificarlo in live
     useEffect(() => {
@@ -65,8 +65,8 @@ export const FirmaSection = (params:Params) => {
                 fbDaFirmare: true,
                 fdMaxDateExecution: `${today} 23:59`,
                 fiTipoFirma: tipoFirma.value as number,
-                fiGruppoId: null, //gruppo firmatario
-                fiUserId: null, //utente firmatario
+                gruppoUtenti: null, //gruppo firmatario
+                utente: null, //utente firmatario
                 posizione: listaAttivita.length,
                 ...FIRMA_D
             }
@@ -114,7 +114,7 @@ export const FirmaSection = (params:Params) => {
             case 'gruppo-firmatario':
                 const newActivity: AttivitaObj = {
                     ...activity!,
-                    fiGruppoId:value
+                    gruppoUtenti:value
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item));
                 break;
@@ -122,7 +122,7 @@ export const FirmaSection = (params:Params) => {
             case 'utente-firmatario':   
                 const newActivity1: AttivitaObj = {
                     ...activity!,
-                    fiUserId:value
+                    utente:value
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity1 : item));
                 break;
@@ -130,7 +130,7 @@ export const FirmaSection = (params:Params) => {
             case 'fsDescriptionOfUserActivity':
                 const newActivity2: AttivitaObj = {
                     ...activity!,
-                    fsDescriptionOfUserActivity: newValue
+                    descrizioneAttivitaUtente: newValue
                 };
 
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity2 : item));
@@ -140,79 +140,78 @@ export const FirmaSection = (params:Params) => {
 
   return (
     <>
-         <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem' }} elevation={2}>
-                <Typography sx={{ paddingBottom: '1rem' }} component={'h6'} variant='h6'>Firma</Typography>
-                <Grid container>
+        <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem' }} elevation={2}>
+            <Typography sx={{ paddingBottom: '1rem' }} component={'h6'} variant='h6'>Firma</Typography>
+            <Grid container>
+                <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
+                    <Custom_Select2
+                        onChangeSelect={(newValue)=> handleFirmaChange(newValue)}
+                        label={'Da firmare ?'}
+                        options={firmaOptions.daFirmare}
+                        defaultValue={firmaOptions.daFirmare[1]}
+                    />
+
+                </Grid>
+            </Grid>
+            {isOpen && 
+            
+                <Grid container className={isOpen ? '': 'd-none'}>
                     <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                         <Custom_Select2
-                            onChangeSelect={(newValue)=> handleFirmaChange(newValue)}
-                            label={'Da firmare ?'}
-                            options={firmaOptions.daFirmare}
-                            defaultValue={firmaOptions.daFirmare[1]}
+                            
+                            label={'Tipo Firma'}
+                            options={firmaOptions.tipoFirma}
+                            value={tipoFirma}
+                            defaultValue={firmaOptions.tipoFirma[0]}
+                            onChangeSelect={(newValue) => handleChange(newValue,'fiTipoFirma')}
+                            name='firmaTipoFirma'
+                            placeholder='Seleziona tipo Firma...'
+                            disabled={!isOpen}
                             
                         />
                     </Grid>
-                </Grid>
-                {isOpen && 
-                
-                    <Grid container className={isOpen ? '': 'd-none'}>
-                        <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
-                            <Custom_Select2
-                                control={ control }
-                                label={'Tipo Firma'}
-                                options={firmaOptions.tipoFirma}
-                                value={tipoFirma}
-                                defaultValue={firmaOptions.tipoFirma[0]}
-                                onChangeSelect={(newValue) => handleChange(newValue,'fiTipoFirma')}
-                                name='firma-tipo-firma'
-                                placeholder='Seleziona tipo Firma...'
-                                disabled={!isOpen}
-                                
-                            />
-                        </Grid>
 
-                        <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
-                            <Custom_Select2
-                                label={'Seleziona Gruppo Firmatario'}
-                                options={firmaOptions.gruppoFirmatario}
-                                onChangeSelect={(newValue) => handleChange(newValue,'gruppo-firmatario')}
-                                control={control}
-                                placeholder='Seleziona gruppo firmatario...'
-                                name='firma-gruppo-firmatario'
-                                disabled={!isOpen}
+                    <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
+                        <Custom_Select2
+                            label={'Seleziona Gruppo Firmatario'}
+                            options={firmaOptions.gruppoFirmatario}
+                            onChangeSelect={(newValue) => handleChange(newValue,'gruppo-firmatario')}
+                            placeholder='Seleziona gruppo firmatario...'
+                            disabled={!isOpen}
 
-                            />
-                        </Grid>
-
-                        <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
-                            <Custom_Select2
-                                label={'Seleziona utente Firmatario'}
-                                options={firmaOptions.utenteFirmatario}
-                                onChangeSelect={(newValue) => handleChange(newValue,'utente-firmatario')}
-                                control={control}
-                                name='firma-utente-firmatario'
-                                placeholder='seleziona utente firmatario...'
-                                disabled={!isOpen}
-                            />
-                        </Grid>
-
-                        <Grid item padding={'0 1rem'} xs={12} md={6} lg={3}>
-                            DatePicker
-                        </Grid>
-                        <Grid item  padding={'0 1rem'} xs={12}>
-                            <Custom_TextField
-                                backgroundColor='#fff'
-                                multiline
-                                minRows={1.4}
-                                maxRows={2}
-                                label={'Note libere Attività'}
-                                onChange={(e) => handleChange(e.target.value, 'fsDescriptionOfUserActivity')}
-                            />
-                        </Grid>
+                        />
                     </Grid>
-                }
 
-            </Paper>
+                    <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
+                        <Custom_Select2
+                            label={'Seleziona utente Firmatario'}
+                            options={firmaOptions.utenteFirmatario}
+                            onChangeSelect={(newValue) => handleChange(newValue,'utente-firmatario')}
+                            placeholder='seleziona utente firmatario...'
+                            disabled={!isOpen}
+                        />
+                    </Grid>
+
+                    <Grid item padding={'0 1rem'} xs={12} md={6} lg={3}>
+                        <Custom_DatePicker 
+                            sx={{backgroundColor:'#fff'}}
+                            label='scadenza' 
+                        />
+                    </Grid>
+                    <Grid item  padding={'0 1rem'} xs={12}>
+                        <Custom_TextField
+                            backgroundColor='#fff'
+                            multiline
+                            minRows={1.4}
+                            maxRows={2}
+                            label={'Note libere Attività'}
+                            onChange={(e) => handleChange(e.target.value, 'fsDescriptionOfUserActivity')}
+                        />
+                    </Grid>
+                </Grid>
+            }
+
+        </Paper>
     </>
   )
-}
+};

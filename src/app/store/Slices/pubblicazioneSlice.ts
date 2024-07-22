@@ -3,27 +3,27 @@ import { RootState } from '../store'
 import { Option } from '../../../components/partials/Inputs/Custom_Select2';
 
 type Lista_uffici = {
-    fiUfficiId: number;
-    fsDescrizione: string;
+    id: number;
+    descrizione: string;
 }
 
 type Lista_tipi_anagrafica = {
-    fiAnagraficaTypeId: number;
-    fsName: string;
+    id: number;
+    descrizione: string;
 }
 
 type sezioni_trasparenza_list = {
-    IDMENU: string;
-    IDMENUREF: string;
-    MENU_NAME: string;
-    POSITION: string;
+    id: string;
+    idMenuRef: string;
+    name: string;
+    posizione: string;
 }
 
 type tipi_atto_list = {
-    ID: string;
-    TIPOATTO: string;
-    DESCRIZIONE: string;
-    IDAMMTRASP: string;
+    id: string;
+    tipoAtto: string;
+    descrizione: string;
+    idAT: string;
 }
 
 type lista_tipi_atto_bacheche = {
