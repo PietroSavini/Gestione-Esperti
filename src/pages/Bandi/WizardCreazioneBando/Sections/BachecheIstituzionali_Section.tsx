@@ -24,7 +24,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
     const [id, setId] = useState<string>(newId);
     const attivita = useWizardBandoContext().attivita;
     const {listaAttivita, setListaAttivita} = attivita;
-    const bachecheIstituzionaliAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.fsAction === "BACIST");
+    const bachecheIstituzionaliAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "BACIST");
     
     const handleChange = useDebounce(( newValue: any,  field: string ) => {
         const value = newValue.value; 
@@ -50,7 +50,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
             case "utente":
                 const newActivity7: AttivitaObj ={
                     ...activity!,
-                    fiUserId: value,
+                    utente: value,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity7: item));
                 break;
@@ -58,7 +58,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
             case "gruppo-utenti":
                 const newActivity8: AttivitaObj ={
                     ...activity!,
-                    fiGruppoId: value,
+                    gruppoUtenti: value,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity8: item));
                 break;
@@ -84,8 +84,8 @@ export const BachecheIstituzionali_Section = (props: Props) => {
                 Id: id,
                 delete: false,
                 fiPubblicazioneBI:true,
-                fiGruppoId: null, //gruppo firmatario
-                fiUserId: null, //utente firmatario
+                gruppoUtenti: null, //gruppo firmatario
+                utente: null, //utente firmatario
                 posizione: listaAttivita.length,
                 fsDescrizioneAttivita: '', //note libere BI -> va al posto di fsDescriptionOfUserActivity
                 fsAnnotazioni: '', //annotazioni BI

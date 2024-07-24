@@ -7,13 +7,13 @@ import { FormStep2 } from './Steps/FormStep2';
 import { FormStep3 } from './Steps/FormStep3';
 import { ActionButton } from '../../../components/partials/Buttons/ActionButton';
 import { Requisito_Table } from '../../SettingsPage/types';
-import { convertData, createOptionArray } from '../../SettingsPage/functions';
+import { convertData } from '../../SettingsPage/functions';
 import { FormStep4 } from './Steps/FormStep4';
 import { FormStep5 } from './Steps/FormStep5';
 import { useWizardBandoContext } from './WizardBandoContext';
 import { useAppDispatch, useAppSelector } from '../../../app/ReduxTSHooks';
-import { setPubblicazioniData, setPubblicazioniSelect } from '../../../app/store/Slices/pubblicazioneSlice';
-import { selectOrganizzaDocumentoSelect, setOrganizzaDocumentoData, setOrganizzaDocumentoSelect } from '../../../app/store/Slices/organizzaDocumentoSlice';
+import { setPubblicazioni } from '../../../app/store/Slices/pubblicazioneSlice';
+import { selectOrganizzaDocumentoSelect, setOrganizzaDocumento } from '../../../app/store/Slices/organizzaDocumentoSlice';
 
 type Params = {
     close: () => void;
@@ -32,7 +32,7 @@ export type AttList = {
     actionName:string; // lable attività -> lable
 };
 
-export const WizardCreazioneBando = (params:Params) => {
+export const WizardBando2 = (params:Params) => {
     const {close, isOpen} = params;
     //react Hook Forms
     const { register, handleSubmit, trigger, formState, control, watch, unregister } = useForm<any>();
@@ -113,7 +113,8 @@ export const WizardCreazioneBando = (params:Params) => {
     async function GET_ORGANIZZA_DOCUMENTO_SELECT_DATA() {
       await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_ORGANIZZA_DOCUMENTO', sService: 'READ_DOCUMENTI', body: {} })
         .then((res) => {
-          saveOrganizzaDocumento(res.response);
+            console.log('RISPOSTA ORGANIZZA DOCUMENTO',res)
+            dispatch(setOrganizzaDocumento(res.response));
         })
         .catch((err) => console.error(err));
 
@@ -122,62 +123,9 @@ export const WizardCreazioneBando = (params:Params) => {
     async function GET_PUBBLICAZIONI_SELECT_DATA() {
       await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_PUBBLICAZIONE', sService: 'READ_DOCUMENTI', body: {} })
         .then((res) => {
-          dispatch(setPubblicazioniData(res.response));
-          saveSelectPubblicazioni(res.response);
-         
+            dispatch(setPubblicazioni(res.response))
         })
         .catch((err) => console.error(err));
-    };
-    //-------------------------------------------------------------- funzioni di salvataggio in state redux ----------------------------------------------------------------------------------------------
-    // select options x dati di pubblicazioni
-    function saveSelectPubblicazioni(data: any) {
-      const listaUffici = data.uffici_list;
-      const listaTipiAtto = data.tipi_atto_list;
-      const listaTipiAttoBacheche = data.tipo_atto_bacheche_list;
-      const listaAnagrafiche = data.tipi_anagraficha_list;
-      const listaSezioniTrasparenza = data.sezioni_trasparenza_list;
-  
-      const newSelectValuesObject = {
-        trasparenza: createOptionArray({ arr: listaSezioniTrasparenza, value: 'id', label: 'name' }),
-        uffici: createOptionArray({ arr: listaUffici, value: 'id', label: 'descrizione' }),
-        atti: createOptionArray({ arr: listaTipiAtto, value: 'id', label: 'descrizione' }),
-        bacheche: createOptionArray({ arr: listaTipiAttoBacheche, value: 'Key', label: 'Value' }),
-        anagrafiche: createOptionArray({ arr: listaAnagrafiche, value: 'id', label: 'descrizione' }),
-      };
-  
-      dispatch(setPubblicazioniSelect(newSelectValuesObject));
-    };
-  
-    function saveOrganizzaDocumento(data: any) {
-      //salvo i dati cosi come sono 
-      dispatch(setOrganizzaDocumentoData(data));
-  
-      //step 1 preparo la lista  dei volori delle selct
-      const aoo = data.lista_aoo;
-      const listaArchivi = data.lista_archivi;
-      const assegnatari = data.lista_assegnatari;
-      const classiDocumentali = data.lista_classi_documentali;
-      const gruppoUtenti = data.lista_gruppo_utenti;
-      const modelliProcedimento = data.lista_modelli_procedimento;
-      const listaAttivita = data.lista_tipi_attivita;
-      const titolari = data.lista_titolari;
-      const utenti = data.lista_utenti;
-      const utentiFirmatari = data.lista_utenti_firmatari;
-  
-      const newSelectValuesObject = {
-        aoo: createOptionArray({ arr: aoo, value: 'id', label: 'descrizione' }),
-        archivi: createOptionArray({ arr: listaArchivi, value: 'dossier_id', label: 'dossier_name' }),
-        assegnatari: createOptionArray({ arr: assegnatari, value: 'fgId', label: 'fsAssigneeUser' }),
-        classi_documentali: createOptionArray({ arr: classiDocumentali, value: 'type_id', label: 'type_name' }),
-        gruppo_utenti: createOptionArray({ arr: gruppoUtenti, value: 'id', label: 'groupName' }),   
-        modelli_procedimento: createOptionArray({ arr: modelliProcedimento, value: 'pm_id', label: 'pm_ext_desc' }),
-        tipi_attivita: createOptionArray({ arr: listaAttivita, value: 'actionId', label: 'actionName' }),
-        titolari: createOptionArray({ arr: titolari, value: 'id', label: 'descrizione' }),
-        utenti: createOptionArray({ arr: utenti, value: 'user_id', label: 'utente' }),
-        utenti_firmatari: createOptionArray({ arr: utentiFirmatari, value: 'user_id', label: 'utente' }),
-      };
-  
-      dispatch(setOrganizzaDocumentoSelect(newSelectValuesObject));
     };
 
     //eseguo chiamate di inizializzazione dati
@@ -279,7 +227,7 @@ export const WizardCreazioneBando = (params:Params) => {
         }
     }
 
-    //const selectOptions = useAppSelector(selectOrganizzaDocumentoSelect)
+    
   return (
     <>
         {
@@ -381,3 +329,7 @@ export const WizardCreazioneBando = (params:Params) => {
     </>
   )
 }
+function saveSelectPubblicazioni(response: any) {
+    throw new Error('Function not implemented.');
+}
+

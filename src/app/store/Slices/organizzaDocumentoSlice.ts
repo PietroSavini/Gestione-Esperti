@@ -120,12 +120,15 @@ const organizzaDocumentoSlice = createSlice({
     name:'organizzaDocumento',
     initialState,
     reducers:{
+        setOrganizzaDocumento: (state, action: PayloadAction<OrganizzaDocumentoSlice>) => {
+            state = action.payload
+        },
         //action/reducer per settaggio delle liste
-        setOrganizzaDocumentoData: (state, action: PayloadAction<Liste>) => {
-            state.liste = action.payload;
+        setOrganizzaDocumentoData: (state, action: PayloadAction<Liste | undefined>) => {
+           state.liste = action.payload
         },
         //action/reducer per il settaggio dei valori delle select
-        setOrganizzaDocumentoSelect: (state, action: PayloadAction<OrganizzaDocumentoSelect>) =>{
+        setOrganizzaDocumentoSelect: (state, action: PayloadAction<OrganizzaDocumentoSelect | undefined>) =>{
             state.selectOptions = action.payload;
         },
          //action/reducer per il settaggio dei valori dei dati ad albero
@@ -137,7 +140,7 @@ const organizzaDocumentoSlice = createSlice({
 })
 
 //esporto le azioni
-export const { setOrganizzaDocumentoData, setOrganizzaDocumentoSelect, setOrganizzaDocumentoTreeViewData } = organizzaDocumentoSlice.actions;
+export const { setOrganizzaDocumentoData, setOrganizzaDocumentoSelect, setOrganizzaDocumentoTreeViewData, setOrganizzaDocumento } = organizzaDocumentoSlice.actions;
 //esporto il reducer
 export default organizzaDocumentoSlice.reducer;
 // esporto le funzioni per l'hook UseSelector

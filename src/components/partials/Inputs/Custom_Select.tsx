@@ -39,11 +39,17 @@ const Custom_Select = forwardRef((props: Props,ref) => {
                 aria-describedby={`my-helper-text-${register?.name ? register.name : label}`}
                 {...rest}
             >
-                {options.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                    </MenuItem>
-                ))}
+                {options && options.length > 0 ? 
+                
+                    options.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    )) 
+                    :
+                    (<MenuItem disabled> nessun elemento selezionabile</MenuItem>)
+                }
+
             </Select>
 
             {error && (

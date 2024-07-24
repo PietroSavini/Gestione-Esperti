@@ -15,93 +15,12 @@ import { TipologiaEdit } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/Tip
 import { theme } from './ms_theme'
 import { BandiPage } from './pages/Bandi/BandiPage';
 import { TipologiaShow } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaShow/TipologiaShow';
-import AXIOS_HTTP from './app/AXIOS_ENGINE/AXIOS_HTTP';
-import { setOrganizzaDocumentoData, setOrganizzaDocumentoSelect } from './app/store/Slices/organizzaDocumentoSlice';
-import { useAppDispatch } from './app/ReduxTSHooks';
-import { createOptionArray } from './pages/SettingsPage/functions';
-import { setPubblicazioniData, setPubblicazioniSelect } from './app/store/Slices/pubblicazioneSlice';
+
 
 function App() {
-  const dispatch = useAppDispatch();
+  
   const data: DrawerData = sidebar;
-  //-----------------------------------------------------------------------INITIALSTATE APPLICAZIONE----------------------------------------------------------------------------------------------------
-  //CHIAMATE PER INIZIALIZZARE L'APPLICAZIONE
-  //CHIAMATA PER INIZIALIZZARE I DATI CHE VERRANNO DATI ALLE SELECT PER L APPLICAZIONE
-  async function GET_ORGANIZZA_DOCUMENTO_SELECT_DATA() {
-    await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_ORGANIZZA_DOCUMENTO', sService: 'READ_DOCUMENTI', body: {} })
-      .then((res) => {
-        saveOrganizzaDocumento(res.response);
-      })
-      .catch((err) => console.error(err));
-  };
-
-  async function GET_PUBBLICAZIONI_SELECT_DATA() {
-    await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_PUBBLICAZIONE', sService: 'READ_DOCUMENTI', body: {} })
-      .then((res) => {
-        console.log('sto a usci matto', res.response)
-        dispatch(setPubblicazioniData(res.response));
-        saveSelectPubblicazioni(res.response);
-
-      })
-      .catch((err) => console.error(err));
-  };
-  //-------------------------------------------------------------- funzioni di salvataggio in state redux ----------------------------------------------------------------------------------------------
-  // select options x dati di pubblicazioni
-  function saveSelectPubblicazioni(data: any) {
-    const listaUffici = data.uffici_list;
-    const listaTipiAtto = data.tipi_atto_list;
-    const listaTipiAttoBacheche = data.tipo_atto_bacheche_list;
-    const listaAnagrafiche = data.tipi_anagraficha_list;
-    const listaSezioniTrasparenza = data.sezioni_trasparenza_list;
-
-    const newSelectValuesObject = {
-      trasparenza: createOptionArray({ arr: listaSezioniTrasparenza, value: 'id', label: 'name' }),
-      uffici: createOptionArray({ arr: listaUffici, value: 'id', label: 'descrizione' }),
-      atti: createOptionArray({ arr: listaTipiAtto, value: 'id', label: 'descrizione' }),
-      bacheche: createOptionArray({ arr: listaTipiAttoBacheche, value: 'Key', label: 'Value' }),
-      anagrafiche: createOptionArray({ arr: listaAnagrafiche, value: 'id', label: 'descrizione' }),
-    };
-
-    console.log(newSelectValuesObject);
-    dispatch(setPubblicazioniSelect(newSelectValuesObject));
-  };
-
-  function saveOrganizzaDocumento(data: any) {
-    //salvo i dati cosi come sono 
-    dispatch(setOrganizzaDocumentoData(data));
-
-    //step 1 preparo la lista  dei volori delle selct
-    const aoo = data.lista_aoo;
-    const listaArchivi = data.lista_archivi;
-    const assegnatari = data.lista_assegnatari;
-    const classiDocumentali = data.lista_classi_documentali;
-    const gruppoUtenti = data.lista_gruppo_utenti;
-    const modelliProcedimento = data.lista_modelli_procedimento;
-    const listaAttivita = data.lista_tipi_attivita;
-    const titolari = data.lista_titolari;
-    const utenti = data.lista_utenti;
-    const utentiFirmatari = data.lista_utenti_firmatari;
-
-    const newSelectValuesObject = {
-      aoo: createOptionArray({ arr: aoo, value: 'id', label: 'descrizione' }),
-      archivi: createOptionArray({ arr: listaArchivi, value: 'dossier_id', label: 'dossier_name' }),
-      assegnatari: createOptionArray({ arr: assegnatari, value: 'fgId', label: 'fsAssigneeUser' }),
-      classi_documentali: createOptionArray({ arr: classiDocumentali, value: 'type_id', label: 'type_name' }),
-      gruppo_utenti: createOptionArray({ arr: gruppoUtenti, value: 'id', label: 'groupName' }),
-      modelli_procedimento: createOptionArray({ arr: modelliProcedimento, value: 'pm_id', label: 'pm_ext_desc' }),
-      tipi_attivita: createOptionArray({ arr: listaAttivita, value: 'actionId', label: 'actionName' }),
-      titolari: createOptionArray({ arr: titolari, value: 'id', label: 'descrizione' }),
-      utenti: createOptionArray({ arr: utenti, value: 'user_id', label: 'utente' }),
-      utenti_firmatari: createOptionArray({ arr: utentiFirmatari, value: 'user_id', label: 'utente' }),
-    };
-
-    dispatch(setOrganizzaDocumentoSelect(newSelectValuesObject));
-  };
-  //eseguo chiamate di inizializzazione dati
-  useEffect(() => {
-    GET_ORGANIZZA_DOCUMENTO_SELECT_DATA();
-    GET_PUBBLICAZIONI_SELECT_DATA()
-  }, []);
+  
 
   return (
     <>

@@ -18,9 +18,9 @@ export const ArchivioSelezionatoSection = ({ className }: { className: string })
     const setArchivio = useWizardBandoContext().archivi.setArchivioCollegato
 
     //treeViewData
-    const treeview = useSelector(selectOrganizzaDocumentoData)!.lista_archivi;
+    const treeview = useSelector(selectOrganizzaDocumentoData)?.lista_archivi;
     // uso useMomo per memorizzare i dati della treview che non dovrebbero cambiare ad ogni rerendering
-    const treeViewData = useMemo(() => convertTreeViewData(treeview), [treeview]);
+    const treeViewData = useMemo(() => convertTreeViewData(treeview as any[]), [treeview]);
     //funzione avviata al tasto 'Salva' contenuto nel modal della treeView
     function saveArchivio(param: Tview | null) {
         if(!param){

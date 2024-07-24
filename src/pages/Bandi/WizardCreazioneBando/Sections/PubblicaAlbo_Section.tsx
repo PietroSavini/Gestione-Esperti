@@ -30,7 +30,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
     const {listaAttivita, setListaAttivita} = attivita;
 
 
-    const pubblicaSuAlboAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.fsAction === "ALBO");
+    const pubblicaSuAlboAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "ALBO");
 
     
     //watcher per creare l'oggetto attività firma e modificarlo in live
@@ -44,11 +44,11 @@ export const PubblicaAlbo_Section = (props: Props) => {
                 Id: id,
                 delete: false,
                 fiTipoAttoId: null,
-                fiGruppoId: null, //gruppo firmatario
-                fiUserId: null, //utente firmatario
+                gruppoUtenti: null, //gruppo firmatario
+                utente: null, //utente firmatario
                 posizione: listaAttivita.length,
                 fsDescrizioneAttivita: '', //note libere albo -> va al posto di fsDescriptionOfUserActivity
-                fsOggetto: '',
+                oggetto: '',
                 fsAnnotazioni: '', //descrizione addizionale
                 fsRichiedente: '',//richiedente
                 fsDestinatarioDescrizione: '', //destinatario albo
@@ -117,7 +117,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
             case "oggetto":
                 const newActivity5: AttivitaObj ={
                     ...activity!,
-                    fsOggetto: newValue,
+                    oggetto: newValue,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity5 : item));
                 break;
@@ -133,7 +133,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
             case "utente":
                 const newActivity7: AttivitaObj ={
                     ...activity!,
-                    fiUserId: value,
+                    utente: value,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity7: item));
                 break;
@@ -141,7 +141,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
             case "gruppo-utenti":
                 const newActivity8: AttivitaObj ={
                     ...activity!,
-                    fiGruppoId: value,
+                    gruppoUtenti: value,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity8: item));
                 break;
@@ -149,7 +149,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
             case "note-libere":
                 const newActivity9: AttivitaObj ={
                     ...activity!,
-                    fsDescrizioneAttivita: newValue,
+                    actionDesc: newValue,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity9 : item));
                 break;

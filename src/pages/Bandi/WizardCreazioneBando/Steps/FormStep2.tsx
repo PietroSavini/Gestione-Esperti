@@ -19,6 +19,8 @@ export const FormStep2 = (props: FormStepProps) => {
     const [isPubblicaAlboSelected, setIsPubblicaAlboSelected] = useState<boolean>(false);
     const [isAmministrazioneTrasparenteSelected, setIsAmministrazioneTrasparenteSelected] = useState<boolean>(false);
     const [isBachecheIstituzionaliSelected, setIsBachecheIstituzionaliSelected] = useState<boolean>(false);
+
+
     const organizzaDocumentoSelectOptions = useSelector(selectOrganizzaDocumentoSelect);
     const pubblicazioniSelectOptions = useSelector(selectPubblicazioniSelect);
     const selectOptions = {...organizzaDocumentoSelectOptions, ...pubblicazioniSelectOptions};
@@ -41,19 +43,17 @@ export const FormStep2 = (props: FormStepProps) => {
     },[isPubblicaAlboSelected]);
 
     return (
-        <>
-            {/* -------------------------------FIRMA--------------------------------------------------------- */}
+        <>  
             <FirmaSection selectValues={selectOptions} openSection={setFirmaExpanded} isOpen={isFirmaExpanded} className={className} control={control} errors={errors}/>
-            {/* -------------------------------------PROTOCOLLO---------------------------------------------- */}
+    
             <ProtocollazioneSection selectValues={selectOptions} openSection={setProtocolloExpanded} isOpen={isProtocolloExpanded} className={className} control={control} register={register} errors={errors} />
-            {/* -------------------------------------SEZIONI CON SWITCHES------------------------------------------------ */}
-            {/* Pubblica su albo online */}
+    
             <PubblicaAlbo_Section selectValues={selectOptions} register={register} className={className} isOpen={isPubblicaAlboSelected} setIsOpen={setIsPubblicaAlboSelected} control={control} errors={errors}/>
-            {/* Amministrazione trasparente */}
+    
             <AmministrazioneTrasparente_Section selectValues={selectOptions} isOpen={isAmministrazioneTrasparenteSelected} setIsOpen={setIsAmministrazioneTrasparenteSelected} control={control} className={className} errors={errors}/>
-            {/*  Bacheche istituzionali */}
+    
             <BachecheIstituzionali_Section selectValues={selectOptions} isOpen={isBachecheIstituzionaliSelected} setIsOpen={setIsBachecheIstituzionaliSelected} control={control} className={className} errors={errors}/>
-
+      
         </>
     )
 }

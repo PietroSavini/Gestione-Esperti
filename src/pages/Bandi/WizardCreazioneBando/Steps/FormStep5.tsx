@@ -4,20 +4,14 @@ import { FormStepProps } from './FormStep1';
 import { AttivitàSection } from '../Sections/AttivitàSection';
 import { useSelector } from 'react-redux';
 import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
-import { useWizardBandoContext } from '../WizardBandoContext';
-
-
-
 
 export const FormStep5 = (props:FormStepProps) => {
     const { register, errors, className, control, fn , unregister} = props;
-    //const [lstAttivita, setLstAttivita] = useState< [] | AttivitaObj[] >([]);
     const respProc = useSelector(selectOrganizzaDocumentoSelect)?.utenti;
-    //const listaAttivitaSelezionate = useMemo(() => lstAttivita, [lstAttivita]);
-    
     
   return (
-    <>
+    <>  
+          
         <Paper className={className} sx={{ padding: ' 1rem 1rem' }}>
             {/*Responsabile del procedimento */}
             <Grid container>
@@ -38,6 +32,7 @@ export const FormStep5 = (props:FormStepProps) => {
 
             <AttivitàSection/>
         </Paper>
+        
     </>
   )
 }

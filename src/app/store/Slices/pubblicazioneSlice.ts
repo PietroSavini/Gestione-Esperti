@@ -64,6 +64,9 @@ const pubblicazioniSlice = createSlice({
     name: 'pubblicazioni',
     initialState,
     reducers: {
+        setPubblicazioni: (state, action: PayloadAction<PubblicazioniSlice>) => {
+            state = action.payload;
+        },
         //action/reducer per settaggio delle liste
         setPubblicazioniData: (state, action: PayloadAction<Liste>) => {
             state.liste = action.payload;
@@ -77,7 +80,7 @@ const pubblicazioniSlice = createSlice({
 })
 
 //esporto le azioni
-export const { setPubblicazioniData, setPubblicazioniSelect } = pubblicazioniSlice.actions
+export const { setPubblicazioniData, setPubblicazioniSelect, setPubblicazioni } = pubblicazioniSlice.actions
 //esporto il reducer
 export default pubblicazioniSlice.reducer
 // esporto le funzioni per l'hook UseSelector
