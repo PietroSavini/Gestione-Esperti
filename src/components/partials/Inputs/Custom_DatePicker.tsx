@@ -31,7 +31,6 @@ export const Custom_DatePicker = (props:DatePickerProps<any>) => {
             slots={{textField: DatePickerTextfield}}
             defaultValue={today}
             {...props}
-            
         />
 
     </LocalizationProvider>

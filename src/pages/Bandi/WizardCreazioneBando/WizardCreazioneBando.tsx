@@ -12,8 +12,8 @@ import { FormStep4 } from './Steps/FormStep4';
 import { FormStep5 } from './Steps/FormStep5';
 import { useWizardBandoContext } from './WizardBandoContext';
 import { useAppDispatch, useAppSelector } from '../../../app/ReduxTSHooks';
-import { setPubblicazioniData, setPubblicazioniSelect } from '../../../app/store/Slices/pubblicazioneSlice';
-import { selectOrganizzaDocumentoSelect, setOrganizzaDocumentoData, setOrganizzaDocumentoSelect } from '../../../app/store/Slices/organizzaDocumentoSlice';
+import { PubblicazioniSelect, setPubblicazioniData, setPubblicazioniSelect } from '../../../app/store/Slices/pubblicazioneSlice';
+import { OrganizzaDocumentoSelect, selectOrganizzaDocumentoSelect, setOrganizzaDocumentoData, setOrganizzaDocumentoSelect } from '../../../app/store/Slices/organizzaDocumentoSlice';
 
 type Params = {
     close: () => void;
@@ -69,6 +69,8 @@ export const WizardCreazioneBando = (params:Params) => {
     useEffect(() => {
         if(selectValues){
             setIsLoaded(true)
+        }else{
+            setIsLoaded(false)
         }
     }, [selectValues])
 
@@ -137,7 +139,7 @@ export const WizardCreazioneBando = (params:Params) => {
       const listaAnagrafiche = data.tipi_anagraficha_list;
       const listaSezioniTrasparenza = data.sezioni_trasparenza_list;
   
-      const newSelectValuesObject = {
+      const newSelectValuesObject: PubblicazioniSelect = {
         trasparenza: createOptionArray({ arr: listaSezioniTrasparenza, value: 'id', label: 'name' }),
         uffici: createOptionArray({ arr: listaUffici, value: 'id', label: 'descrizione' }),
         atti: createOptionArray({ arr: listaTipiAtto, value: 'id', label: 'descrizione' }),
@@ -161,10 +163,9 @@ export const WizardCreazioneBando = (params:Params) => {
       const modelliProcedimento = data.lista_modelli_procedimento;
       const listaAttivita = data.lista_tipi_attivita;
       const titolari = data.lista_titolari;
-      const utenti = data.lista_utenti;
       const utentiFirmatari = data.lista_utenti_firmatari;
   
-      const newSelectValuesObject = {
+      const newSelectValuesObject: OrganizzaDocumentoSelect = {
         aoo: createOptionArray({ arr: aoo, value: 'id', label: 'descrizione' }),
         archivi: createOptionArray({ arr: listaArchivi, value: 'dossier_id', label: 'dossier_name' }),
         assegnatari: createOptionArray({ arr: assegnatari, value: 'fgId', label: 'fsAssigneeUser' }),
@@ -173,7 +174,6 @@ export const WizardCreazioneBando = (params:Params) => {
         modelli_procedimento: createOptionArray({ arr: modelliProcedimento, value: 'pm_id', label: 'pm_ext_desc' }),
         tipi_attivita: createOptionArray({ arr: listaAttivita, value: 'actionId', label: 'actionName' }),
         titolari: createOptionArray({ arr: titolari, value: 'id', label: 'descrizione' }),
-        utenti: createOptionArray({ arr: utenti, value: 'user_id', label: 'utente' }),
         utenti_firmatari: createOptionArray({ arr: utentiFirmatari, value: 'user_id', label: 'utente' }),
       };
   

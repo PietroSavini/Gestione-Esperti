@@ -5,19 +5,19 @@ import './BandiPage.scss'
 import AXIOS_HTTP from '../../app/AXIOS_ENGINE/AXIOS_HTTP'
 import { WizardCreazioneBando } from './WizardCreazioneBando/WizardCreazioneBando'
 import WizardBandoContextProvider from './WizardCreazioneBando/WizardBandoContext'
-import Custom_Select from '../../components/partials/Inputs/Custom_Select'
 import { useAppDispatch } from '../../app/ReduxTSHooks'
 import { setOrganizzaDocumentoData, setOrganizzaDocumentoSelect } from '../../app/store/Slices/organizzaDocumentoSlice'
-import { WizardBando2 } from './WizardCreazioneBando/WizardBando2'
+import { WizardBando4 } from './WizardCreazioneBando/WizardBando4'
 
 
 export const BandiPage = () => {
   
   const [isOpen, setOpenModal] = useState<boolean>(false);
-  const [isOpen2, setIsOpen2] = useState<boolean>(false)
+  const [isOpen4, setIsOpen4] = useState<boolean>(false);
   const [aooSelect, setAooSelect] = useState<any>([])
   const dispatch = useAppDispatch()
   const closeModal = () => {
+    setIsOpen4(false)
     setOpenModal(false);
     dispatch(setOrganizzaDocumentoSelect(undefined))
     dispatch(setOrganizzaDocumentoData(undefined))
@@ -48,21 +48,15 @@ export const BandiPage = () => {
           <ActionButton color='secondary' text='GET ALL BANDI' onClick={ () => GET_ALL_BANDI() }/>
         </Box>
         <Grid gap={2} container>
-          <ActionButton color='secondary' text='Crea nuovo Bando test 1' onClick={() => setOpenModal(true)}  />
-          <ActionButton color='secondary' text='Crea nuovo Bando test 2 (dati preparati gia da BE)' onClick={() => setIsOpen2(true)}  />
+          <ActionButton color='secondary' text=' Bando test 1 (JSON Singolo / selectValues formattate da Frontend - 500ms circa)' onClick={() => setOpenModal(true)}  />
+          <ActionButton color='secondary' text=' Bando test 4 (SelectValues a liste singole - formattate da frontend - 450ms circa)' onClick={() => setIsOpen4(true)}  />
         </Grid>
         
         {/* MODAL CON WIZARD CREAZIONE DEL BANDO */}
         <WizardBandoContextProvider>
           <WizardCreazioneBando close={closeModal} isOpen={isOpen}/>
-          <WizardBando2 close={closeModal} isOpen={isOpen2}/>
+          <WizardBando4 close={closeModal} isOpen={isOpen4}/>
         </WizardBandoContextProvider>
-
-
-        {/* <Custom_Select 
-          label={'Aoo'}
-          options={aooSelect}
-        /> */}
     </>
     
   )

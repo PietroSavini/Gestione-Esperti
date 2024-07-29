@@ -31,7 +31,7 @@ type lista_tipi_atto_bacheche = {
     value: string;
 }
 
-type Liste = {
+export type ListePub = {
     sezioni_trasparenza_list: sezioni_trasparenza_list[] | [];
     lista_tipi_anagrafica: Lista_tipi_anagrafica[] | [];
     lista_tipi_atto: tipi_atto_list[] | [];
@@ -50,7 +50,7 @@ export type PubblicazioniSelect = {
 }
 
 type PubblicazioniSlice = {
-    liste: Liste | undefined;
+    liste: ListePub | undefined;
     selectOptions: PubblicazioniSelect | undefined
 }
 
@@ -68,7 +68,7 @@ const pubblicazioniSlice = createSlice({
             state = action.payload;
         },
         //action/reducer per settaggio delle liste
-        setPubblicazioniData: (state, action: PayloadAction<Liste>) => {
+        setPubblicazioniData: (state, action: PayloadAction<ListePub>) => {
             state.liste = action.payload;
         },
         //action/reducer per il settaggio dei valori delle select

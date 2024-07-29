@@ -7,7 +7,7 @@ import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/org
 
 export const FormStep5 = (props:FormStepProps) => {
     const { register, errors, className, control, fn , unregister} = props;
-    const respProc = useSelector(selectOrganizzaDocumentoSelect)?.utenti;
+    const respProc = useSelector(selectOrganizzaDocumentoSelect)?.utenti_firmatari;
     
   return (
     <>  

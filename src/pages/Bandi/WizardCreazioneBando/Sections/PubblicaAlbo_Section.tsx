@@ -43,17 +43,17 @@ export const PubblicaAlbo_Section = (props: Props) => {
             const initialObj:AttivitaObj = {
                 Id: id,
                 delete: false,
-                fiTipoAttoId: null,
+                attoId: undefined,
                 gruppoUtenti: null, //gruppo firmatario
                 utente: null, //utente firmatario
                 posizione: listaAttivita.length,
-                fsDescrizioneAttivita: '', //note libere albo -> va al posto di fsDescriptionOfUserActivity
+                descrizioneAttivita: '', //note libere albo -> va al posto di fsDescriptionOfUserActivity
                 oggetto: '',
-                fsAnnotazioni: '', //descrizione addizionale
-                fsRichiedente: '',//richiedente
-                fsDestinatarioDescrizione: '', //destinatario albo
-                fbDirittoOblio: false,
-                fiPubblicazioneAlbo: true,
+                annotazioni: '', //descrizione addizionale
+                richiedente: '',//richiedente
+                destinatarioDescrizione: '', //destinatario albo
+                dirittoOblio: false,
+                alboPubblicazione: true,
                 ...pubblicaSuAlboAction
                 
             }
@@ -77,7 +77,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
                 
                 const newActivity: AttivitaObj ={
                     ...activity!,
-                    fiTipoAttoId: value,
+                    attoId: value,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item));
                 break;
@@ -85,7 +85,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
             case "diritto-oblio":
                 const newActivity1: AttivitaObj ={
                     ...activity!,
-                    fbDirittoOblio: newValue,
+                    dirittoOblio: newValue,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity1 : item));
                 break;
@@ -93,7 +93,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
             case "richiedente" :
                 const newActivity2: AttivitaObj ={
                     ...activity!,
-                    fsRichiedente: newValue,
+                    richiedente: newValue,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity2 : item));
                 break;
@@ -101,7 +101,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
             case "ufficio":
                 const newActivity3: AttivitaObj ={
                     ...activity!,
-                    fiUfficioId: value,
+                    ufficio: value,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity3 : item));
                 break;
@@ -109,7 +109,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
             case "destinatario":
                 const newActivity4: AttivitaObj ={
                     ...activity!,
-                    fsDestinatarioDescrizione: newValue,
+                    destinatarioDescrizione: newValue,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity4 : item));
                 break;
@@ -125,7 +125,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
             case "descrizione-addizionale":
                 const newActivity6: AttivitaObj ={
                     ...activity!,
-                    fsAnnotazioni: newValue,
+                    annotazioni: newValue,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity6 : item));
                 break;
@@ -257,7 +257,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
                         <Grid container  >
                             <Grid padding={'0 1rem'} item xs={12} md={6}>
                                 <Custom_Select2
-                                    options={selectValues.utenti}
+                                    options={selectValues.utenti_firmatari}
                                     label="Utente a cui asseggnare l'attività"
                                     placeholder='seleziona un utente...'
                                     onChangeSelect={(newValue) => handleChange(newValue, 'utente')}

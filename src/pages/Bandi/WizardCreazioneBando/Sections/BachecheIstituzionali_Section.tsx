@@ -34,7 +34,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
             case 'tipo-atto': 
                 const newActivity: AttivitaObj ={
                     ...activity!,
-                    fiTipoAttoId: value,
+                    attoId: value,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item));
                 break;
@@ -42,7 +42,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
             case "annotazioni":
                 const newActivity1: AttivitaObj ={
                     ...activity!,
-                    fsAnnotazioni: newValue,
+                    annotazioni: newValue,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity1 : item));
                 break;
@@ -66,7 +66,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
             case "note-libere":
                 const newActivity9: AttivitaObj ={
                     ...activity!,
-                    fsDescrizioneAttivita: newValue,
+                    descrizioneAttivita: newValue,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity9 : item));
                 break;
@@ -83,13 +83,13 @@ export const BachecheIstituzionali_Section = (props: Props) => {
             const initialObj:AttivitaObj = {
                 Id: id,
                 delete: false,
-                fiPubblicazioneBI:true,
+                pubblicazioneBI:true,
                 gruppoUtenti: null, //gruppo firmatario
                 utente: null, //utente firmatario
                 posizione: listaAttivita.length,
-                fsDescrizioneAttivita: '', //note libere BI -> va al posto di fsDescriptionOfUserActivity
-                fsAnnotazioni: '', //annotazioni BI
-                fsAttoId:'',//ID atto BI
+                descrizioneAttivita: '', //note libere BI -> va al posto di fsDescriptionOfUserActivity
+                annotazioni: '', //annotazioni BI
+                attoId:'',//ID atto BI
                 ...bachecheIstituzionaliAction
                 
             }
@@ -143,7 +143,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
                             <Grid item padding={'0 1rem'} xs={12} md={6}>
                                 <Custom_Select2 
                                     label="Utente a cui assegnare l'attività" 
-                                    options={selectValues.utenti} 
+                                    options={selectValues.utenti_firmatari} 
                                     placeholder='Seleziona utente ...'
                                     onChangeSelect={(newValue) => handleChange(newValue, 'utente')}
                                 />

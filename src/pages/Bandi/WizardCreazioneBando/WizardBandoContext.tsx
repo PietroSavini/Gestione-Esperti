@@ -24,46 +24,40 @@ export type AttivitaObj = {
     actionId?: string | number;
     actionDesc?: string;
     actionName?: string;
-    fdMaxDateExecution?: string | number | null;
-    fiExtimatedDuration?: number | string | null;
+    scadenza?: string | number | null;
+    stima?: number | string | null;
     gruppoUtenti?: string | number | null;
     utente?: number | null; //credo sia lo user che ha creato il procedimento o il documento
     descrizioneAttivitaUtente?: string | null;
-    fiProcessOwnerId?: string | number | null;
+    utenteDelProcesso?: string | number | null;
     oggetto?: string | null;
-    //PARAMETRI AZIONI PARTICOLARI
-    //fiActionId?: number;
-    // fsAction?:string;
-    // fsActionName?:string;
-    // fsActionDesc?:string;
-    // fsActionDett?:string;
-    fsDescrizioneAttivita?: string // campi note libere delle sezioni
+    descrizioneAttivita?: string // campi note libere delle sezioni
     //param x BI - AT - ALBO common
-    fsAnnotazioni?: string; //annotazioni 
-    fsAttoId?: string; // chiedere bene a daniele
+    annotazioni?: string; //annotazioni 
+    attoId?: string; // chiedere bene a daniele
     //parametri firma
     //fsAction: -> campo tipo firma
-    fbDaFirmare?: boolean;
-    fiTipoFirma?: number;
+    daFirmare?: boolean;
+    tipoFirma?: number;
     //parametri protocollo
-    fiDaProtocollare?: boolean;
+    daProtocollare?: boolean;
     //parametri amministrazione trasparente
     //fsAction: AT
-    fiDaPubblicare?: boolean; // fi?? // amministrazione trasparente -> 
+    daPubblicare?: boolean; // fi?? // amministrazione trasparente -> 
     //parametri albo online
     //fsAction: ALBO
-    fiUfficioId?: number;
-    fiTipoAttoId?: number | null;
-    fsDestinatarioDescrizione?: string;
-    fiPubblicazioneAlbo?: boolean; // fi?? dovrebbe essere fb
-    fbDirittoOblio?: boolean; // trovato per Albo Online
-    fsRichiedente?: string; //trovato per albo online // in agd c'e' scritto "Richiedente Albo"
+    ufficio?: number;
+    atto?: number | null;
+    destinatarioDescrizione?: string;
+    alboPubblicazione?: boolean; // fi?? dovrebbe essere fb
+    dirittoOblio?: boolean; // trovato per Albo Online
+    richiedente?: string; //trovato per albo online // in agd c'e' scritto "Richiedente Albo"
     //parametri Bachece Istituzionali
     //fsAction: BACIST
-    fiPubblicazioneBI?: boolean; //fi??
+    pubblicazioneBI?: boolean; //fi??
     //param che servono per creare oggetto pubblicazione  es: pubblicazione_albo/bacheche/trasparenza -> ogetto che viene aggiunto al JSON di invio per ogni sezione pubblicazione aggiunta
-    fbAnnullato?: boolean;
-    fiTipoId?: number; //da chiedere bene
+    annullato?: boolean;
+    tipoId?: number; //da chiedere bene
 }
 
 type WizardBandoContextProvider = {

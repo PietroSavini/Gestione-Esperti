@@ -42,7 +42,7 @@ export const ProtocollazioneSection = (params:Params) => {
             
         ],
         gruppo:selectValues!.gruppo_utenti,
-        utente:selectValues!.utenti,
+        utenti_firmatari:selectValues!.utenti_firmatari,
     }
 
     const protocolloInUscitaAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "PROT_U");
@@ -57,13 +57,14 @@ export const ProtocollazioneSection = (params:Params) => {
 
             const initialObj:AttivitaObj = {
                 Id: id,
-                fiDaProtocollare:true,
+                daProtocollare:true,
                 delete: false,
                 gruppoUtenti: null, //gruppo firmatario
                 utente: null, //utente firmatario
                 posizione: listaAttivita.length,
                 descrizioneAttivitaUtente: '',
                 oggetto:'',
+                ...protocolloInEntrataAction
                 
             }
             setListaAttivita(prev => [...prev, initialObj])
@@ -125,7 +126,7 @@ export const ProtocollazioneSection = (params:Params) => {
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity1 : item));
                 break;
 
-            case 'fsOggetto':   
+            case 'oggetto':   
                 
                 const newActivity2: AttivitaObj = {
                     ...activity!,
@@ -134,7 +135,7 @@ export const ProtocollazioneSection = (params:Params) => {
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity2 : item));
                 break;
             
-            case 'fsDescriptionOfUserActivity':   
+            case 'descrizioneAttivitaUtente':   
             
             const newActivity3: AttivitaObj = {
                 ...activity!,
@@ -177,7 +178,7 @@ export const ProtocollazioneSection = (params:Params) => {
                             <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                                 <Custom_Select2
                                     label={"Utente a cui assegnare l'attività"}
-                                    options={ProtocollazioneOptions.utente}
+                                    options={ProtocollazioneOptions.utenti_firmatari}
                                     placeholder='sleleziona utente...'
                                     control={control}
                                     name='protocollo-utente-assegnato'
@@ -203,7 +204,7 @@ export const ProtocollazioneSection = (params:Params) => {
                                     error={!!errors.protocollazione_oggetto}
                                     errorMessage={errors.protocollazione_oggetto?.message as string}
                                     {...register('protocollazione_oggetto',{required:"l'oggetto della protocollazione è obbligatorio"})}
-                                    onChange={(e) => handleChange( e.target.value, 'fsOggetto')}
+                                    onChange={(e) => handleChange( e.target.value, 'oggetto')}
                                     backgroundColor='#fff'
                                 />
                             </Grid>
@@ -212,7 +213,7 @@ export const ProtocollazioneSection = (params:Params) => {
                                 <Custom_TextField 
                                     backgroundColor='#fff'
                                     label={'note libere attività'}
-                                    onChange={(e) => handleChange( e.target.value, 'fsDescriptionOfUserActivity')}
+                                    onChange={(e) => handleChange( e.target.value, 'descrizioneAttivitaUtente')}
                                 />
                             </Grid>
                         </>

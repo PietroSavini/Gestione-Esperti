@@ -85,9 +85,8 @@ export type Liste = {
     lista_gruppo_utenti: lista_gruppo_utenti[]|[];
     lista_modelli_procedimento: lista_modelli_procedimento[]|[];
     lista_tipi_attivita: lista_tipi_attivita[]|[];
-    lista_titolari:lista_titolari[]|[];
-    lista_utenti:lista_utenti[]|[];
-    lista_utenti_firmatari:lista_utenti_firmatari[]|[];
+    lista_titolari: lista_titolari[]|[];
+    lista_utenti_firmatari: lista_utenti_firmatari[]|[];
 };
 
 export type OrganizzaDocumentoSelect= {
@@ -99,7 +98,6 @@ export type OrganizzaDocumentoSelect= {
     modelli_procedimento: Option[]|[];
     tipi_attivita: Option[]|[];
     titolari: Option[]|[];
-    utenti: Option[]|[];
     utenti_firmatari: Option[]|[];
 };
 
@@ -121,7 +119,10 @@ const organizzaDocumentoSlice = createSlice({
     initialState,
     reducers:{
         setOrganizzaDocumento: (state, action: PayloadAction<OrganizzaDocumentoSlice>) => {
-            state = action.payload
+            console.log('salvo', action.payload)
+            state.liste = action.payload.liste;
+            state.selectOptions = action.payload.selectOptions;
+            state.treeViewData = action.payload.treeViewData;
         },
         //action/reducer per settaggio delle liste
         setOrganizzaDocumentoData: (state, action: PayloadAction<Liste | undefined>) => {
@@ -135,7 +136,6 @@ const organizzaDocumentoSlice = createSlice({
         setOrganizzaDocumentoTreeViewData: (state, action: PayloadAction<Tview[]>) => {
             state.treeViewData = action.payload;
         },
-   
     },
 })
 

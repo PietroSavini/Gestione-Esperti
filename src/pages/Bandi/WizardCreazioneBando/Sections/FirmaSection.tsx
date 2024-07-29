@@ -38,7 +38,7 @@ export const FirmaSection = (params:Params) => {
             { value: 3 , label: 'Firma Grafometrica', }
         ],
         gruppoFirmatario: selectValues!.gruppo_utenti,
-        utenteFirmatario: selectValues!.utenti,
+        utenteFirmatario: selectValues!.utenti_firmatari,
        
     };
 
@@ -62,9 +62,9 @@ export const FirmaSection = (params:Params) => {
             const initialObj:AttivitaObj = {
                 Id: id,
                 delete: false,
-                fbDaFirmare: true,
-                fdMaxDateExecution: `${today} 23:59`,
-                fiTipoFirma: tipoFirma.value as number,
+                daFirmare: true,
+                scadenza: `${today} 23:59`,
+                tipoFirma: tipoFirma.value as number,
                 gruppoUtenti: null, //gruppo firmatario
                 utente: null, //utente firmatario
                 posizione: listaAttivita.length,
@@ -98,13 +98,13 @@ export const FirmaSection = (params:Params) => {
                 if(value !== 3){
                     const newActivity: AttivitaObj ={
                         ...activity!,
-                        fiTipoFirma: value as number,
+                        tipoFirma: value as number,
                     };
                     setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item))
                 }else{
                     const newActivity: AttivitaObj ={
                         ...activity!,
-                        fiTipoFirma: value as number,
+                        tipoFirma: value as number,
                         ...FIRMA_G
                     };
                     setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item))

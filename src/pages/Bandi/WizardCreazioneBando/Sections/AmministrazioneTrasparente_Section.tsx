@@ -42,10 +42,10 @@ export const AmministrazioneTrasparente_Section = (props : Props) => {
                 gruppoUtenti: null, //gruppo firmatario
                 utente: null, //utente firmatario
                 posizione: listaAttivita.length,
-                fsDescrizioneAttivita: '', //note libere at -> va al posto di fsDescriptionOfUserActivity
-                fsAnnotazioni: '', //annotazioni at
-                fsAttoId:'',//ID atto Amministrazione Trapsarente
-                fiDaPubblicare: true,
+                descrizioneAttivita: '', //note libere at -> va al posto di fsDescriptionOfUserActivity
+                annotazioni: '', //annotazioni at
+                attoId:'',//ID atto Amministrazione Trapsarente
+                daPubblicare: true,
                 ...amministrazioneTrasparenteAction
                 
             }
@@ -67,7 +67,7 @@ export const AmministrazioneTrasparente_Section = (props : Props) => {
             case 'tipo-atto': 
                 const newActivity: AttivitaObj ={
                     ...activity!,
-                    fiTipoAttoId: value,
+                    atto: value,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item));
                 break;
@@ -75,7 +75,7 @@ export const AmministrazioneTrasparente_Section = (props : Props) => {
             case "annotazioni":
                 const newActivity1: AttivitaObj ={
                     ...activity!,
-                    fsAnnotazioni: newValue,
+                    annotazioni: newValue,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity1 : item));
                 break;
@@ -99,7 +99,7 @@ export const AmministrazioneTrasparente_Section = (props : Props) => {
             case "note-libere":
                 const newActivity9: AttivitaObj ={
                     ...activity!,
-                    fsDescrizioneAttivita: newValue,
+                    descrizioneAttivita: newValue,
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity9 : item));
                 break;
@@ -146,7 +146,7 @@ export const AmministrazioneTrasparente_Section = (props : Props) => {
                             <Grid item padding={'0 1rem'} xs={12} md={6}>
                                 <Custom_Select2 
                                     label="Utente a cui assegnare l'attività" 
-                                    options={selectValues.utenti} 
+                                    options={selectValues.utenti_firmatari} 
                                     placeholder='Seleziona utente ...'
                                     onChangeSelect={(newValue) => handleChange(newValue, 'utente')}
                                 />

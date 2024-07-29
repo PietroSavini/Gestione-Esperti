@@ -8,6 +8,7 @@ import { lista_tipi_attivita, selectOrganizzaDocumentoData, selectOrganizzaDocum
 import { useSelector } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
+import useDebounce from '../../../../app/Hooks/useDebounceHook';
 
 export const AttivitàSection = () => {
     //states
@@ -36,14 +37,14 @@ export const AttivitàSection = () => {
                         {
                             nonEditableData.map((activity, index) =>
                                 <NonEditableActivityComponent key={index} activity={activity} />
-                        )
-                    }
+                            )
+                        }
                     </Box>
-                    
-                    { editableData && 
+
+                    {editableData &&
                         <Box component={'div'} ref={containerRef} display={'flex'} flexDirection={'column'} gap={1} paddingBottom={'8px'}>
-                            {  editableData.map((activity, index) =>
-                                <ActivityComponent key={index} index={index} activity={activity} activityList={listaAttivitaData!} isDragging={isDragging} setIsDragging={setIsDragging} containerRef={containerRef} data={editableData} otherData={nonEditableData} setData={setData} />
+                            {editableData.map((activity, index) =>
+                                <ActivityComponent key={index} index={index} activity={activity} activityList={listaAttivitaData!} isDragging={isDragging} setIsDragging={setIsDragging} containerRef={containerRef} data={editableData} otherData={nonEditableData} setData={setData}/>
                             )}
                         </Box>
                     }
@@ -56,21 +57,21 @@ export const AttivitàSection = () => {
     )
 }
 
-const NonEditableActivityComponent = ({ activity }: {activity: AttivitaObj}) => {
+const NonEditableActivityComponent = ({ activity }: { activity: AttivitaObj }) => {
 
     const selectOptions = useSelector(selectOrganizzaDocumentoSelect);
-    const assignedUser = selectOptions?.utenti.find( (item) => item.value === activity.utente)?.label
+    const assignedUser = selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente)?.label
     const assignedGroup = selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti)?.label;
 
     return (
-        <Box className='non-editable-activity' sx={{border:'1px solid rgba(196, 194, 194, 0.641)', borderRadius:'10px' }} >
-            <Box sx={{backgroundColor:'#fff', padding:'.5rem .5rem', borderTopLeftRadius:'10px', borderTopRightRadius:'10px'}}>
+        <Box className='non-editable-activity' sx={{ border: '1px solid rgba(196, 194, 194, 0.641)', borderRadius: '10px' }} >
+            <Box sx={{ backgroundColor: '#fff', padding: '.5rem .5rem', borderTopLeftRadius: '10px', borderTopRightRadius: '10px' }}>
                 <Grid container>
                     <Grid item padding={'.2rem .3rem'} lg={3} md={6} xs={5} display={'flex'} alignItems={'center'}>
                         <Typography fontSize={'.8rem'}>{activity.actionName}</Typography>
                     </Grid>
-                    <Grid item padding={'.2rem .3rem'}  lg={3} md={6} xs={5} display={'flex'} alignItems={'center'}>
-                        { assignedUser && <Icon sx={{marginRight:'10px'}}>account_circle</Icon>} 
+                    <Grid item padding={'.2rem .3rem'} lg={3} md={6} xs={5} display={'flex'} alignItems={'center'}>
+                        {assignedUser && <Icon sx={{ marginRight: '10px' }}>account_circle</Icon>}
                         <Typography fontSize={'.8rem'} > {assignedUser ? assignedUser : 'nessun utente selezionato'}</Typography>
                     </Grid>
                     <Grid item padding={'.2rem .3rem'} lg={3} md={6} xs={2} display={'flex'} alignItems={'center'}>
@@ -80,42 +81,25 @@ const NonEditableActivityComponent = ({ activity }: {activity: AttivitaObj}) => 
                         <Custom_TextField
                             placeholder='Scadenza'
                             endAdornment={<Icon>calendar_month</Icon>}
-                            sx={{marginBottom:0}}
+                            sx={{ marginBottom: 0 }}
                         />
                         <Custom_TextField
                             placeholder='Stima'
                             endAdornment={<Icon>access_time</Icon>}
-                            sx={{marginBottom:0}}
+                            sx={{ marginBottom: 0 }}
                         />
                     </Grid>
                 </Grid>
-                
+
             </Box>
-            <Box sx={{backgroundColor:'aliceblue', padding:'1rem .7rem', borderBottomLeftRadius:'10px', borderBottomRightRadius:'10px'}}>
+            <Box sx={{ backgroundColor: 'aliceblue', padding: '1rem .7rem', borderBottomLeftRadius: '10px', borderBottomRightRadius: '10px' }}>
                 <Typography fontSize={'.8rem'}>{activity.descrizioneAttivitaUtente}</Typography>
             </Box>
         </Box>
     )
 };
 
-const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDragging, containerRef, data, setData, otherData }: { index: number, activity: AttivitaObj, activityList: lista_tipi_attivita[] | [], isDragging: number | undefined, setIsDragging: React.Dispatch<React.SetStateAction<number | undefined>>, containerRef: React.RefObject<HTMLDivElement>, data: AttivitaObj[], setData: React.Dispatch<React.SetStateAction<AttivitaObj[]>> , otherData:AttivitaObj[]}) => {
-
-    const selectOptions = useSelector(selectOrganizzaDocumentoSelect);
-    //trovo i valori delle select che utilizzo come default value
-    useEffect(() => {
-        setUser(selectOptions!.utenti.find((user) => user.value === activity.utente)!)
-        setActivityValue(selectOptions!.tipi_attivita.find((item) => item.value === activity.actionId)!);
-        setUserGroup(selectOptions!.gruppo_utenti.find((user) => user.value === activity.gruppoUtenti)!);
-        setDescription(activity.descrizioneAttivitaUtente);
-        setStima(activity.fiExtimatedDuration ? activity.fiExtimatedDuration : 0)
-    }, [activity]);
-
-    //states
-    const [activityValue, setActivityValue] = useState<Option | null>(null);
-    const [user, setUser] = useState<Option | null>(null);
-    const [userGroup, setUserGroup] = useState<Option | null>(null);
-    const [description, setDescription] = useState<string | null | undefined>('');
-    const [stima, setStima] = useState<number | string | null>(0);
+const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDragging, containerRef, data, setData, otherData }: { index: number, activity: AttivitaObj, activityList: lista_tipi_attivita[] | [], isDragging: number | undefined, setIsDragging: React.Dispatch<React.SetStateAction<number | undefined>>, containerRef: React.RefObject<HTMLDivElement>, data: AttivitaObj[], setData: React.Dispatch<React.SetStateAction<AttivitaObj[]>>, otherData: AttivitaObj[] }) => {
 
     //FUNZIONALITA' DRAG AND DROP DEGLI ELEMENTI--------------------------------------------------------------------------------------------------------------------------------------
     // variabili di reset 
@@ -132,7 +116,6 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
     async function dragStart(e: React.PointerEvent<HTMLDivElement>, index: number) {
 
         let dragStart = true;
-        console.log('dragStart');
         //controllo che sia un click con il pulsante sinistro del mouse
         if (!detectLeftMouseClick(e)) return;
         //evito il comportamento di default dell'evento (selezione del testo o elementi html)
@@ -146,7 +129,6 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
         const items = Array.from(container!.childNodes).filter(
             (node): node is HTMLElement => node instanceof HTMLElement
         );
-
         const itemsBelowDragItem = items.slice(index + 1);
         const notDragItems = items.filter((_, i) => i !== index);
         const draggedElementData = data[index];
@@ -157,8 +139,8 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
         const dragBoundingClientRect = itemToDrag.getBoundingClientRect();
         //setto lo style inline dell' elemento in dragging
         itemToDrag.style.position = 'fixed',
-        itemToDrag.style.zIndex = '5000',
-        itemToDrag.style.width = `${dragBoundingClientRect.width}px`;
+            itemToDrag.style.zIndex = '5000',
+            itemToDrag.style.width = `${dragBoundingClientRect.width}px`;
         itemToDrag.style.height = `${dragBoundingClientRect.height}px`;
         itemToDrag.style.top = `${dragBoundingClientRect.top}px`;
         itemToDrag.style.left = `${dragBoundingClientRect.left}px`;
@@ -216,8 +198,7 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
         //definisco la funzione di dragEnd che si esegue al rilascio del pulsante sinistro del mouse
         async function dragEnd() {
             if (!dragStart) return;
-            console.log('dragEnd');
-            setData([...otherData,...newData]);
+            setData([...otherData, ...newData]);
             setIsDragging(undefined);
             document.onpointermove = resetOnPointerMove;
             //reset dello style dell elemento in dragging 
@@ -242,8 +223,6 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
         document.onpointerup = dragEnd;
     };
 
-    //END FUNZIONALITA' DRAG AND DROP DEGLI ELEMENTI--------------------------------------------------------------------------------------------------------------------------------------
-    //funzioni per salvataggio dei campi e  cambio valori.
     function onActivityChange(newValue: Option) {
 
         //seleziono l'attività dalla lista attività per prendere i valori del nuovo oggetto
@@ -256,17 +235,44 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                 Id: activity.Id,
                 delete: activity.delete,
                 posizione: activity.posizione,
-                fiExtimatedDuration: stima,
+                scadenza: stima,
                 gruppoUtenti: userGroup ? userGroup.value : userGroup,
                 utente: user ? user.value as number : user,
                 descrizioneAttivitaUtente: description,
                 ...newActivity
             };
             const newData = data.map((item) => item.Id !== tempObj.Id ? item : tempObj);
-            setData([...otherData,...newData]);
+            setData([...otherData, ...newData]);
         };
     };
 
+    //END FUNZIONALITA' DRAG AND DROP DEGLI ELEMENTI--------------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    const selectOptions = useSelector(selectOrganizzaDocumentoSelect);
+    //initial values
+    useEffect(() => {
+        setActivityValue(selectOptions?.tipi_attivita.find((item) => item.value === activity.actionId));
+       setUser(selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente));
+       setUserGroup(selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti)) ;
+        setDescription(activity.descrizioneAttivitaUtente ? activity.descrizioneAttivitaUtente : '');
+        setStima(activity.stima ? activity.stima : '0');
+
+    },[data])
+
+    
+    //states
+    const [activityValue, setActivityValue] = useState<Option | undefined>(undefined);
+    const [user, setUser] = useState<Option | undefined>(undefined);
+    const [userGroup, setUserGroup] = useState<Option | undefined>(undefined);
+    const [description, setDescription] = useState<string>('');
+    const [stima, setStima] = useState<string | number>('');
+    //da aggiungere scadenza attività
+    
+    //useEffect utilizzato per forzare il rendering dei valori, se tolto avviene lo swap delle posizioni nei dati ma non avviene il cambio dei valori nei campi in UI
+  
+
+    //funzioni per salvataggio dei campi e  cambio valori.
     const handleSelectChange = (option: Option, field: string, setState: React.SetStateAction<any>) => {
         setState(option);
         const tempObj: AttivitaObj = {
@@ -274,20 +280,17 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
             [field]: option.value
         };
         const newData = data.map((item) => item.Id === tempObj.Id ? tempObj : item);
-        setData([...otherData,...newData]);
+        setData([...otherData, ...newData]);
     };
 
-    const handleInputChange = (e: any, field: string) => {
-        const value = e.target.value;
+    const handleInputChange = useDebounce((value: any, field: string) => {
         const tempObj: AttivitaObj = {
             ...activity,
             [field]: value
         };
-
-        const newData = data.map((item) => item.Id === tempObj.Id ? tempObj : item);
-        setData([...otherData,...newData]);
-        setDescription(value);
-    };
+        const newData = data.map((item) => item.Id === activity.Id ? tempObj : item);
+        setData([...otherData, ...newData]);
+    },200);
 
     function handleActivityDelete(id: string | number) {
         const newData = data.filter((item) => item.Id !== id);
@@ -307,7 +310,6 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                         <Grid xs={12} md={12} lg={6} padding={'0 .5rem'} item display={'flex'} flexDirection={'column'} justifyContent={'center'}>
                             <Custom_Select2
                                 options={selectOptions!.tipi_attivita}
-                                //defaultValue={currentActivityValue}
                                 value={activityValue}
                                 onChangeSelect={newValue => onActivityChange(newValue as Option)}
                                 marginBottom='.2rem'
@@ -320,17 +322,19 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                                 minRows={1.4}
                                 placeholder='descrizione attività'
                                 value={description}
-                                onChange={(e) => handleInputChange(e, 'fsDescriptionOfUserActivity')}
+                                onChange={(e)=> {
+                                    setDescription(e.target.value)
+                                    handleInputChange(e.target.value, 'descrizioneAttivitaUtente')}}
                                 sx={{ marginBottom: '0px' }}
                             />
 
                         </Grid>
                         <Grid xs={12} md={6} lg={4} padding={'0 .5rem'} display={'flex'} flexDirection={'column'} justifyContent={'center'} item>
                             <Custom_Select2
-                                options={selectOptions!.utenti}
+                                options={selectOptions!.utenti_firmatari}
                                 defaultValue={user}
                                 value={user}
-                                onChangeSelect={newValue => handleSelectChange(newValue as Option, 'fiUserId', setUser)}
+                                onChangeSelect={newValue => handleSelectChange(newValue as Option, 'utente', setUser)}
                                 placeholder='selziona utente...'
                                 marginBottom='1px'
                             />
@@ -339,7 +343,7 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                                 options={selectOptions!.gruppo_utenti}
                                 placeholder='selziona gruppo...'
                                 value={userGroup}
-                                onChangeSelect={newValue => handleSelectChange(newValue as Option, 'fiGruppoId', setUserGroup)}
+                                onChangeSelect={newValue => handleSelectChange(newValue as Option, 'gruppoUtenti', setUserGroup)}
                                 defaultValue={userGroup}
                                 marginBottom='0px'
                             />

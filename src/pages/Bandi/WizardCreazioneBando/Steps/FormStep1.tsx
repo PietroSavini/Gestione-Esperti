@@ -23,10 +23,9 @@ export type FormStepProps = {
 export const FormStep1 = (props: FormStepProps) => {
     const { register, errors, className, control, setState} = props;
     //requisiti di validazione per campo
-  
 
-//valori per select Tipologia Esperto select
-const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
+    //valori per select Tipologia Esperto select
+    const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
 
     useEffect(() => {
         if(TEspMenuItems.length === 0){
