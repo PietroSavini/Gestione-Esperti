@@ -23,7 +23,7 @@ function checkData (data:any[]): number {
     
     if(data && data.length > 0){
         const firstItem = data[0];
-        if('fiDossierId' in firstItem && 'fiDossierIdRef' in firstItem && 'fsDossierName' in firstItem){
+        if('dossier_id' in firstItem && 'dossier_ref_id' in firstItem && 'dossier_name' in firstItem){
             console.log('convertTreeViewData() => dati in conversione : Archivi, typeOf lista_archivi[]');
             return 1;
         }else{

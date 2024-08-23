@@ -57,8 +57,8 @@ export const Custom_Select2 = (props:Props) => {
                     (
                     <>
                         <Box display={'flex'}>
-                            <InputLabel sx={{fontWeight:600,fontSize:'.9rem', color:'#127aa3ff',marginBottom:'.3rem'}} id={`${name}-select-label`} error={error}>{label}</InputLabel>
-                            <Typography component={'span'} color={'error'}>*</Typography>
+                            <InputLabel sx={{fontWeight:600,fontSize:'.9rem', color:'#127aa3ff',marginBottom:'.3rem',}} id={`${name}-select-label`} error={error}>{label}</InputLabel>
+                            <Typography component={'span'} color={'error'} marginLeft={'3px'}>*</Typography>
                         </Box>
                     </> 
                     )

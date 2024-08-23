@@ -16,7 +16,7 @@ export const AttivitàSection = () => {
     //lista delle attività selezionabili
     const listaAttivitaData = useSelector(selectOrganizzaDocumentoData)?.lista_tipi_attivita;
     const selectOptions = useSelector(selectOrganizzaDocumentoSelect);
-    const modelliProcedimentoSelect = useSelector(selectOrganizzaDocumentoSelect)?.modelli_procedimento
+    const modelliProcedimentoSelect = useSelector(selectOrganizzaDocumentoSelect)?.modelli_procedimento;
     //ref per stabilire l'elemento da draggare
     const containerRef = useRef<HTMLDivElement>(null);
     //prendo i dati dal contextprovider
@@ -253,11 +253,10 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
     //initial values
     useEffect(() => {
         setActivityValue(selectOptions?.tipi_attivita.find((item) => item.value === activity.actionId));
-       setUser(selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente));
-       setUserGroup(selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti)) ;
+        setUser(selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente));
+        setUserGroup(selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti)) ;
         setDescription(activity.descrizioneAttivitaUtente ? activity.descrizioneAttivitaUtente : '');
         setStima(activity.stima ? activity.stima : '0');
-
     },[data])
 
     

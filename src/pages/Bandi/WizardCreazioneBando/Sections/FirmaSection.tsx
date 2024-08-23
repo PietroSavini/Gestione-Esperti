@@ -196,6 +196,7 @@ export const FirmaSection = (params:Params) => {
                         <Custom_DatePicker 
                             sx={{backgroundColor:'#fff'}}
                             label='scadenza' 
+                            
                         />
                     </Grid>
                     <Grid item  padding={'0 1rem'} xs={12}>

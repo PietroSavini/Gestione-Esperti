@@ -7,6 +7,7 @@ import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import { TipologiaEspertoRow } from '../../../SettingsPage/types';
 import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { useSelector } from 'react-redux';
+import { Custom_DatePicker } from '../../../../components/partials/Inputs/Custom_DatePicker';
 
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
 export type FormStepProps = {
@@ -65,10 +66,10 @@ export const FormStep1 = (props: FormStepProps) => {
 
                         <Grid padding={'0 1rem'} item xs={12} md={6}>
                             {/* da implementare select */}
-
+                            <Custom_DatePicker />
                         </Grid>
 
-                        <Grid padding={'0 1rem'} item xs={12}>
+                        <Grid padding={'0 1rem'} item xs={12} lg={6}>
                             <Custom_Select2 
                                 placeholder='Seleziona Tipologia Esperto...' 
                                 label='Tipologia Esperto' 
@@ -93,7 +94,7 @@ export const FormStep1 = (props: FormStepProps) => {
                     <Typography sx={{ paddingBottom: '1rem' }} component={'h6'} variant='h6'>Informazioni Generali</Typography>
                     <Grid container sx={{ marginBottom: '1rem' }}>
 
-                        <Grid padding={'0 1rem'} item xs={12} md={3}>
+                        <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                         <Custom_Select2
                                 options={[{value:'2024', label:'2024'}]}
                                 disabled
@@ -105,7 +106,7 @@ export const FormStep1 = (props: FormStepProps) => {
                         
                         </Grid>
 
-                        <Grid padding={'0 1rem'} item xs={12} md={3}>
+                        <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                             <Custom_Select2
                                 placeholder='Seleziona A.O.O...'
                                 control={control}
@@ -116,7 +117,7 @@ export const FormStep1 = (props: FormStepProps) => {
                             />
                         </Grid>
 
-                        <Grid padding={'0 1rem'} item xs={12} md={3}>
+                        <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                             <Custom_Select2
                                 placeholder='Seleziona Archivio di Collocazione...'
                                 control={control}
@@ -127,7 +128,7 @@ export const FormStep1 = (props: FormStepProps) => {
                             />
                         </Grid>
 
-                        <Grid padding={'0 1rem'} item xs={12} md={3}>
+                        <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
                             <Custom_Select2
                                 control={control}
                                 name='classeAddizionale'
