@@ -5,6 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import React from 'react'
 import dayjs from 'dayjs';
 import { Box, InputLabel, TextField, TextFieldProps, Typography } from '@mui/material';
+import './inputs.scss'
 
 type CustomProps = {
   disabled?: boolean;
@@ -21,27 +22,45 @@ export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='it'>
       <DatePicker
-        className='datePicker'
+
         slots={{ textField: DatePickerTextfield }}
         disablePast
+        label={<LabelComponent label={props.label}  isRequired={props.isRequired ? props.isRequired : false}/>}
         {...props}
+        
         sx={{
+          width:'100%',
           "& .MuiInputBase-root": {
-            maxHeight: '40px',
+            borderRadius:'10px',
+            height: '38px',
             outline: '0px',
-            boxShadow: "0px 0px 2px grey",
+            //boxShadow: "0px 0px 3px grey",
+            minWidth:'100%',
             backgroundColor:`${props.disabled ?"#e0e0e0" : "#fff" }`,
-            
+            "& :hover":{
+              "fieldset":{
+                border:'none'
+              }
+            }
+          },
+          "& .MuiInputBase-input":{
+            padding:0,
+            height:'100%',
+            paddingLeft:'.5rem',
+            color:'black'
           },
           "& fieldset": {
-            border: 'none'
+            borderColor:'rgba(0,0,0,.2)',
+            borderWidth:'1px',
+            borderStyle:'solid',
+            boxShadow: "0px 0px 2px grey",
+           
+          },
+          "& .MuiOutlinedInput-notchedOutline":{
+            padding:'0'
           },
           ...props.sx
-          
-          
-          
         }}
-        label={<LabelComponent label={props.label}  isRequired={props.isRequired ? props.isRequired : false}/>}
         />
     </LocalizationProvider>
   )
@@ -51,9 +70,8 @@ const DatePickerTextfield = React.forwardRef(
   (props: TextFieldProps, ref: React.Ref<HTMLDivElement>) => {
     return(
     <>
-      
       <InputLabel 
-        sx={{  color: '#127aa3ff', fontWeight: 600, fontSize: 14, marginBottom: .5 }}
+        sx={{  color: '#127aa3ff', fontWeight: 600, fontSize: 14, marginBottom: .7 }}
       >
         {props.label}
       </InputLabel>
@@ -69,9 +87,8 @@ const DatePickerTextfield = React.forwardRef(
 );
 
 const LabelComponent = ({isRequired, label}: {isRequired:boolean, label:any}) => {
-  console.log('label component')
+
   if(isRequired && label){
-    console.log(' IL DATEPICKER è REQUIRED')
     return(
       <>
         {label}

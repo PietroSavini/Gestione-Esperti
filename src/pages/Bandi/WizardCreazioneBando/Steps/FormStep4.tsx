@@ -7,7 +7,6 @@ import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Se
 import { useEffect, useState } from 'react';
 import { InboundSelectData, Options } from '../../../SettingsPage/Tabs/TipologiaEspertoTab/TipologiaEdit/TipologiaEdit';
 import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
-import { v4 as uuid } from 'uuid';
 import Table_PunteggiBando from '../Tables/Table_PunteggiBando';
 
 type FormStep4Props = FormStepProps & {
@@ -23,7 +22,6 @@ export const FormStep4 = (props: FormStep4Props) => {
   const [selectedItem, setSelectedItem] = useState<any>();
   const [error, setIsError] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
-  
 
   const GET_REQUISITI_FOR_SELECT = async () => {
     await AXIOS_HTTP.Retrieve({ sService: 'READ_REQUISITI', sModule: 'IMPOSTAZIONI_GET_REQUISITI_MASTER', body: { TEspId: TEspId }, url: '/api/launch/retrieve' })
@@ -39,7 +37,6 @@ export const FormStep4 = (props: FormStep4Props) => {
                 finalArray.push(newFormat);
             });
             setSelectableItems(finalArray)
-            
         })
   };
 
@@ -48,14 +45,11 @@ export const FormStep4 = (props: FormStep4Props) => {
       GET_REQUISITI_FOR_SELECT();
     }
 
-
   }, [TEspId])
 
   useEffect(()=>{
     console.log(data)
   },[data])
-
-
 
   const addNewSection = () => {
     if (!selectedItem) {
@@ -85,6 +79,7 @@ export const FormStep4 = (props: FormStep4Props) => {
       <Paper className={className} sx={{ padding: ' 1rem 1rem' }}>
 
         <Box sx={{ marginBottom: '1rem' }} display={'flex'} width={'100%'} justifyContent={'flex-start'}>
+          
           <ActionButton text='Collega requisito' onClick={() => setOpenSectionDialog(true)} endIcon={<Icon>add</Icon>} color='secondary' />
           <Dialog open={isAddSectionOpen} onClose={() => setOpenSectionDialog(false)}>
             <Box display={'flex'} flexDirection={'column'} minHeight={'300px'} minWidth={'600px'} padding={'1rem 2rem'}  >
@@ -97,13 +92,16 @@ export const FormStep4 = (props: FormStep4Props) => {
                 <ActionButton onClick={() => setOpenSectionDialog(false)} color='error' icon='cancel' sx={{ marginRight: '.5rem' }} />
                 <ActionButton text='Aggiungi' color='secondary' onClick={addNewSection} />
               </Box>
-            </Box>
 
+            </Box>
           </Dialog>
+
         </Box>
+
         <Box textAlign={'center'} padding={2}>
           <Typography fontWeight={600} fontSize={20}>Requisiti da collegare al Bando</Typography>
         </Box>
+        
         {data && data.length > 0 && data.map((item: Requisito_Table, index:any) =>
           <Table_PunteggiBando data={item} key={index} setData={setData!} tespId={TEspId!}/>
         )}

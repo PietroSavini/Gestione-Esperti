@@ -7,7 +7,6 @@ import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import { TipologiaEspertoRow } from '../../../SettingsPage/types';
 import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { useSelector } from 'react-redux';
-import { Custom_DatePicker } from '../../../../components/partials/Inputs/Custom_DatePicker';
 
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
 export type FormStepProps = {
@@ -66,7 +65,7 @@ export const FormStep1 = (props: FormStepProps) => {
 
                         <Grid padding={'0 1rem'} item xs={12} md={6}>
                             {/* da implementare select */}
-                            <Custom_DatePicker />
+                            <Custom_Select2 options={[]} label='Titolario' placeholder='seleziona titolario...'/>
                         </Grid>
 
                         <Grid padding={'0 1rem'} item xs={12} lg={6}>
