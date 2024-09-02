@@ -7,18 +7,15 @@ import { FormStep2 } from './Steps/FormStep2';
 import { FormStep3 } from './Steps/FormStep3';
 import { ActionButton } from '../../../components/partials/Buttons/ActionButton';
 import { Requisito_Table } from '../../SettingsPage/types';
-import { convertData, createOptionArray } from '../../SettingsPage/functions';
+import { convertData} from '../../SettingsPage/functions';
 import { FormStep4 } from './Steps/FormStep4';
 import { FormStep5 } from './Steps/FormStep5';
 import { useWizardBandoContext } from './WizardBandoContext';
 import { useAppDispatch, useAppSelector } from '../../../app/ReduxTSHooks';
-import { PubblicazioniSelect, setPubblicazioniData, setPubblicazioniSelect } from '../../../app/store/Slices/pubblicazioneSlice';
-import { OrganizzaDocumentoSelect, selectOrganizzaDocumentoSelect, setOrganizzaDocumentoData, setOrganizzaDocumentoSelect } from '../../../app/store/Slices/organizzaDocumentoSlice';
+import { selectOrganizzaDocumentoSelect } from '../../../app/store/Slices/organizzaDocumentoSlice';
+import { closeLoader } from '../../../app/store/Slices/loaderSlice';
+import Loader from '../../../components/partials/Loader/Loader';
 
-type Params = {
-    close: () => void;
-    isOpen: boolean
-}
 
 type PunteggiFinali = {
     reqId: number | null;
@@ -32,8 +29,8 @@ export type AttList = {
     actionName:string; // lable attività -> lable
 };
 
-export const WizardCreazioneBando = (params:Params) => {
-    const {close, isOpen} = params;
+export const WizardCreazioneBando = () => {
+    //const {close, isOpen} = params;
     //react Hook Forms
     const { register, handleSubmit, trigger, formState, control, watch, unregister } = useForm<any>();
     const { errors } = formState;
@@ -67,12 +64,11 @@ export const WizardCreazioneBando = (params:Params) => {
     };
     //watcher per poter caricare il bando senza errori o crash
     useEffect(() => {
-        if(selectValues){
-            setIsLoaded(true)
-        }else{
-            setIsLoaded(false)
-        }
+      if(selectValues !== undefined){
+        setIsLoaded(true)
+      }
     }, [selectValues])
+    
 
     //useEffect che utilizzo per chiamare i punteggi collegati alla tipologiaEsperto e salvarli per mostrarli nel 4o step
     useEffect(() => {
@@ -109,85 +105,8 @@ export const WizardCreazioneBando = (params:Params) => {
     },[punteggi])
 
     const dispatch = useAppDispatch();
-    //-----------------------------------------------------------------------CHIAMATE PER VALORI DELLE SELECT----------------------------------------------------------------------------------------------------
-    //CHIAMATE PER INIZIALIZZARE L'APPLICAZIONE
-    //CHIAMATA PER INIZIALIZZARE I DATI CHE VERRANNO DATI ALLE SELECT PER L APPLICAZIONE
-    async function GET_ORGANIZZA_DOCUMENTO_SELECT_DATA() {
-      await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_ORGANIZZA_DOCUMENTO', sService: 'READ_DOCUMENTI', body: {} })
-        .then((res) => {
-          saveOrganizzaDocumento(res.response);
-        })
-        .catch((err) => console.error(err));
-
-    };
-  
-    async function GET_PUBBLICAZIONI_SELECT_DATA() {
-      await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_PUBBLICAZIONE', sService: 'READ_DOCUMENTI', body: {} })
-        .then((res) => {
-          dispatch(setPubblicazioniData(res.response));
-          saveSelectPubblicazioni(res.response);
-         
-        })
-        .catch((err) => console.error(err));
-    };
-    //-------------------------------------------------------------- funzioni di salvataggio in state redux ----------------------------------------------------------------------------------------------
-    // select options x dati di pubblicazioni
-    function saveSelectPubblicazioni(data: any) {
-      const listaUffici = data.uffici_list;
-      const listaTipiAtto = data.tipi_atto_list;
-      const listaTipiAttoBacheche = data.tipo_atto_bacheche_list;
-      const listaAnagrafiche = data.tipi_anagraficha_list;
-      const listaSezioniTrasparenza = data.sezioni_trasparenza_list;
-  
-      const newSelectValuesObject: PubblicazioniSelect = {
-        trasparenza: createOptionArray({ arr: listaSezioniTrasparenza, value: 'id', label: 'name' }),
-        uffici: createOptionArray({ arr: listaUffici, value: 'id', label: 'descrizione' }),
-        atti: createOptionArray({ arr: listaTipiAtto, value: 'id', label: 'descrizione' }),
-        bacheche: createOptionArray({ arr: listaTipiAttoBacheche, value: 'Key', label: 'Value' }),
-        anagrafiche: createOptionArray({ arr: listaAnagrafiche, value: 'id', label: 'descrizione' }),
-      };
-  
-      dispatch(setPubblicazioniSelect(newSelectValuesObject));
-    };
-  
-    function saveOrganizzaDocumento(data: any) {
-      //salvo i dati cosi come sono 
-      dispatch(setOrganizzaDocumentoData(data));
-  
-      //step 1 preparo la lista  dei volori delle selct
-      const aoo = data.lista_aoo;
-      const listaArchivi = data.lista_archivi;
-      const assegnatari = data.lista_assegnatari;
-      const classiDocumentali = data.lista_classi_documentali;
-      const gruppoUtenti = data.lista_gruppo_utenti;
-      const modelliProcedimento = data.lista_modelli_procedimento;
-      const listaAttivita = data.lista_tipi_attivita;
-      const titolari = data.lista_titolari;
-      const utentiFirmatari = data.lista_utenti_firmatari;
-  
-      const newSelectValuesObject: OrganizzaDocumentoSelect = {
-        aoo: createOptionArray({ arr: aoo, value: 'id', label: 'descrizione' }),
-        archivi: createOptionArray({ arr: listaArchivi, value: 'dossier_id', label: 'dossier_name' }),
-        assegnatari: createOptionArray({ arr: assegnatari, value: 'fgId', label: 'fsAssigneeUser' }),
-        classi_documentali: createOptionArray({ arr: classiDocumentali, value: 'type_id', label: 'type_name' }),
-        gruppo_utenti: createOptionArray({ arr: gruppoUtenti, value: 'id', label: 'groupName' }),   
-        modelli_procedimento: createOptionArray({ arr: modelliProcedimento, value: 'pm_id', label: 'pm_ext_desc' }),
-        tipi_attivita: createOptionArray({ arr: listaAttivita, value: 'actionId', label: 'actionName' }),
-        titolari: createOptionArray({ arr: titolari, value: 'id', label: 'descrizione' }),
-        utenti_firmatari: createOptionArray({ arr: utentiFirmatari, value: 'user_id', label: 'utente' }),
-      };
-  
-      dispatch(setOrganizzaDocumentoSelect(newSelectValuesObject));
-    };
-
-    //eseguo chiamate di inizializzazione dati
-    useEffect(() => {
-        if(isOpen){
-            GET_ORGANIZZA_DOCUMENTO_SELECT_DATA();
-            GET_PUBBLICAZIONI_SELECT_DATA();
-        }
-      
-    }, [isOpen]);
+    
+   
 
     
     //steps (x stepper MUI)
@@ -281,23 +200,19 @@ export const WizardCreazioneBando = (params:Params) => {
 
     //const selectOptions = useAppSelector(selectOrganizzaDocumentoSelect)
   return (
-    <>
-        {
-            isLoaded === true && isOpen === true && selectValues &&
-
-            <Dialog className='modello-creazione-bando' fullScreen onClose={close} open={isOpen} keepMounted={false}>
+    <>  
+        {selectValues &&
+        
+            <Box className='modello-creazione-bando' height={'100%'}>
                 <Box className={'creazione-bando-header'}>
-                    <Box width={'90%'} display={'flex'} justifyContent={'start'} alignItems={'center'}>
+                    <Box display={'flex'} justifyContent={'start'} alignItems={'center'}>
                         <Typography variant='h6' fontWeight={600}>Crea nuovo Bando</Typography>
                         <Avatar sx={{height:'30px', width:'30px', marginLeft:'5rem'}}></Avatar>
-                    </Box>
-                    <Box width={'10%'} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
-                        <Button onClick={() => close()} sx={{color:'black'}} ><Icon>close</Icon></Button>
                     </Box>
                     <Divider/>
                 </Box>
 
-                <Box className={'creazione-bando-body'}  >
+                <Box className={'creazione-bando-body'} >
                     {/*---------------------------------------- STEPPER ------------------------------------------------*/}
                     <Box className={'stepper-container'} sx={{padding:'0.5rem .5rem'}} >
                         {/* MOBILE STEPPER XS+ */}
@@ -331,18 +246,23 @@ export const WizardCreazioneBando = (params:Params) => {
                     {/*-----------------------------------------FINE STEPPER ------------------------------------------------*/}
                     {/*------------------------------------------------------------------------------------------------------*/}
                     {/*-------------------------------------FORM + NAVIGATION------------------------------------------------*/}
-                    
                     <Box className={'form-container'} >
                         {/* form con logica per visualizzare i form */}
                         <Box component={'form'} noValidate onSubmit={handleSubmit(submitWizard)}>
-                            <Box className={'ms_form-group'}>
-                                {/* qui vanno renderizzati i vari form input in base agli steps */}
-                                <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control} setState={setTEsp} />
-                                <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors} control={control} fn={watch} unregister={unregister}/>
-                                <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors} />
-                                <FormStep4 className={`${activeStep !== 3 && 'd-none'}`} register={register} errors={errors} data={punteggi} setState={setPunteggi} TEspId={TEsp}/>
-                                <FormStep5 className={`${activeStep !== 4 && 'd-none'}`} register={register} errors={errors} control={control}/>
-                            </Box>
+                        {
+                            isLoaded ? (
+                                <Box className={'ms_form-group'}>
+                                    {/* qui vanno renderizzati i vari form input in base agli steps */}
+                                    <FormStep1 className={`${activeStep !== 0 && 'd-none'}`} register={register} errors={errors} control={control} setState={setTEsp} />
+                                    <FormStep2 className={`${activeStep !== 1 && 'd-none'}`} register={register} errors={errors} control={control} fn={watch} unregister={unregister}/>
+                                    <FormStep3 className={`${activeStep !== 2 && 'd-none'}`} register={register} errors={errors} />
+                                    <FormStep4 className={`${activeStep !== 3 && 'd-none'}`} register={register} errors={errors} data={punteggi} setState={setPunteggi} TEspId={TEsp}/>
+                                    <FormStep5 className={`${activeStep !== 4 && 'd-none'}`} register={register} errors={errors} control={control}/>
+                                </Box>
+                            ): (
+                                <Loader/>
+                            )
+                        }
 
                             {/* mobile navigation xs -> md */}
                             <Box sx={{padding:'.5rem 1rem', borderTop:'1px solid #efefef', backgroundColor:'#fafbffff'}} className={'mobile-navigation'} textAlign={'center'} >
@@ -356,10 +276,7 @@ export const WizardCreazioneBando = (params:Params) => {
 
                             {/* Navigation md -> xl */}
                             <Box className='navigation' >
-                                <Box className='cancel-button'>
-                                    <ActionButton color='error' text='Annulla' icon='cancel' onClick={() => close()}/>
-                                </Box>
-                                <Box display={'flex'} gap={'.5rem'} justifyContent={'flex-end'} width={'50%'}>
+                                <Box display={'flex'} gap={'.5rem'} justifyContent={'flex-end'} width={'100%'}>
                                     <ActionButton  onClick={() => setActiveStep((prev) => prev -1)} disabled={activeStep === 0} color='primary' text='Indietro' icon='chevron_left' direction={'row-reverse'}/>
                                     {activeStep === steps.length -1 && 
                                         <ActionButton type='submit' color='secondary' icon='save' text='Crea Bando' />
@@ -376,7 +293,7 @@ export const WizardCreazioneBando = (params:Params) => {
                     {/*---------------------------------FINE FORM -----------------------------------------------*/}    
                 </Box>
                 
-            </Dialog>
+            </Box>
         }
     </>
   )

@@ -27,6 +27,20 @@ export const sidebar:DrawerData = {
           "text": "Bandi",
           "method": "/Bandi",
           "icon": "document_scanner",
+          "subItems":[
+            {
+              "text": "Crea nuovo Bando",
+              "method": "/Bandi",
+              "icon": "settings_suggest",
+              
+            },
+            {
+              "text": "Ricerca e consulta",
+              "method": "/Bandi",
+              "icon": "search",
+              
+            },
+          ]
           
         },
         {

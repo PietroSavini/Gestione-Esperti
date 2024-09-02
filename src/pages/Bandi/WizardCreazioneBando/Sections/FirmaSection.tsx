@@ -46,14 +46,16 @@ export const FirmaSection = (params:Params) => {
     const FIRMA_D = useAppSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find((item) => item.actionDett === "FIRMA_D");
     const FIRMA_G = useAppSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find((item) => item.actionDett === "FIRMA_G");
     const newId = uuid();
-    const today = dayjs().format('DD/MM/YYYY');
+    const today = dayjs();
+    const formattedToday = dayjs().format('DD/MM/YYYY')
     const [id] = useState<string>(newId);
     const [tipoFirma] = useState<Option>(firmaOptions.tipoFirma[0]);
 
     //dati WizardBandoContext
     const attivita = useWizardBandoContext().attivita;
     const {listaAttivita, setListaAttivita} = attivita;
-    
+    //states per datepiker
+    const [firmaScadenza, setFirmaScadenza] = useState()
     //watcher per creare l'oggetto attività firma e modificarlo in live
     useEffect(() => {
         if(isOpen){
@@ -64,7 +66,7 @@ export const FirmaSection = (params:Params) => {
                 Id: id,
                 delete: false,
                 daFirmare: true,
-                scadenza: `${today} 23:59`,
+                scadenza: formattedToday,
                 tipoFirma: tipoFirma.value as number,
                 gruppoUtenti: null, //gruppo firmatario
                 utente: null, //utente firmatario
@@ -135,6 +137,24 @@ export const FirmaSection = (params:Params) => {
                 };
 
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity2 : item));
+                break;
+
+            case "scadenza":
+                const date = dayjs(newValue).format("DD/MM/YYYY");
+                const isDateBeforeToday1 = dayjs(date).isBefore(dayjs(formattedToday));
+
+                if(isDateBeforeToday1) {
+                    console.log('data di scadenza non valida ')
+                    return;
+                }
+                setFirmaScadenza(newValue);
+                const newActivity3: AttivitaObj = {
+                    ...activity!,
+                    scadenza: date
+                }
+                
+                setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity3 : item));
+                break;
         }
 
     },300);
@@ -197,6 +217,7 @@ export const FirmaSection = (params:Params) => {
                         <Custom_DatePicker 
                             sx={{backgroundColor:'#fff'}}
                             label='scadenza' 
+                            onChange={(e) => handleChange(e,'scadenza')}
                             
                         />
 
