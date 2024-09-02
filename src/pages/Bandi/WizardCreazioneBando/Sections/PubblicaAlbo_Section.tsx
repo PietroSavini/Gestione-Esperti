@@ -1,14 +1,15 @@
 import { Box, Grid, Paper, Switch, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { FieldErrors, UseFormRegister, UseFormUnregister, useForm } from 'react-hook-form';
+import { FieldErrors, UseFormRegister, UseFormUnregister} from 'react-hook-form';
 import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
-import { DatePicker } from '@mui/x-date-pickers';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
-import { OrganizzaDocumentoSelect, selectOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice';
+import { selectOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
 import { v4 as uuid } from 'uuid';
 import { useSelector } from 'react-redux';
 import useDebounce from '../../../../app/Hooks/useDebounceHook';
+import { Custom_DatePicker } from '../../../../components/partials/Inputs/Custom_DatePicker';
+import dayjs from 'dayjs';
 
 type Props = {
     isOpen: boolean;
@@ -28,11 +29,13 @@ export const PubblicaAlbo_Section = (props: Props) => {
     //dati WizardBandoContext
     const attivita = useWizardBandoContext().attivita;
     const {listaAttivita, setListaAttivita} = attivita;
-
-
     const pubblicaSuAlboAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "ALBO");
+    //dati e states per datepicker
+    const today = dayjs();
+    const formattedToday = dayjs(today).format("DD/MM/YYYY")
+    const [inizioAffissione, setInizioAffissione] = useState(today);
+    const [fineAffissione, setfineAffissione] = useState(today);
 
-    
     //watcher per creare l'oggetto attività firma e modificarlo in live
     useEffect(() => {
         if(isOpen){
@@ -54,6 +57,8 @@ export const PubblicaAlbo_Section = (props: Props) => {
                 destinatarioDescrizione: '', //destinatario albo
                 dirittoOblio: false,
                 alboPubblicazione: true,
+                fdDataAffissioneInizio: formattedToday,
+                fdDataAffissioneFine: formattedToday,
                 ...pubblicaSuAlboAction
                 
             }
@@ -74,7 +79,6 @@ export const PubblicaAlbo_Section = (props: Props) => {
         const activity = listaAttivita.find(item => item.Id === id);
         switch (field) {
             case 'tipo-atto':
-                
                 const newActivity: AttivitaObj ={
                     ...activity!,
                     attoId: value,
@@ -153,6 +157,51 @@ export const PubblicaAlbo_Section = (props: Props) => {
                 };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity9 : item));
                 break;
+            
+            case "inizio-affissione":
+                const date = dayjs(newValue).format("DD/MM/YYYY");
+                const isDateBeforeToday = dayjs(date).isBefore(dayjs(formattedToday));
+                //se la data di inizio selezionata è inferiore ad oggi non la seleziono ed esco 
+                if(isDateBeforeToday) return;
+                setInizioAffissione(newValue);
+                const isStartDateAfterEndDate = dayjs(newValue).isAfter(dayjs(fineAffissione));
+                //se la data di inizio è superiore alla data di fine setto la data di fine nell oggetto attività alla data selezionata di inizio in modo da non rendere mai la data di fine inferiore a quella di inizio
+                if(isStartDateAfterEndDate){
+                    console.log('la data è successiva')
+                    setfineAffissione(newValue);
+                    const newActivity: AttivitaObj = {
+                        ...activity!,
+                        fdDataAffissioneInizio: date,
+                        fdDataAffissioneFine: date
+                    };
+                    setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item));
+                    return;
+                }
+                //se no cambio solo la data di inizio
+                const newActivity10: AttivitaObj = {
+                    ...activity!,
+                    fdDataAffissioneInizio: date
+                };
+
+                setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity10 : item));
+                break;
+
+            case "fine-affissione":
+                const date1 = dayjs(newValue).format("DD/MM/YYYY");
+                const isDateBeforeToday1 = dayjs(date1).isBefore(dayjs(formattedToday));
+                const isEndDateBeforeStartDate = dayjs(newValue).isBefore(dayjs(inizioAffissione));
+
+                if(isDateBeforeToday1 || isEndDateBeforeStartDate) {
+                    console.log('data fine affissione non valida ')
+                    return;
+                }
+                setfineAffissione(newValue);
+                const newActivity11: AttivitaObj = {
+                    ...activity!,
+                    fdDataAffissioneFine: date1
+                }
+                setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity11 : item));
+                break;
         }
 
     }, 300);
@@ -188,11 +237,23 @@ export const PubblicaAlbo_Section = (props: Props) => {
                             </Grid>
 
                             <Grid item padding={'0 1rem'} xs={12} md={6} lg={3}>
-                                inizio affissione
+                                <Custom_DatePicker 
+                                    onChange={(e) => handleChange(e, 'inizio-affissione')} 
+                                    label={'Inizio affissione'} 
+                                    value={inizioAffissione}
+                                    onError={(params) => console.log(params)}
+                                />
+                                    
+                                    
                             </Grid>
 
                             <Grid item padding={'0 1rem'} xs={12} md={6} lg={3} >
-                                fine affissione
+                                <Custom_DatePicker 
+                                    onChange={(e) => handleChange(e, 'fine-affissione')} 
+                                    label={'Fine affissione'}
+                                    value={fineAffissione}
+                                    minDate={inizioAffissione}
+                                />
                             </Grid>
                         </Grid>
 

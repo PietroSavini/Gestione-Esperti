@@ -58,6 +58,8 @@ export type AttivitaObj = {
     //param che servono per creare oggetto pubblicazione  es: pubblicazione_albo/bacheche/trasparenza -> ogetto che viene aggiunto al JSON di invio per ogni sezione pubblicazione aggiunta
     annullato?: boolean;
     tipoId?: number; //da chiedere bene
+    fdDataAffissioneInizio?:string;
+    fdDataAffissioneFine?:string
 }
 
 type WizardBandoContextProvider = {

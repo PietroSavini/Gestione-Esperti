@@ -3,7 +3,6 @@ import { DatePicker, DatePickerProps } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import React from 'react'
-import dayjs from 'dayjs';
 import { Box, InputLabel, TextField, TextFieldProps, Typography } from '@mui/material';
 import './inputs.scss'
 
@@ -30,6 +29,7 @@ export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => 
         
         sx={{
           width:'100%',
+          marginBottom:'1rem',
           "& .MuiInputBase-root": {
             borderRadius:'10px',
             height: '38px',
@@ -43,19 +43,21 @@ export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => 
               }
             }
           },
+
           "& .MuiInputBase-input":{
             padding:0,
             height:'100%',
             paddingLeft:'.5rem',
             color:'black'
           },
+
           "& fieldset": {
             borderColor:'rgba(0,0,0,.2)',
             borderWidth:'1px',
             borderStyle:'solid',
             boxShadow: "0px 0px 2px grey",
-           
           },
+          
           "& .MuiOutlinedInput-notchedOutline":{
             padding:'0'
           },
