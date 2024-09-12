@@ -238,6 +238,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
 
                             <Grid item padding={'0 1rem'} xs={12} md={6} lg={3}>
                                 <Custom_DatePicker 
+                                    disablePast
                                     onChange={(e) => handleChange(e, 'inizio-affissione')} 
                                     label={'Inizio affissione'} 
                                     value={inizioAffissione}

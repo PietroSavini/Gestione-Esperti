@@ -25,7 +25,7 @@ export const Custom_TextField = forwardRef<HTMLInputElement, Props>((props, ref)
             {label && 
                 <InputLabel
                     shrink
-                    sx={{ zIndex: 0, top: '12px', left: '-15px', color: '#127aa3ff', fontWeight: 600, fontSize: '1.2rem' }}
+                    sx={{ zIndex: 0, top: '11px', left: '-15px', color: '#127aa3ff', fontWeight: 600, fontSize: '1.2rem' }}
                     htmlFor={finalId}
                 >
                     {label}
@@ -38,7 +38,7 @@ export const Custom_TextField = forwardRef<HTMLInputElement, Props>((props, ref)
                 id={finalId}
                 ref={ref}
                 value={value}
-                sx={{ padding: '0.1rem 0.5rem', borderRadius: '10px', boxShadow: '0px 0px 2px grey', border: `${error? '1px solid red': '1px solid #ccccccff'}`, backgroundColor:`${backgroundColor ? backgroundColor : 'inherit'}` }}
+                sx={{marginTop:'-2px', height: props.multiline ? 'auto' : '39px', padding: '0.1rem 0.5rem', borderRadius: '10px', boxShadow: '0px 0px 2px grey', border: `${error? '1px solid red': '1px solid #ccccccff'}`, backgroundColor:`${backgroundColor ? backgroundColor : 'inherit'}` }}
                 aria-describedby={`my-helper-text-${props.register ? props.register.name : label}`}
                 className="ms_custom-input"
                 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+
 //React Router e componenti
 import { Routes, Route } from 'react-router-dom'
 import { NotFound } from './pages/404Page/NotFound'
@@ -13,8 +13,9 @@ import { SettingsPage } from './pages/SettingsPage/SettingsPage';
 import { ThemeProvider } from '@mui/material/styles';
 import { TipologiaEdit } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaEdit/TipologiaEdit';
 import { theme } from './ms_theme'
-import { BandiPage } from './pages/Bandi/BandiPage';
+import { WizardBando } from './pages/Bandi/WizardBando';
 import { TipologiaShow } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaShow/TipologiaShow';
+import { RicercaBando } from './pages/Bandi/RicercaBando/RicercaBando';
 
 
 function App() {
@@ -36,7 +37,8 @@ function App() {
                   <Route path='/impostazioni' element={<SettingsPage />} />
                   <Route path='/impostazioni/modifica-tipologia' element={<TipologiaEdit />} />
                   <Route path='/impostazioni/visualizza-tipologia' element={<TipologiaShow />} />
-                  <Route path='/Bandi' element={<BandiPage />} />
+                  <Route path='/Bandi' element={<WizardBando />} />
+                  <Route path='/Ricerca-bandi' element={<RicercaBando />} />
                   {/* Catch All */}
                   <Route path='*' element={<NotFound />} />
                 </Route>

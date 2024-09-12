@@ -152,7 +152,7 @@ export const FirmaSection = (params:Params) => {
                     ...activity!,
                     scadenza: date
                 }
-                
+
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity3 : item));
                 break;
         }
@@ -215,6 +215,7 @@ export const FirmaSection = (params:Params) => {
 
                     <Grid item padding={'0 1rem'} xs={12} md={6} lg={3}>
                         <Custom_DatePicker 
+                            disablePast
                             sx={{backgroundColor:'#fff'}}
                             label='scadenza' 
                             onChange={(e) => handleChange(e,'scadenza')}

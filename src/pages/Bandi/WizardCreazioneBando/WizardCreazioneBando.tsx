@@ -16,6 +16,17 @@ import { selectOrganizzaDocumentoSelect } from '../../../app/store/Slices/organi
 import { closeLoader } from '../../../app/store/Slices/loaderSlice';
 import Loader from '../../../components/partials/Loader/Loader';
 
+type DocumentoData = {
+    TEsp : number | null;
+    anno: string | null;
+    aoo: number | null;
+    archivioCollocazione: number | null;
+    classeAddizionale: number | null;
+    classeDocumentale: number | null;
+    descrizioneEstesa: string | null;
+    responsabile:number | null;
+    tagDocumento:string | null
+}
 
 type PunteggiFinali = {
     reqId: number | null;
@@ -150,12 +161,22 @@ export const WizardCreazioneBando = () => {
     }
 
     //funzione di submit
-    const submitWizard = (data:any) => {
+    const submitWizard = (data:DocumentoData) => {
         setActiveStep(0)
-        close()
+        const dataToSend: DocumentoData = {
+            TEsp: data.TEsp ? data.TEsp : null,
+            anno: data.anno ? data.anno : null,
+            aoo: data.aoo ? data.aoo : null,
+            archivioCollocazione: data.archivioCollocazione ? data.archivioCollocazione : null,
+            classeAddizionale: data.classeAddizionale ? data.classeAddizionale : null,
+            classeDocumentale: data.classeDocumentale ? data.classeDocumentale : null,
+            descrizioneEstesa: data.descrizioneEstesa ? data.descrizioneEstesa : null,
+            responsabile: data.responsabile ? data.responsabile : null,
+            tagDocumento: data.tagDocumento ? data.tagDocumento : null,
+        }
         //struttura dati riformattati
         const dataToSubmit = {
-            documento : {...data},
+            documento : {...dataToSend},
             requisiti: punteggiFinali,
             procedimento:[...procedimento],
             linkFascicoliId:[...fascicoliSelezionati],

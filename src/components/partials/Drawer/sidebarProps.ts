@@ -31,12 +31,12 @@ export const sidebar:DrawerData = {
             {
               "text": "Crea nuovo Bando",
               "method": "/Bandi",
-              "icon": "settings_suggest",
+              "icon": "add_card",
               
             },
             {
               "text": "Ricerca e consulta",
-              "method": "/Bandi",
+              "method": "/Ricerca-bandi",
               "icon": "search",
               
             },

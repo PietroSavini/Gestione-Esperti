@@ -23,7 +23,6 @@ export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => 
       <DatePicker
 
         slots={{ textField: DatePickerTextfield }}
-        disablePast
         label={<LabelComponent label={props.label}  isRequired={props.isRequired ? props.isRequired : false}/>}
         {...props}
         
@@ -32,7 +31,7 @@ export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => 
           marginBottom:'1rem',
           "& .MuiInputBase-root": {
             borderRadius:'10px',
-            height: '38px',
+            height: '39px',
             outline: '0px',
             //boxShadow: "0px 0px 3px grey",
             minWidth:'100%',
@@ -73,7 +72,7 @@ const DatePickerTextfield = React.forwardRef(
     return(
     <>
       <InputLabel 
-        sx={{  color: '#127aa3ff', fontWeight: 600, fontSize: 14, marginBottom: .7 }}
+        sx={{  color: '#127aa3ff', fontWeight: 600, fontSize: 14, marginBottom: .6 }}
       >
         {props.label}
       </InputLabel>
