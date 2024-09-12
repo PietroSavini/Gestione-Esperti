@@ -127,17 +127,17 @@ export const Table_tipologiePersonalizzate = ({ rows, setRows }: Props) => {
                         slots={{
                             pagination: CustomPagination,
                         }}
-                        hideFooterSelectedRowCount
-                        loading={isLoading}
-                        autoHeight
-                        rows={rows}
-                        columns={columns}
                         initialState={{
                             pagination: {
                                 paginationModel: { page: 0, pageSize: 10 }
                             },
                         }}
                         pageSizeOptions={[5, 10, 20, 50]}
+                        hideFooterSelectedRowCount
+                        loading={isLoading}
+                        autoHeight
+                        rows={rows}
+                        columns={columns}
                         sx={{
                             padding: '0',
                             fontSize: 14,

@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
 import useDebounce from '../../../../app/Hooks/useDebounceHook';
+import { NoResultComponent } from '../../../../components/partials/placeholders/NoResultComponent';
 
 export const AttivitàSection = () => {
     //states
@@ -32,7 +33,7 @@ export const AttivitàSection = () => {
                 <Box>
                     <Box marginBottom={'8px'} display={'flex'} flexDirection={'column'} gap={1}>
                         {data && data.length === 0 &&
-                            <NoActivityComponent />
+                            <NoResultComponent message='Non ci sono attività da mostrare' />
                         }
                         {
                             nonEditableData.map((activity, index) =>
@@ -425,15 +426,4 @@ function SelectActivityComponent({ selectOptions, data, setData }: { selectOptio
     )
 };
 
-//componente che si visualizza quando non ci sono attività selezionate
-function NoActivityComponent() {
-    return (
-        <>
-            <Box display={'flex'} alignItems={'center'} flexDirection={'column'}>
-                <NoContentSvg width='200px' height='200px' />
-                <Typography sx={{ marginTop: '2rem', color: '#525354' }} fontSize={28} fontStyle={'bold'} textAlign={'center'}>Non ci sono attività da mostrare</Typography>
-            </Box>
-        </>
-    )
-};
 
