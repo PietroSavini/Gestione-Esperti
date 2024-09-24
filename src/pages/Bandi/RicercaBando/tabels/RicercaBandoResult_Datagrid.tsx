@@ -1,9 +1,10 @@
-import { Box, Divider, Icon, Typography } from '@mui/material';
+import { Box, Icon, Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid'
-import React, { forwardRef, useState } from 'react'
+import React from 'react'
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
 import { CustomPagination } from '../../../../components/partials/CustomPagination/CustomPagination';
 import { NoResultComponent } from '../../../../components/partials/placeholders/NoResultComponent';
+import dayjs from 'dayjs';
 
 
 const columns: GridColDef[] = [
@@ -13,9 +14,7 @@ const columns: GridColDef[] = [
     { field: 'statoProcedimento', headerName: 'Stato Procedimento',width:450},
     { field: 'utenteFirmatario', headerName: 'Caricato da', width:160 },
     { field: 'stato', headerName: 'Stato del Bando', width:220 },
-    { field: 'actions', type: 'actions', headerName: '',flex:1, minWidth:220},
-
-
+    { field: 'actions', type: 'actions', headerName: '', minWidth:220},
 ]
 
 export type Props = {
@@ -28,14 +27,15 @@ export type Props = {
 const CustomRow = ({ params }: { params: GridRowParams }) => {
 
     return (
-        <Box role='row' data-id={params.row.id} sx={{ overflow:'hidden',padding:'10px 10px', transition:'200ms', backgroundColor: 'transparent', borderTopLeftRadius:'10px', borderTopRightRadius:'10px',  ":hover>div.headerRow":{
+        <Box role='row' data-id={params.row.id} sx={{ overflow:'hidden',padding:'10px 10px 10px 0px', transition:'200ms', backgroundColor: 'transparent', borderTopLeftRadius:'10px', borderTopRightRadius:'10px',  ":hover>div.headerRow":{
             backgroundColor:'aliceblue',
             
         } }}>
-            <Box display={'flex'} position={'relative'} className={'headerRow'}  zIndex={1} sx={{boxShadow:'0px 1px 5px rgba(0,0,0,0.3)', border:'1px solid rgba(0,0,0, .1)', borderTopLeftRadius:'10px', borderTopRightRadius:'10px' }} >
+            <Box display={'flex'} position={'relative'} className={'headerRow'}  zIndex={1} sx={{backgroundColor:'#fff', border:'1px solid rgba(0,0,0, .1)', borderTopLeftRadius:'10px', borderTopRightRadius:'10px' }} >
 
-                <Box sx={{minHeight:'48px',alignItems:'center',display:'flex', p:'0px 10px', width:'150px'  }}>
-                    <Typography variant="body1" fontSize={14}>{params.row.dataCreazione}</Typography>
+                <Box sx={{minHeight:'48px',alignItems:'flex-start',display:'flex', p:'0px 10px', width:'150px', flexDirection:'column', justifyContent:'center' }}>
+                    <Typography variant="body1" fontSize={14}>{ dayjs(params.row.dataCreazione).format('DD/MM/YYYY') }</Typography>
+                    <Typography variant="body1" fontSize={14}>{ dayjs(params.row.dataCreazione).format(' HH:mm') }</Typography>
                 </Box>
                 <Box sx={{minHeight:'48px',alignItems:'center',display:'flex', p:'0px 10px', width:'200px'}}>
                     <Typography variant="body1" fontSize={14}>{params.row.descrizioneTEsp}</Typography>
@@ -83,18 +83,18 @@ const CustomRow = ({ params }: { params: GridRowParams }) => {
 };
 
 export const RicercaBandoResult_Datagrid = (props:Props) => {
-const {rows, setRows} = props;
+const {rows} = props;
 
     return (
         <>
             <DataGrid
-                autoHeight
+                disableVirtualization
+                rowBuffer={2}
                 columns={columns}
                 rows={rows ? rows : []}
-                getRowHeight={() => 123}
+                getRowHeight={() => 121}
                 disableColumnMenu
                 disableRowSelectionOnClick
-                //getRowHeight={() => 60} // Imposta altezza fissa per visualizzare i dettagli
                 slots={{
                     row: (params: GridRowParams<any>) => <CustomRow params={params} />,// Usa il componente CustomRow per ogni riga
                     pagination: CustomPagination, //uso paginazione personalizzata
@@ -103,18 +103,37 @@ const {rows, setRows} = props;
                 sx={{
                     margin:'0 1rem',
                     border:'none', 
+                    height:'100%',
                     
-                    
-                    
+                    "& .MuiDataGrid-virtualScroller":{
+                      marginTop: "0!important",
+                      backgroundColor:'aliceblue'
+                    },
                     "& .MuiDataGrid-virtualScrollerRenderZone ":{
                         minWidth:'100%',
-        
                         transform: 'translate3d(0px,0px,0px) !important',
                     },
-
+                    "& .MuiDataGrid-columnHeaders": {
+                       // position: "sticky",
+                        //top:'-16px',
+                        //zIndex:2,
+                        //backgroundColor: '#f8f9ff',
+                        
+                    },
+                    "& .MuiDataGrid-footerContainer":{
+                        //position: "sticky",
+                        //bottom:'-16px',
+                        //zIndex:2,
+                        //backgroundColor: '#f8f9ff',
+                    },
+                    "& .MuiDataGrid-overlayWrapperInner":{
+                        transition:'200ms'
+                    }
                    
+            
                     
                 }}
+
                 initialState={{
                     pagination: {
                         paginationModel: { page: 0, pageSize: 10 }
@@ -128,7 +147,7 @@ const {rows, setRows} = props;
 
 const NoResultOverlay = () => {
     return(
-        <Box display={'flex'} alignItems={'center'} justifyContent={'center'} height={'100%'}>
+        <Box display={'flex'} alignItems={'center'} justifyContent={'center'}  height={'100%'} sx={{backgroundColor:'aliceblue'}} >
             <NoResultComponent message='Nessun Risultato'/>
         </Box>
     )
