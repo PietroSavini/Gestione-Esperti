@@ -77,7 +77,7 @@ export const FirmaSection = (params:Params) => {
         }
         
         if(!isOpen){
-            console.log("'firma' deselezionato, rimuovo l'attività dalla lista")
+            //console.log("'firma' deselezionato, rimuovo l'attività dalla lista")
             const firmaRemovedActivityList = listaAttivita.filter((item) => item.Id !== id)
             setListaAttivita(firmaRemovedActivityList)
         }

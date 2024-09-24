@@ -1,5 +1,5 @@
 //Libreria di gestione chiamate
-import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 import { setCredentials, logOut } from '../store/Slices/authSlice';
 import AxiosUtils from './AxiosUTILS';
 import { store } from '../store/store';
@@ -45,8 +45,10 @@ export const AxiosHTTP = (options: Options) => {
         handleRes: undefined,
         isAxiosJsonResponse:true,
         isResponseEncoded:true,
+        //contentType:'text/plain',
         contentType:'application/json; charset=UTF-8',
         responseType:'json',
+        
     };  
 
     //merging dei parametri di base con quelli passati alla funzione AxiosHTTP
@@ -69,9 +71,10 @@ export const AxiosHTTP = (options: Options) => {
     const baseQuery = fetchBaseQuery({
         baseUrl: newOptions.baseUrl,
         credentials: 'include',
+        mode:'cors',
         //responseHandler:'content-type'(default) -> decifra il payload della risposta in base al tipo di content-type contenuto negli headers della risposta: application/json --> return json response // text/plain --> return text response 
         responseHandler: newOptions.responseType,
-        //preparo gli headers (chiamata) a seconda del contentType (default: 'text/plain')
+        //preparo gli headers (chiamata) a seconda del contentType (default: 'application/json)
         prepareHeaders: (headers) => {
             headers.set('Content-Type', `${newOptions?.contentType}`);
             //Aggiungo header Authorizzation con token se la chiamata ha bisogno di autenticazione (comunico con nostro webService)
@@ -101,22 +104,24 @@ export const AxiosHTTP = (options: Options) => {
               newArgs = { ...args, body: args.body }
             break;
         };
-        console.log('CHIAMATA EFFETTUATA CON PARAMETRI: ', newArgs)
-
+        //console.log('CHIAMATA EFFETTUATA CON PARAMETRI: ', newArgs)
+        
         //eseguo la chiamata ed associo il risultato a result
         const result = await baseQuery(newArgs, api, extraOptions);
-
+        //inizializzo funzione di refresh con debounce
+        const debouncedRefreshToken = useDebouncedRefreshAccessToken(baseQuery, api, extraOptions, 300);
         // -------------------------------------------------------BLOCCO DI CASISTICA DI REFRESH DEL TOKEN ----------------------------------------------------------------- //
         //controllo se la risposta contiene l'errore 401 ( oppure qualsiasi errore decidiamo), se contiene l'errore l'accessToken è scaduto e va eseguito il refresh.
         if (result?.error?.status === 401) {
             console.log('accessToken scaduto, Tentativo di Refresh del token...')
             //se la fn refreshAccessToken() ritorna true (nuovo accessToken salvato con successo)
-            if (await refreshAccessToken(baseQuery, api, extraOptions)) {
+            if (await debouncedRefreshToken()) {
                 //eseguo nuovamente la chiamata precedente con il nuovo accesstoken
                 const result = await baseQuery(newArgs, api, extraOptions);
                 finalResult = processResponse(newOptions.isAxiosJsonResponse, result)
+                console.log('AccessToken Salvato con successo')
             } else {// la refreshAccessToken ha ritornato false => REFRESHTOKEN SCADUTO
-                alert('sessione scaduta, eseguire nuovamente il Login');
+                console.log('REFRESH TOKEN SCADUTO ESEGUIRE NUOVAMENTE IL LOGIN')
             };
             // ---------------------------------------------------- FINE BLOCCO CASISTICA DI REFRESH DEL TOKEN ----------------------------------------------------------------- //
         }else{//caso in cui l'accessToken è ancora valido (procedimento normale) 
@@ -181,36 +186,88 @@ function processResponse (isAxiosJsonResponse:boolean | undefined, queryResult:a
 / extraOptions : oggetto comprendente opzioni extra
 / return => bool => true | false
 */
+
+
+//funzione di debounce personalizzata da usare fuori il contesto di React per funzione di refresh
+function debounce<T extends (...args: any[]) => Promise<any>>(func: T, wait: number): (...args: Parameters<T>) => Promise<any> {
+    let timeout: ReturnType<typeof setTimeout>;
+    return function (this: any, ...args: Parameters<T>) {
+    return new Promise((resolve, reject) => {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(async () => {
+        try {
+            const result = await func.apply(context, args);
+            resolve(result);
+        } catch (error) {
+            reject(error);
+        }
+        }, wait);
+    });
+    };
+}
+
+
+let isRefreshing = false; // Variabile globale che controlla se il processo di refresh è in corso
+let refreshPromise: Promise<any> | null = null; // Conserviamo la Promise del refresh
+
 async function refreshAccessToken(fn: Function, api: any, extraOptions: any) {
-    type RefreshData = {
-        accessToken: string;
-    };
+    if (isRefreshing && refreshPromise) {
+        // Se il processo di refresh è già in corso, aspettiamo il suo risultato
+        return refreshPromise;
+    }
+    
+    isRefreshing = true;
+    refreshPromise = new Promise(async (resolve, reject) => {
+        try {
+            const refreshResult = await fn({
+                url: '/api/oauth2/refresh',
+                method: 'POST',
+            }, api, extraOptions);
 
-    //faccio la chiamata all'endpoint di refresh
-    const refreshResult = await fn({
-        url: '/api/Test/Refresh',
-        method: 'POST',
-    }, api, extraOptions);
+            if (refreshResult?.data) {
+                const user = api.getState().auth.user;
+                const accessToken = (refreshResult.data as { token: string }).token;
+                api.dispatch(setCredentials({ user, accessToken }));
+                resolve(true);
+            } else {
+                api.dispatch(logOut());
+                resolve(false);
+            }
+        } catch (error) {
+            processErrorResponse(error as FetchBaseQueryError)
+            api.dispatch(logOut());
+            reject(false);
+        } finally {
+            isRefreshing = false;
+            refreshPromise = null;
+        }
+    });
 
-    //chiamata all'endpoint di refresh andata a buon fine
-    if (refreshResult?.data) {
-        //prendo lo user dallo state in qunato è già presente
-        const user = api.getState().auth.user;
-        //prendo il nuovo Access Token
-        const accessToken = (refreshResult.data as RefreshData).accessToken;
-        //Salvo il nuovo Token nello state
-        api.dispatch(setCredentials({ user, accessToken }));
-        return true;
-        
-    //se risponde con 401 il refreshtoken è scaduto
-    } else if (refreshResult?.error.originalStatus === 401) {
-        console.error('Refresh Token Scaduto');
-        api.dispatch(logOut())
-        return false;
+    return refreshPromise;
+}
 
-    //se avviene qualsiasi errore non ritorna nulla, viene eseguito il LogOut e stampato in console il messaggio di errore
-    } else if(refreshResult?.error) {
-        console.error('ERRORE NEL PROCESSO DI REFRESH: ', refreshResult.error)
-        api.dispatch(logOut()); 
-    };
-};
+const processErrorResponse = (error: FetchBaseQueryError) => {
+    const status = error.status;
+    switch (status) {
+        case 401:
+            console.error('RefreshToken scaduto, eseguire nuovamente il log in')
+            break;
+        default:
+            console.error("Errore durante il processo di Refresh", error)
+            break;
+
+    }
+}
+
+
+// Wrapping la funzione refreshAccessToken con debounce
+function useDebouncedRefreshAccessToken(fn: Function, api: any, extraOptions: any, delay: number = 300) {
+    const debouncedRefreshToken = debounce(async () => {
+        return await refreshAccessToken(fn, api, extraOptions);
+      }, 
+      delay
+    );
+  
+    return debouncedRefreshToken;
+}

@@ -53,7 +53,7 @@ export const AmministrazioneTrasparente_Section = (props : Props) => {
         }
         
         if(!isOpen){
-            console.log("'Amministrazione Trasparente' deselezionato, rimuovo l'attività dalla lista")
+            //console.log("'Amministrazione Trasparente' deselezionato, rimuovo l'attività dalla lista")
             const AmministrazioneTrasparenteRemovedActivityList = listaAttivita.filter((item) => item.Id !== id)
             setListaAttivita(AmministrazioneTrasparenteRemovedActivityList)
         }

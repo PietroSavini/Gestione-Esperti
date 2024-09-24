@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 
 // Funzione di debounce
-function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
+export function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
     let timeout: ReturnType<typeof setTimeout>;
     return function (this: any, ...args: Parameters<T>) {
       const context = this;

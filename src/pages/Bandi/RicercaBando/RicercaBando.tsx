@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { RicercaBandoComponent } from './Components/RicercaBandoComponent'
 import RicercaBandoContextProvider from './RicercaBandoContext'
 import { RicercaBandoResult_Datagrid } from './tabels/RicercaBandoResult_Datagrid'

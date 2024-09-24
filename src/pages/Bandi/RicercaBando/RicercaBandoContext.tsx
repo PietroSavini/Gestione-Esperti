@@ -87,7 +87,6 @@ export default function RicercaBandoContextProvider({ children }: RicercaBandoCo
         .then((res) => {
             const usersArr:  lista_utenti[] = res.response;
             const optionsArr = createOptionArray({arr: usersArr, value:'user_id', label:'utente'});
-            console.log(optionsArr)
             setUsers(optionsArr)
         })
         .catch((err) => console.log(err))

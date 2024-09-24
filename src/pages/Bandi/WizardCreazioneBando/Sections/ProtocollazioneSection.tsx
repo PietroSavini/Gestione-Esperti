@@ -71,7 +71,7 @@ export const ProtocollazioneSection = (params:Params) => {
         }
         
         if(!isOpen){
-            console.log("'protocollo' deselezionato, rimuovo l'attività dalla lista")
+            //console.log("'protocollo' deselezionato, rimuovo l'attività dalla lista")
             const protocolloRemovedActivityList = listaAttivita.filter((item) => item.Id !== id)
             setListaAttivita(protocolloRemovedActivityList)
         }

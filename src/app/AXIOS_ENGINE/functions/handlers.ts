@@ -1,5 +1,5 @@
-import { lista_archivi } from "../../app/store/Slices/organizzaDocumentoSlice";
-import { Tview } from "../../components/partials/TreeView/Treeview";
+import { lista_archivi } from "../../store/Slices/organizzaDocumentoSlice";
+import { Tview } from "../../../components/partials/TreeView/Treeview";
 
 
 export function convertTreeViewData (data:any[]): Tview[] | [] {
@@ -24,7 +24,7 @@ function checkData (data:any[]): number {
     if(data && data.length > 0){
         const firstItem = data[0];
         if('dossier_id' in firstItem && 'dossier_ref_id' in firstItem && 'dossier_name' in firstItem){
-            console.log('convertTreeViewData() => dati in conversione : Archivi, typeOf lista_archivi[]');
+            //console.log('convertTreeViewData() => dati in conversione : Archivi, typeOf lista_archivi[]');
             return 1;
         }else{
             return 0;
@@ -65,6 +65,6 @@ function convertArchivitreeView (data:lista_archivi[]): Tview[] {
         }
         counter ++;
     });
-    console.log('convertTreeViewData() => numero di elementi processati : ', counter)
+    //console.log('convertTreeViewData() => numero di elementi processati : ', counter)
     return tree;
 };

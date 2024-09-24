@@ -6,7 +6,7 @@ import { CustomTreeview, Tview } from '../../../../components/partials/TreeView/
 import { useSelector } from 'react-redux'
 import { selectOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice'
 import { OpenFolderSvg } from '../../../../components/partials/svg/OpenFolderSvg'
-import { convertTreeViewData } from '../../handlers'
+import { convertTreeViewData } from '../../../../app/AXIOS_ENGINE/functions/handlers'
 import { useWizardBandoContext } from '../WizardBandoContext'
 
 export const ArchivioSelezionatoSection = ({ className }: { className: string }) => {

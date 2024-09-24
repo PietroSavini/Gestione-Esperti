@@ -68,7 +68,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
        
         
         if(!isOpen){
-            console.log("'pubblica su albo-online' deselezionato, rimuovo l'attività dalla lista")
+            //console.log("'pubblica su albo-online' deselezionato, rimuovo l'attività dalla lista")
             const pubblicaAlboRemovedActivityList = listaAttivita.filter((item) => item.Id !== id)
             setListaAttivita(pubblicaAlboRemovedActivityList)
         }

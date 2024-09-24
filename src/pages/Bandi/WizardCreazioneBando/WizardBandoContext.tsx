@@ -157,7 +157,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
       };
       
     useEffect(() => {
-        console.log("Procedimento: ", listaAttivita)
+        //console.log("Procedimento: ", listaAttivita)
     }, [listaAttivita]);
 
     //aggiungere altri useState necessari per altre liste come i punteggi del bando etc..

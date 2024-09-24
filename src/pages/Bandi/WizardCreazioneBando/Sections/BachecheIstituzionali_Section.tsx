@@ -97,7 +97,7 @@ export const BachecheIstituzionali_Section = (props: Props) => {
         }
         
         if(!isOpen){
-            console.log("'Amministrazione Trasparente' deselezionato, rimuovo l'attività dalla lista")
+            //console.log("'Bacheche istituzionali' deselezionato, rimuovo l'attività dalla lista")
             const AmministrazioneTrasparenteRemovedActivityList = listaAttivita.filter((item) => item.Id !== id)
             setListaAttivita(AmministrazioneTrasparenteRemovedActivityList)
         }

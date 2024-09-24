@@ -1,4 +1,4 @@
-import { Box, Collapse, Divider, Grid, Icon, Paper } from '@mui/material'
+import { Box, Collapse, Divider, Grid, Icon } from '@mui/material'
 
 import React, { useEffect, useState } from 'react'
 import { Filters, useRicercaBandoContext } from '../RicercaBandoContext'
@@ -9,7 +9,6 @@ import { Custom_DatePicker } from '../../../../components/partials/Inputs/Custom
 import useDebounce from '../../../../app/Hooks/useDebounceHook';
 import dayjs from 'dayjs';
 import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
-import { set } from 'react-hook-form';
 
 type Props = {
     setRows: React.Dispatch<React.SetStateAction<any[]>>
@@ -132,9 +131,14 @@ export const RicercaBandoComponent = (props : Props) => {
                 break;
 
             case 'creato-il':
-                const date = dayjs(newValue).format("YYYY/MM/DD");
-                newFilters.dataCreazione = date;
-                setFilters(newFilters);
+                if(newValue !== null){
+                    const date = dayjs(newValue).format("YYYY/MM/DD");
+                    newFilters.dataCreazione = date;
+                    setFilters(newFilters);
+                }else{
+                    newFilters.dataCreazione = null;
+                    setFilters(newFilters);
+                }
                 break;
         }
 

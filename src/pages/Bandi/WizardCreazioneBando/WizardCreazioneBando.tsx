@@ -111,14 +111,10 @@ export const WizardCreazioneBando = () => {
                 })
             }
         })
-        console.log('PUNTEGGI DA INVIARE CON CREAZIONE DEL BANDO: ',resultArr)
         setPunteggiFinali(resultArr)
     },[punteggi])
 
     const dispatch = useAppDispatch();
-    
-   
-
     
     //steps (x stepper MUI)
     const steps = [
