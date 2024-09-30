@@ -24,12 +24,14 @@ export const RicercaBandoComponent = (props : Props) => {
             {
                 value: 2024,
                 label: "2024"
+        
 
             },
             {
                 value: 2025,
-                label: "2025"
-
+                label: "2025",
+                isTitle:true,
+                isDisabled: true
             },
             {
                 value: 2026,

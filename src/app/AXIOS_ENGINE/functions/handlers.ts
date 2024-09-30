@@ -1,6 +1,6 @@
 import { lista_archivi } from "../../store/Slices/organizzaDocumentoSlice";
 import { Tview } from "../../../components/partials/TreeView/Treeview";
-
+import { Option } from "../../../components/partials/Inputs/Custom_Select2";
 
 export function convertTreeViewData (data:any[]): Tview[] | [] {
 
@@ -68,3 +68,54 @@ function convertArchivitreeView (data:lista_archivi[]): Tview[] {
     //console.log('convertTreeViewData() => numero di elementi processati : ', counter)
     return tree;
 };
+
+
+
+
+type Titolari = {
+    id:number;
+    detailId:number; //value
+    rif:string;
+    rifDetailId:number; // identificativo padre
+    descrizione:string;
+    codice:string;
+    codTitolo:string;
+    descCodice:string; // label
+    codC:string;
+}
+
+//Funzione che prepara la lista di opzioni con visualizzazione ad albero della lista dei titolari
+export const createTitolariOptionArray = (titolariArr : Titolari[]) => {
+            
+    const buildOptions = (parentId: number, level: number): Option[] => {
+        return titolariArr
+            .filter((titolario) => titolario.rifDetailId === parentId)
+            .map((titolario) => ({
+                value: titolario.detailId,
+                label: titolario.descCodice,
+                level: level,
+                isDisabled: level === 0, // disabilitiamo solo i genitori (titoli)
+                isTitle: level === 0,    // consideriamo solo i genitori come titoli
+            }))
+            .reduce((acc: Option[], parentOption) => {
+                acc.push(parentOption);
+                // Aggiungiamo i figli (e poi i nipoti) sotto ogni genitore, aumentando il livello
+                const childOptions = buildOptions(parentOption.value, level + 1);
+                return acc.concat(childOptions);
+            }, []);
+    };
+
+    // Partiamo dai genitori, ovvero quelli con `rifDetailId === 0` e livello 0
+    const finalOptions = buildOptions(0, 0);
+    
+    return finalOptions;
+};
+//funzione per preparare gli array semplici di Opzioni per le select
+export const createOptionArray = ({ arr, value, label }: { arr: any[], value: string, label: string }) => {
+    if (arr && arr.length > 0) {
+        const newArr = arr.map((item) => ({ value: item[value], label: item[label] }))
+        return newArr;
+    } else {
+        return []
+    }
+}

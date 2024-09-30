@@ -13,6 +13,7 @@ ul li{
 
 :root {
   font-family: 'Roboto', sans-serif;
+  font-size: 14px;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
@@ -23,7 +24,9 @@ ul li{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  
 }
+
 a{
   text-decoration: none;
   color: inherit;

@@ -233,7 +233,14 @@ export const FascicoliElettroniciSection = ({className}: {className:string,}) =>
     //controllo l'array per pulire gli errori al cambio
     useEffect(() => {
         setErrorFascicolo(undefined)
+
     }, [fascicoliSelezionati])
+
+    useEffect(() => {
+        console.log(sottofascicoli)
+        
+    }, [sottofascicoli])
+
 
     //funzione passata al'async select per selezionare l'oggetto da salvare sulla variabile di state
     const onFascicoloChange = async (newValue: SingleValue<any>) => {

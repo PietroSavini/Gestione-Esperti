@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import AXIOS_HTTP from "../../../app/AXIOS_ENGINE/AXIOS_HTTP";
-import { createOptionArray } from "../../SettingsPage/functions";
 import { PubblicazioniSelect, setPubblicazioniData, setPubblicazioniSelect } from "../../../app/store/Slices/pubblicazioneSlice";
 import { OrganizzaDocumentoSelect, setOrganizzaDocumentoData, setOrganizzaDocumentoSelect } from "../../../app/store/Slices/organizzaDocumentoSlice";
 import { useAppDispatch } from "../../../app/ReduxTSHooks";
+import { createOptionArray, createTitolariOptionArray } from "../../../app/AXIOS_ENGINE/functions/handlers";
 
 type WizardBandoContext = {
     attivita: {
@@ -112,7 +112,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
         const listaAttivita = data.lista_tipi_attivita;
         const titolari = data.lista_titolari;
         const utentiFirmatari = data.lista_utenti_firmatari;
-    
+        
         const newSelectValuesObject: OrganizzaDocumentoSelect = {
           aoo: createOptionArray({ arr: aoo, value: 'id', label: 'descrizione' }),
           archivi: createOptionArray({ arr: listaArchivi, value: 'dossier_id', label: 'dossier_name' }),
@@ -121,7 +121,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
           gruppo_utenti: createOptionArray({ arr: gruppoUtenti, value: 'id', label: 'groupName' }),   
           modelli_procedimento: createOptionArray({ arr: modelliProcedimento, value: 'pm_id', label: 'pm_ext_desc' }),
           tipi_attivita: createOptionArray({ arr: listaAttivita, value: 'actionId', label: 'actionName' }),
-          titolari: createOptionArray({ arr: titolari, value: 'id', label: 'descrizione' }),
+          titolari: createTitolariOptionArray(titolari),
           utenti_firmatari: createOptionArray({ arr: utentiFirmatari, value: 'user_id', label: 'utente' }),
         };
     

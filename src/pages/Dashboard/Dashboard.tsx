@@ -14,7 +14,7 @@ export const Dashboard = () => {
       <Grid sx={{marginBottom:'2rem'}} container spacing={2}>
         {/* eventuale mapping di tutto il grid Item con all'interno il widget */}
           <Grid item xs={12} sm={6}  lg={3} >
-              <Widget handleCall={{url:'test/decazz'}} data={{icon:'document_scanner',title:'Bandi', to:'/Bandi', body:[{counter:0,text:'Aperti'},{counter:0,text:'Chiusi'}]}} />
+              <Widget handleCall={{url:'test'}} data={{icon:'document_scanner',title:'Bandi', to:'/Bandi', body:[{counter:0,text:'Aperti'},{counter:0,text:'Chiusi'}]}} />
           </Grid>
 
           <Grid item xs={12} sm={6}  lg={3} >

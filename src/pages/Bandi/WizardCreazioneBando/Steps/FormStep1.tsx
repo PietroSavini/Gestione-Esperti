@@ -65,7 +65,7 @@ export const FormStep1 = (props: FormStepProps) => {
 
                         <Grid padding={'0 1rem'} item xs={12} md={6}>
                             {/* da implementare select */}
-                            <Custom_Select2 options={[]} label='Titolario' placeholder='seleziona titolario...'/>
+                            <Custom_Select2 options={options?.titolari ? options.titolari : []} label='Titolario' placeholder='seleziona titolario...'/>
                         </Grid>
 
                         <Grid padding={'0 1rem'} item xs={12} lg={6}>

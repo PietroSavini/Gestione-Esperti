@@ -194,11 +194,3 @@ export const convertData = (rawData: RawData): any[] | [] => {
     return returnArr;
 };
 
-export const createOptionArray = ({ arr, value, label }: { arr: any[], value: string, label: string }) => {
-    if (arr && arr.length > 0) {
-        const newArr = arr.map((item) => ({ value: item[value], label: item[label] }))
-        return newArr;
-    } else {
-        return []
-    }
-}

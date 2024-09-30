@@ -35,6 +35,8 @@ export type Option = {
     id?: string | number;
     childrens?: Option[] | [];
     level?: number;
+    isDisabled?: boolean;
+    isTitle?:boolean;
 }
 
 
@@ -112,7 +114,14 @@ export const Custom_Select2 = (props:Props) => {
                                 }),
                                 option:(provided: CSSObjectWithLabel, state) =>({
                                     ...provided,
-                                    paddingLeft: state.data.level && state.data.level !== 0 ? `${state.data.level * 40}px` : undefined  // aggiungo 40 * livello indentazione al padding sx in modo da creare la struttura ad albero solo se la proprietà level di Option esiste ed è diversa da 0
+                                    paddingLeft: state.data.level && state.data.level !== 0 ? `${state.data.level * 40}px` : undefined,  // aggiungo 40 * livello indentazione al padding sx in modo da creare la struttura ad albero solo se la proprietà level di Option esiste ed è diversa da 0
+                                    backgroundColor: state.data.isTitle ? "#efefef" : undefined,
+                                    color: state.data.isTitle ? "black" : undefined,
+                                    fontWeight: state.data.isTitle ? 600 : undefined,
+                                    cursor: state.data.isDisabled ? 'inherit' : 'pointer',
+                                    ":hover":{
+                                        backgroundColor: `${state.data.isDisabled ? "#e8e9eb" : '#F3F5FF'}`
+                                    }
                                 })
                                     
                             }}
@@ -162,7 +171,14 @@ export const Custom_Select2 = (props:Props) => {
                         }),
                         option:(provided: CSSObjectWithLabel, state) =>({
                             ...provided,
-                            paddingLeft: state.data.level && state.data.level !== 0 ? `${state.data.level * 40}px` : undefined  // aggiungo 40 * livello indentazione al padding sx in modo da creare la struttura ad albero solo se la proprietà level di Option esiste ed è diversa da 0
+                            paddingLeft: state.data.level && state.data.level !== 0 ? `${state.data.level * 40}px` : undefined,  // aggiungo 40 * livello indentazione al padding sx in modo da creare la struttura ad albero solo se la proprietà level di Option esiste ed è diversa da 0
+                            backgroundColor: state.data.isTitle ? "#e8e9eb" : undefined,
+                            color: state.data.isTitle ? "black" : undefined,
+                            fontWeight: state.data.isTitle ? 600 : undefined,
+                            cursor: state.data.isDisabled ? 'inherit' : 'pointer',
+                            ":hover":{
+                                backgroundColor: `${state.data.isDisabled ? "#e8e9eb" : '#f3f5ff'}`
+                            }
                         })
                     }}
                     //@ts-ignore

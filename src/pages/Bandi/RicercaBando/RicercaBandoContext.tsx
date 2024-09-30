@@ -3,7 +3,8 @@ import { Option } from '../../../components/partials/Inputs/Custom_Select2';
 import AXIOS_HTTP from "../../../app/AXIOS_ENGINE/AXIOS_HTTP";
 import { TipologiaEspertoRow } from "../../SettingsPage/types";
 import { lista_utenti } from "../../../app/store/Slices/organizzaDocumentoSlice";
-import { createOptionArray } from "../../SettingsPage/functions";
+import { createOptionArray } from "../../../app/AXIOS_ENGINE/functions/handlers";
+
 
 type RicercaBandoContext = {
     filtriRicerca:{
