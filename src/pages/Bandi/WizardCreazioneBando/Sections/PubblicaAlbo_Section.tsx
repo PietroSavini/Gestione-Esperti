@@ -29,7 +29,7 @@ export const PubblicaAlbo_Section = (props: Props) => {
     //dati WizardBandoContext
     const attivita = useWizardBandoContext().attivita;
     const {listaAttivita, setListaAttivita} = attivita;
-    const pubblicaSuAlboAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "ALBO");
+    const pubblicaSuAlboAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "ALBO"); //da sostituire con wizard bando context
     //dati e states per datepicker
     const today = dayjs();
     const formattedToday = dayjs(today).format("DD/MM/YYYY")
@@ -39,10 +39,8 @@ export const PubblicaAlbo_Section = (props: Props) => {
     //watcher per creare l'oggetto attività firma e modificarlo in live
     useEffect(() => {
         if(isOpen){
-            console.log(pubblicaSuAlboAction)
             //check per non duplicare attività
             if(listaAttivita.some((item) => item.Id === id)) return;
-
             const initialObj:AttivitaObj = {
                 Id: id,
                 delete: false,
@@ -57,21 +55,20 @@ export const PubblicaAlbo_Section = (props: Props) => {
                 destinatarioDescrizione: '', //destinatario albo
                 dirittoOblio: false,
                 alboPubblicazione: true,
-                fdDataAffissioneInizio: formattedToday,
-                fdDataAffissioneFine: formattedToday,
+                fdDataAffissioneInizio: today,
+                fdDataAffissioneFine: today,
                 ...pubblicaSuAlboAction
-                
             }
             setListaAttivita(prev => [...prev, initialObj])
+        }else{
+            //console.log("'pubblica su albo-online' deselezionato, rimuovo l'attività dalla lista")
+            const pubblicaAlboRemovedActivityList = listaAttivita.filter((item) => item.Id !== id);
+            setListaAttivita(pubblicaAlboRemovedActivityList);
+            //reset dei campi
+            setfineAffissione(today);
+            setInizioAffissione(today)
         }
 
-       
-        
-        if(!isOpen){
-            //console.log("'pubblica su albo-online' deselezionato, rimuovo l'attività dalla lista")
-            const pubblicaAlboRemovedActivityList = listaAttivita.filter((item) => item.Id !== id)
-            setListaAttivita(pubblicaAlboRemovedActivityList)
-        }
     }, [isOpen])
 
     const handleChange = useDebounce(( newValue:any,  field:string, ) => {
@@ -159,15 +156,14 @@ export const PubblicaAlbo_Section = (props: Props) => {
                 break;
             
             case "inizio-affissione":
-                const date = dayjs(newValue).format("DD/MM/YYYY");
-                const isDateBeforeToday = dayjs(date).isBefore(dayjs(formattedToday));
+                const date = dayjs(newValue);
+                const isDateBeforeToday = dayjs(date).isBefore(dayjs(today));
                 //se la data di inizio selezionata è inferiore ad oggi non la seleziono ed esco 
                 if(isDateBeforeToday) return;
                 setInizioAffissione(newValue);
                 const isStartDateAfterEndDate = dayjs(newValue).isAfter(dayjs(fineAffissione));
                 //se la data di inizio è superiore alla data di fine setto la data di fine nell oggetto attività alla data selezionata di inizio in modo da non rendere mai la data di fine inferiore a quella di inizio
                 if(isStartDateAfterEndDate){
-                    console.log('la data è successiva')
                     setfineAffissione(newValue);
                     const newActivity: AttivitaObj = {
                         ...activity!,
@@ -187,10 +183,9 @@ export const PubblicaAlbo_Section = (props: Props) => {
                 break;
 
             case "fine-affissione":
-                const date1 = dayjs(newValue).format("DD/MM/YYYY");
-                const isDateBeforeToday1 = dayjs(date1).isBefore(dayjs(formattedToday));
+                const date1 = dayjs(newValue);
+                const isDateBeforeToday1 = dayjs(date1).isBefore(dayjs(today));
                 const isEndDateBeforeStartDate = dayjs(newValue).isBefore(dayjs(inizioAffissione));
-
                 if(isDateBeforeToday1 || isEndDateBeforeStartDate) {
                     console.log('data fine affissione non valida ')
                     return;

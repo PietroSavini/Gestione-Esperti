@@ -29,7 +29,7 @@ export type AttivitaObj = {
     actionId?: string | number;
     actionDesc?: string;
     actionName?: string;
-    scadenza?: string | number | null;
+    scadenza?: any;
     stima?: number | string | null;
     gruppoUtenti?: string | number | null;
     utente?: number | null; //credo sia lo user che ha creato il procedimento o il documento
@@ -63,8 +63,8 @@ export type AttivitaObj = {
     //param che servono per creare oggetto pubblicazione  es: pubblicazione_albo/bacheche/trasparenza -> ogetto che viene aggiunto al JSON di invio per ogni sezione pubblicazione aggiunta
     annullato?: boolean;
     tipoId?: number; //da chiedere bene
-    fdDataAffissioneInizio?:string;
-    fdDataAffissioneFine?:string
+    fdDataAffissioneInizio?:any;
+    fdDataAffissioneFine?:any
 }
 
 type WizardBandoContextProvider = {

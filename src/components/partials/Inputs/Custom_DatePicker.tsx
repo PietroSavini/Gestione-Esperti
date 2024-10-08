@@ -18,8 +18,6 @@ type CustomProps = {
 const id = uuid();
 
 export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => {
-
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='it'>
       <DatePicker

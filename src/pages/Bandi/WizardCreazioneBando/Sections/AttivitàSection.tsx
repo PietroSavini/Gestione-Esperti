@@ -1,4 +1,4 @@
-import { Box, Grid, Icon, IconButton, Typography } from '@mui/material'
+import { Box, Grid, Icon, IconButton, Tooltip, Typography } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
@@ -22,18 +22,24 @@ export const AttivitàSection = () => {
     //ref per stabilire l'elemento da draggare
     const containerRef = useRef<HTMLDivElement>(null);
     //prendo i dati dal contextprovider
-    const attivitaData = useWizardBandoContext().attivita;
-    const data = attivitaData.listaAttivita;
-    const setData = attivitaData.setListaAttivita;
-    const nonEditableData = data.filter((item) => item.delete === false);
-    const editableData = data.filter((item) => item.delete === true);
+    const { listaAttivita, setListaAttivita } = useWizardBandoContext().attivita;
+    const [nonEditableData, setNonEditableData] = useState<AttivitaObj[]>(listaAttivita.filter((item) => item.delete === false))
+    const editableData = listaAttivita.filter((item) => item.delete === true);
+
+    const getNonEditableData = (arr: AttivitaObj[]) => {
+        return arr.filter((item) => item.delete === false)
+    }
+
+    useEffect(() => {
+        setNonEditableData(getNonEditableData(listaAttivita))
+    }, [listaAttivita])
 
     return (
         <>
             <Box className={'attivita-container'} sx={{ minHeight: '350px' }} padding={'.5rem 0rem'} position={'relative'} display={'flex'} flexDirection={'column'} justifyContent={'space-between'}>
                 <Box>
                     <Box marginBottom={'8px'} display={'flex'} flexDirection={'column'} gap={1}>
-                        {data && data.length === 0 &&
+                        {listaAttivita && listaAttivita.length === 0 &&
                             <NoResultComponent message='Non ci sono attività da mostrare' />
                         }
                         {
@@ -46,13 +52,23 @@ export const AttivitàSection = () => {
                     {editableData &&
                         <Box component={'div'} ref={containerRef} display={'flex'} flexDirection={'column'} gap={1} paddingBottom={'8px'}>
                             {editableData.map((activity, index) =>
-                                <ActivityComponent key={index} index={index} activity={activity} activityList={listaAttivitaData!} isDragging={isDragging} setIsDragging={setIsDragging} containerRef={containerRef} data={editableData} otherData={nonEditableData} setData={setData} />
+                                <ActivityComponent
+                                    key={index}
+                                    index={index}
+                                    activity={activity}
+                                    activityList={listaAttivitaData!}
+                                    isDragging={isDragging}
+                                    setIsDragging={setIsDragging}
+                                    containerRef={containerRef}
+                                    data={editableData}
+                                    otherData={nonEditableData}
+                                    setData={setListaAttivita} />
                             )}
                         </Box>
                     }
                 </Box>
                 <Box >
-                    <SelectActivityComponent data={data} setData={setData} selectOptions={selectOptions!.tipi_attivita} />
+                    <SelectActivityComponent data={listaAttivita} setData={setListaAttivita} selectOptions={selectOptions!.tipi_attivita} />
                 </Box>
             </Box>
         </>
@@ -64,45 +80,53 @@ const NonEditableActivityComponent = ({ activity }: { activity: AttivitaObj }) =
     const selectOptions = useSelector(selectOrganizzaDocumentoSelect); // da cambiare con contextProvider
     const assignedUser = selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente)?.label
     const assignedGroup = selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti)?.label;
-    const {listaAttivita, setListaAttivita} = useWizardBandoContext().attivita
+    const datePikerValue = activity.scadenza
+    const { listaAttivita, setListaAttivita } = useWizardBandoContext().attivita
 
     const handleDateChange = useDebounce((e: any, field: string) => {
-        //const formattedDate = dayjs(e).format('YYYY/MM/DD');
         const tempObj: AttivitaObj = {
             ...activity,
             [field]: e
         };
         const newData = listaAttivita.map((item) => item.Id === activity.Id ? tempObj : item);
-        setListaAttivita([ ...newData]);
+        setListaAttivita(newData);
     }, 200)
+
 
     return (
         <Box className='non-editable-activity' sx={{ border: '1px solid rgba(196, 194, 194, 0.641)', borderRadius: '10px' }} >
             <Box sx={{ backgroundColor: '#fff', padding: '.5rem .5rem', borderTopLeftRadius: '10px', borderTopRightRadius: '10px' }}>
                 <Grid container>
+
                     <Grid item padding={'.2rem .3rem'} lg={3} md={6} xs={5} display={'flex'} alignItems={'center'}>
                         <Typography fontSize={'.8rem'}>{activity.actionName}</Typography>
                     </Grid>
+
                     <Grid item padding={'.2rem .3rem'} lg={3} md={6} xs={5} display={'flex'} alignItems={'center'}>
                         {assignedUser && <Icon sx={{ marginRight: '10px' }}>account_circle</Icon>}
-                        <Typography fontSize={'.8rem'} > {assignedUser ? assignedUser : 'nessun utente selezionato'}</Typography>
+                        <Typography fontSize={'.8rem'} > {assignedUser ? assignedUser : ''}</Typography>
                     </Grid>
+
                     <Grid item padding={'.2rem .3rem'} lg={3} md={6} xs={2} display={'flex'} alignItems={'center'}>
-                        <Typography fontSize={'.8rem'}>{assignedGroup ? assignedGroup : 'nessun gruppo selezionato'}</Typography>
+                        <Typography fontSize={'.8rem'}>{assignedGroup ? assignedGroup : ''}</Typography>
                     </Grid>
+
                     <Grid item padding={'.2rem .3rem'} lg={3} md={6} xs={12} display={'flex'} gap={1} alignItems={'center'} >
+
                         <Custom_DatePicker
                             sx={{ marginBottom: '4px' }}
                             disablePast
                             heigth='38px'
                             onChange={(e) => handleDateChange(e, 'scadenza')}
-                            
+                            value={datePikerValue}
                         />
+
                         <Custom_TextField
                             placeholder='Stima'
                             endAdornment={<Icon>access_time</Icon>}
-                            sx={{ marginBottom: 0 }}
+                            sx={{ marginBottom: 0, height: '37px' }}
                         />
+
                     </Grid>
                 </Grid>
 
@@ -332,6 +356,7 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                 </Box>
                 <Box flexGrow={1} sx={{ cursor: 'default' }}>
                     <Grid container>
+
                         <Grid xs={12} md={12} lg={6} padding={'0 .5rem'} item display={'flex'} flexDirection={'column'} justifyContent={'center'}>
                             <Custom_Select2
                                 options={selectOptions!.tipi_attivita}
@@ -353,8 +378,8 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                                 }}
                                 sx={{ marginBottom: '0px', marginTop: '3px' }}
                             />
-
                         </Grid>
+
                         <Grid xs={12} md={6} lg={4} padding={'0 .5rem'} display={'flex'} flexDirection={'column'} justifyContent={'center'} item>
                             <Custom_Select2
                                 options={selectOptions!.utenti_firmatari}
@@ -373,8 +398,8 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                                 defaultValue={userGroup}
                                 marginBottom='0px'
                             />
-
                         </Grid>
+
                         <Grid xs={12} md={6} lg={2} padding={'0 .5rem'} display={'flex'} flexDirection={'column'} justifyContent={'center'} item>
                             <Custom_DatePicker
                                 sx={{ marginBottom: '4px' }}
@@ -393,6 +418,7 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                                 sx={{ marginBottom: '0px', marginTop: '3px' }}
                             />
                         </Grid>
+
                     </Grid>
                 </Box>
                 <Box width={'45px'} sx={{ cursor: 'default' }} display={'flex'} alignItems={'center'} justifyContent={'center'}>
@@ -436,16 +462,20 @@ function SelectActivityComponent({ selectOptions, data, setData }: { selectOptio
     return (
         <>
             <Box sx={{ backgroundColor: '#e9eaf7', borderRadius: '13px' }} display={'flex'} alignItems={'center'} >
+
                 <Box padding={'.5rem .5rem'} display={'flex'} alignItems={'center'}>
                     <Typography component={'span'} fontWeight={600} sx={{ color: '#42648a' }}> Aggiungi attività </Typography>
                     <Icon sx={{ color: '#42648a' }}>chevron_right</Icon>
                 </Box>
+
                 <Box paddingLeft={'.3rem'} paddingRight={'.3rem'} flexGrow={1} paddingTop={'.5rem'} >
                     <Custom_Select2 placeholder='Seleziona attività...' options={selectOptions} onChangeSelect={(newValue) => setValue(newValue!.value)} />
                 </Box>
+
                 <Box padding={'.5rem .5rem'} >
                     <ActionButton color='secondary' text='Aggiungi' startIcon={<Icon>add</Icon>} onClick={() => addAttivitaToList(value)} />
                 </Box>
+
             </Box>
         </>
     )
