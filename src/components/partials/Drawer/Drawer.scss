@@ -5,6 +5,7 @@
 
         .MuiPaper-root {
             transition: 300ms !important;
+            
         }
     }
     span.material-icons{
@@ -12,13 +13,14 @@
     }
     .MuiListItemText-root{
         color: rgb(55, 55, 55) ;
+        font-size: .9rem;
     }
 
     .sidebar-button {
 
         display: flex;
         justify-content: end;
-
+        
         .sidebar-toggler {
             background-color: rgb(255, 255, 255);
             height: 40px;

@@ -73,20 +73,19 @@ function convertArchivitreeView (data:lista_archivi[]): Tview[] {
 
 
 type Titolari = {
-    id:number;
+   // id:number;
     detailId:number; //value
-    rif:string;
+   // rif:string;
     rifDetailId:number; // identificativo padre
-    descrizione:string;
-    codice:string;
-    codTitolo:string;
+   // descrizione:string;
+   // codice:string;
+   // codTitolo:string;
     descCodice:string; // label
-    codC:string;
+   // codC:string;
 }
 
 //Funzione che prepara la lista di opzioni con visualizzazione ad albero della lista dei titolari
 export const createTitolariOptionArray = (titolariArr : Titolari[]) => {
-            
     const buildOptions = (parentId: number, level: number): Option[] => {
         return titolariArr
             .filter((titolario) => titolario.rifDetailId === parentId)
@@ -104,10 +103,8 @@ export const createTitolariOptionArray = (titolariArr : Titolari[]) => {
                 return acc.concat(childOptions);
             }, []);
     };
-
     // Partiamo dai genitori, ovvero quelli con `rifDetailId === 0` e livello 0
     const finalOptions = buildOptions(0, 0);
-    
     return finalOptions;
 };
 //funzione per preparare gli array semplici di Opzioni per le select

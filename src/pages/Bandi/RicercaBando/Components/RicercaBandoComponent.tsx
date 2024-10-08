@@ -30,8 +30,6 @@ export const RicercaBandoComponent = (props : Props) => {
             {
                 value: 2025,
                 label: "2025",
-                isTitle:true,
-                isDisabled: true
             },
             {
                 value: 2026,

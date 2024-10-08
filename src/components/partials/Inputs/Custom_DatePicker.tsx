@@ -5,7 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import React from 'react'
 import { Box, InputLabel, TextField, TextFieldProps, Typography } from '@mui/material';
 import './inputs.scss'
-
+import { v4 as uuid } from 'uuid';
 type CustomProps = {
   disabled?: boolean;
   label?: string;
@@ -13,7 +13,9 @@ type CustomProps = {
   errorMessage?: string;
   isRequired?: boolean;
   backgroundColor?:string;
+  heigth?:string;
 }
+const id = uuid();
 
 export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => {
 
@@ -21,17 +23,16 @@ export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='it'>
       <DatePicker
-
         slots={{ textField: DatePickerTextfield }}
-        label={<LabelComponent label={props.label}  isRequired={props.isRequired ? props.isRequired : false}/>}
+        label={  <LabelComponent label={props.label}  isRequired={props.isRequired ? props.isRequired : false}/>}
         {...props}
         
         sx={{
           width:'100%',
-          marginBottom:'1rem',
+          marginBottom:'14px',
           "& .MuiInputBase-root": {
             borderRadius:'10px',
-            height: '39px',
+            height: `${props.heigth ? props.heigth : '38px'}`,
             outline: '0px',
             //boxShadow: "0px 0px 3px grey",
             minWidth:'100%',
@@ -62,6 +63,7 @@ export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => 
           },
           ...props.sx
         }}
+        
         />
     </LocalizationProvider>
   )
@@ -71,15 +73,20 @@ const DatePickerTextfield = React.forwardRef(
   (props: TextFieldProps, ref: React.Ref<HTMLDivElement>) => {
     return(
     <>
+    {
+      props.label && 
       <InputLabel 
-        sx={{  color: '#127aa3ff', fontWeight: 600, fontSize: 14, marginBottom: .6 }}
+        id={id}
+        sx={{  color: '#127aa3ff', fontWeight: 600, fontSize: 12.6, marginBottom: '4.2px' }}
       >
         {props.label}
       </InputLabel>
+    }
    
       <TextField
         {...props}
         label={null}
+        aria-labelledby={props.label ? id : undefined}
         ref={ref} 
       />
     </>
@@ -101,10 +108,6 @@ const LabelComponent = ({isRequired, label}: {isRequired:boolean, label:any}) =>
       <>
         {label}
       </>
-    )
-  }else if(!label){
-    return(
-      <Box height={'20px'} ></Box>
     )
   }
 }

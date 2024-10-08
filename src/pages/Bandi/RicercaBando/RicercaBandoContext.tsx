@@ -15,6 +15,18 @@ type RicercaBandoContext = {
     selectValues : {
         tipologiaEsperto: Option[];
         users: Option[];
+    },
+
+    dialog:{
+        isOpen: boolean;
+        setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+        data: any;
+        setData: React.Dispatch<React.SetStateAction<any>>
+
+    },
+    dataGrid:{
+        dataGridData: any[];
+        setDataGridData: React.Dispatch<React.SetStateAction<any[]>>
     }
 
 };
@@ -56,6 +68,11 @@ export default function RicercaBandoContextProvider({ children }: RicercaBandoCo
     //valori per select Tipologia Esperto 
     const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([]);
     const [users, setUsers] = useState<Option[] | []>([])
+    //controllo dialog di assegnazione utente
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [dialogData, setDialogData] = useState<any>({})
+    //datagrtid Data
+    const [dataGridData, setDataGridData] = useState<any[]>([])
 
     useEffect(() => {
         if(TEspMenuItems.length === 0 || users.length === 0){
@@ -69,6 +86,9 @@ export default function RicercaBandoContextProvider({ children }: RicercaBandoCo
     useEffect(() => {
         console.log(filters)
     },[filters])
+    useEffect(() => {
+        console.log(dialogData)
+    },[dialogData])
 
     const retrieveTEspOptions = async () => {
         await AXIOS_HTTP.Retrieve({ sService: 'READ_TIPOLOGIA_ESPERTO', sModule: 'IMPOSTAZIONI_GET_ALL_TIPOLOGIE_ESPERTO', url: '/api/launch/retrieve', body: null })
@@ -103,8 +123,17 @@ export default function RicercaBandoContextProvider({ children }: RicercaBandoCo
                selectValues:{
                     tipologiaEsperto: TEspMenuItems,
                     users: users,
+               },
+               dialog:{
+                    isOpen: isOpen,
+                    setIsOpen: setIsOpen,
+                    data: dialogData,
+                    setData: setDialogData
+               },
+               dataGrid:{
+                dataGridData: dataGridData,
+                setDataGridData: setDataGridData
                }
-               
             }}
         >
             {children}

@@ -5,7 +5,8 @@ import { ActionButton } from '../../../../components/partials/Buttons/ActionButt
 import { CustomPagination } from '../../../../components/partials/CustomPagination/CustomPagination';
 import { NoResultComponent } from '../../../../components/partials/placeholders/NoResultComponent';
 import dayjs from 'dayjs';
-
+import { useRicercaBandoContext } from '../RicercaBandoContext';
+import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 
 const columns: GridColDef[] = [
     { field: 'dataCreazione', headerName: 'Creato il', width:150 },
@@ -22,9 +23,25 @@ export type Props = {
     setRows: React.Dispatch<React.SetStateAction<any[]>>,
 }
 
-
-
 const CustomRow = ({ params }: { params: GridRowParams }) => {
+    const {setIsOpen, setData} = useRicercaBandoContext().dialog
+
+    const openAssignUserModal = (rowParams: any) => {
+        setData(rowParams)
+        setIsOpen(true)
+    }
+
+    const visualizzaBandoClickFunction = async (idBando:number) => {
+        const response = await AXIOS_HTTP.Retrieve({body:{idBando: idBando},url:'/api/launch/retrieve',sModule:'GET_VISUALIZZA_BANDO',sService:'READ_BANDI'})
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.error(err);
+            })
+        
+        return response
+    }
 
     return (
         <Box role='row' data-id={params.row.id} sx={{ overflow:'hidden',padding:'10px 10px 10px 0px', transition:'200ms', backgroundColor: 'transparent', borderTopLeftRadius:'10px', borderTopRightRadius:'10px',  ":hover>div.headerRow":{
@@ -33,9 +50,19 @@ const CustomRow = ({ params }: { params: GridRowParams }) => {
         } }}>
             <Box display={'flex'} position={'relative'} className={'headerRow'}  zIndex={1} sx={{backgroundColor:'#fff', border:'1px solid rgba(0,0,0, .1)', borderTopLeftRadius:'10px', borderTopRightRadius:'10px' }} >
 
-                <Box sx={{minHeight:'48px',alignItems:'flex-start',display:'flex', p:'0px 10px', width:'150px', flexDirection:'column', justifyContent:'center' }}>
-                    <Typography variant="body1" fontSize={14}>{ dayjs(params.row.dataCreazione).format('DD/MM/YYYY') }</Typography>
-                    <Typography variant="body1" fontSize={14}>{ dayjs(params.row.dataCreazione).format(' HH:mm') }</Typography>
+                <Box display={'flex'} sx={{minHeight:'48px',display:'flex', p:'0px 10px', width:'150px'}}>
+                    <Box width={'60%'} display={'flex'} alignItems={'start'} flexDirection={'column'} justifyContent={'center'}> 
+                        <Typography variant="body1" fontSize={12}>{ dayjs(params.row.dataCreazione).format('DD/MM/YYYY') }</Typography>
+                        <Typography variant="body1" fontSize={12}>{ dayjs(params.row.dataCreazione).format(' HH:mm') }</Typography>
+                    </Box>
+                    <Box width={'40%'} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                        <Box position={'relative'} sx={{cursor:'pointer'}}  display={'flex'} alignItems={'center'} justifyContent={'center'} onClick={() => openAssignUserModal(params.row)}>
+                            <Icon sx={{color:'#D8D8D8', fontSize:'40px'}}>account_circle</Icon>
+                            <Box position={'absolute'} borderRadius={'50%'} bottom={3} right={2} sx={{backgroundColor:'#2A9FCF'}} padding={'0.2rem'}>
+                                <Icon sx={{color:'#fff', fontSize:10, width:'8px', height:'8px', display:'flex', justifyContent:'center', alignItems:'center', fontWeight:600}}>add</Icon>
+                            </Box>
+                        </Box>
+                    </Box>
                 </Box>
                 <Box sx={{minHeight:'48px',alignItems:'center',display:'flex', p:'0px 10px', width:'200px'}}>
                     <Typography variant="body1" fontSize={14}>{params.row.descrizioneTEsp}</Typography>
@@ -75,7 +102,7 @@ const CustomRow = ({ params }: { params: GridRowParams }) => {
                     
                 </Box>
                 <Box sx={{width:'50%', minHeight:'50px', display:'flex', alignItems:'center', justifyContent:'flex-end'}}>
-                    <ActionButton color='warning' text='Visualizza' endIcon={<Icon sx={{marginRight:'.5rem'}}>document_scanner</Icon>} direction={'row-reverse'} />
+                    <ActionButton color='warning' text='Visualizza' endIcon={<Icon sx={{marginRight:'.5rem'}}>document_scanner</Icon>} direction={'row-reverse'} onClick={() => visualizzaBandoClickFunction(params.row.id)} />
                 </Box>
             </Box>
         </Box>

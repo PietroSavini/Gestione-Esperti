@@ -2,7 +2,6 @@ import { Box, Grid, Icon, IconButton, Typography } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
-import { NoContentSvg } from '../../../../components/partials/svg/NoContentSvg';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 import { lista_tipi_attivita, selectOrganizzaDocumentoData, selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { useSelector } from 'react-redux';
@@ -10,14 +9,16 @@ import { v4 as uuid } from 'uuid';
 import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
 import useDebounce from '../../../../app/Hooks/useDebounceHook';
 import { NoResultComponent } from '../../../../components/partials/placeholders/NoResultComponent';
+import { Custom_DatePicker } from '../../../../components/partials/Inputs/Custom_DatePicker';
+import dayjs from 'dayjs';
 
 export const AttivitàSection = () => {
     //states
     const [isDragging, setIsDragging] = useState<number | undefined>(undefined);
     //lista delle attività selezionabili
-    const listaAttivitaData = useSelector(selectOrganizzaDocumentoData)?.lista_tipi_attivita;
-    const selectOptions = useSelector(selectOrganizzaDocumentoSelect);
-    const modelliProcedimentoSelect = useSelector(selectOrganizzaDocumentoSelect)?.modelli_procedimento;
+    const listaAttivitaData = useSelector(selectOrganizzaDocumentoData)?.lista_tipi_attivita; // da cambiare con contextProvider
+    const selectOptions = useSelector(selectOrganizzaDocumentoSelect); // da cambiare con contextProvider
+    const modelliProcedimentoSelect = useSelector(selectOrganizzaDocumentoSelect)?.modelli_procedimento; // da cambiare con contextProvider
     //ref per stabilire l'elemento da draggare
     const containerRef = useRef<HTMLDivElement>(null);
     //prendo i dati dal contextprovider
@@ -45,7 +46,7 @@ export const AttivitàSection = () => {
                     {editableData &&
                         <Box component={'div'} ref={containerRef} display={'flex'} flexDirection={'column'} gap={1} paddingBottom={'8px'}>
                             {editableData.map((activity, index) =>
-                                <ActivityComponent key={index} index={index} activity={activity} activityList={listaAttivitaData!} isDragging={isDragging} setIsDragging={setIsDragging} containerRef={containerRef} data={editableData} otherData={nonEditableData} setData={setData}/>
+                                <ActivityComponent key={index} index={index} activity={activity} activityList={listaAttivitaData!} isDragging={isDragging} setIsDragging={setIsDragging} containerRef={containerRef} data={editableData} otherData={nonEditableData} setData={setData} />
                             )}
                         </Box>
                     }
@@ -60,9 +61,20 @@ export const AttivitàSection = () => {
 
 const NonEditableActivityComponent = ({ activity }: { activity: AttivitaObj }) => {
 
-    const selectOptions = useSelector(selectOrganizzaDocumentoSelect);
+    const selectOptions = useSelector(selectOrganizzaDocumentoSelect); // da cambiare con contextProvider
     const assignedUser = selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente)?.label
     const assignedGroup = selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti)?.label;
+    const {listaAttivita, setListaAttivita} = useWizardBandoContext().attivita
+
+    const handleDateChange = useDebounce((e: any, field: string) => {
+        //const formattedDate = dayjs(e).format('YYYY/MM/DD');
+        const tempObj: AttivitaObj = {
+            ...activity,
+            [field]: e
+        };
+        const newData = listaAttivita.map((item) => item.Id === activity.Id ? tempObj : item);
+        setListaAttivita([ ...newData]);
+    }, 200)
 
     return (
         <Box className='non-editable-activity' sx={{ border: '1px solid rgba(196, 194, 194, 0.641)', borderRadius: '10px' }} >
@@ -79,10 +91,12 @@ const NonEditableActivityComponent = ({ activity }: { activity: AttivitaObj }) =
                         <Typography fontSize={'.8rem'}>{assignedGroup ? assignedGroup : 'nessun gruppo selezionato'}</Typography>
                     </Grid>
                     <Grid item padding={'.2rem .3rem'} lg={3} md={6} xs={12} display={'flex'} gap={1} alignItems={'center'} >
-                        <Custom_TextField
-                            placeholder='Scadenza'
-                            endAdornment={<Icon>calendar_month</Icon>}
-                            sx={{ marginBottom: 0 }}
+                        <Custom_DatePicker
+                            sx={{ marginBottom: '4px' }}
+                            disablePast
+                            heigth='38px'
+                            onChange={(e) => handleDateChange(e, 'scadenza')}
+                            
                         />
                         <Custom_TextField
                             placeholder='Stima'
@@ -250,17 +264,17 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
     //END FUNZIONALITA' DRAG AND DROP DEGLI ELEMENTI--------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    const selectOptions = useSelector(selectOrganizzaDocumentoSelect);
+    const selectOptions = useSelector(selectOrganizzaDocumentoSelect); // da sostituire con context provider
     //initial values
     useEffect(() => {
         setActivityValue(selectOptions?.tipi_attivita.find((item) => item.value === activity.actionId));
         setUser(selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente));
-        setUserGroup(selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti)) ;
+        setUserGroup(selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti));
         setDescription(activity.descrizioneAttivitaUtente ? activity.descrizioneAttivitaUtente : '');
         setStima(activity.stima ? activity.stima : '0');
-    },[data])
+    }, [data])
 
-    
+
     //states
     const [activityValue, setActivityValue] = useState<Option | undefined>(undefined);
     const [user, setUser] = useState<Option | undefined>(undefined);
@@ -268,9 +282,9 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
     const [description, setDescription] = useState<string>('');
     const [stima, setStima] = useState<string | number>('');
     //da aggiungere scadenza attività
-    
+
     //useEffect utilizzato per forzare il rendering dei valori, se tolto avviene lo swap delle posizioni nei dati ma non avviene il cambio dei valori nei campi in UI
-  
+
 
     //funzioni per salvataggio dei campi e  cambio valori.
     const handleSelectChange = (option: Option, field: string, setState: React.SetStateAction<any>) => {
@@ -290,12 +304,23 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
         };
         const newData = data.map((item) => item.Id === activity.Id ? tempObj : item);
         setData([...otherData, ...newData]);
-    },200);
+    }, 200);
+
+    const handleDateChange = useDebounce((e: any, field: string) => {
+        const formattedDate = dayjs(e).format('YYYY/MM/DD');
+        const tempObj: AttivitaObj = {
+            ...activity,
+            [field]: formattedDate
+        };
+        const newData = data.map((item) => item.Id === activity.Id ? tempObj : item);
+        setData([...otherData, ...newData]);
+    }, 200)
 
     function handleActivityDelete(id: string | number) {
         const newData = data.filter((item) => item.Id !== id);
         setData([...otherData, ...newData]);
     };
+
 
     return (
         <>
@@ -319,13 +344,14 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
                                 backgroundColor='#fff'
                                 multiline
                                 maxRows={2}
-                                minRows={1.4}
+                                minRows={1.5}
                                 placeholder='descrizione attività'
                                 value={description}
-                                onChange={(e)=> {
+                                onChange={(e) => {
                                     setDescription(e.target.value)
-                                    handleInputChange(e.target.value, 'descrizioneAttivitaUtente')}}
-                                sx={{ marginBottom: '0px' }}
+                                    handleInputChange(e.target.value, 'descrizioneAttivitaUtente')
+                                }}
+                                sx={{ marginBottom: '0px', marginTop: '3px' }}
                             />
 
                         </Grid>
@@ -350,12 +376,11 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
 
                         </Grid>
                         <Grid xs={12} md={6} lg={2} padding={'0 .5rem'} display={'flex'} flexDirection={'column'} justifyContent={'center'} item>
-                            <Custom_TextField
-                                backgroundColor='#fff'
-                                type='text'
-                                placeholder='DATEPICKER '
-                                endAdornment={<Icon>access_time</Icon>}
-                                sx={{ marginBottom: '5px', marginTop: '5px' }}
+                            <Custom_DatePicker
+                                sx={{ marginBottom: '4px' }}
+                                disablePast
+                                heigth='38px'
+                                onChange={(e) => handleDateChange(e, 'scadenza')}
                             />
 
                             <Custom_TextField
