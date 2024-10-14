@@ -2,6 +2,7 @@ import { Box, Paper, Typography } from '@mui/material'
 import { FormStepProps } from './FormStep1';
 import { FascicoliElettroniciSection } from '../Sections/FascicoliElettroniciSection';
 import { ArchivioSelezionatoSection } from '../Sections/ArchivioSelezionatoSection';
+import { CollegaAltriDocumentiSection } from '../Sections/CollegaDocumentiSection/CollegaAltriDocumentiSection';
 
 export const FormStep3 = (props: FormStepProps) => {
     const { register, errors, className } = props;
@@ -13,12 +14,7 @@ export const FormStep3 = (props: FormStepProps) => {
             {/* --------------------------------------------------------------------------------------------------------------------------------------------------------------- */}
             <FascicoliElettroniciSection className={className} />
             {/* --------------------------------------------------------------------------------------------------------------------------------------------------------------- */}
-
-            <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem', }} elevation={2}>
-                <Box display={'flex'} justifyContent={'space-between'}>
-                    <Typography sx={{}} component={'h6'} variant='h6'>Collega altri documenti</Typography>
-                </Box>
-            </Paper>
+            <CollegaAltriDocumentiSection className={className} />
         </>
     )
 }

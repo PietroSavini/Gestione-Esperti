@@ -6,9 +6,7 @@ import { FirmaSection } from '../Sections/FirmaSection';
 import { ProtocollazioneSection } from '../Sections/ProtocollazioneSection';
 import { AmministrazioneTrasparente_Section } from '../Sections/AmministrazioneTrasparente_Section';
 import { BachecheIstituzionali_Section } from '../Sections/BachecheIstituzionali_Section';
-import { useSelector } from 'react-redux';
-import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
-import { selectPubblicazioniSelect } from '../../../../app/store/Slices/pubblicazioneSlice';
+import { useWizardBandoContext } from '../WizardBandoContext';
 
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
 
@@ -19,11 +17,11 @@ export const FormStep2 = (props: FormStepProps) => {
     const [isPubblicaAlboSelected, setIsPubblicaAlboSelected] = useState<boolean>(false);
     const [isAmministrazioneTrasparenteSelected, setIsAmministrazioneTrasparenteSelected] = useState<boolean>(false);
     const [isBachecheIstituzionaliSelected, setIsBachecheIstituzionaliSelected] = useState<boolean>(false);
-
-
-    const organizzaDocumentoSelectOptions = useSelector(selectOrganizzaDocumentoSelect);
-    const pubblicazioniSelectOptions = useSelector(selectPubblicazioniSelect);
-    const selectOptions = {...organizzaDocumentoSelectOptions, ...pubblicazioniSelectOptions};
+    const selectOptions = useWizardBandoContext().selectValues
+    const organizzaDocumentoSelectOptions = selectOptions.organizzaDocumentoSelectValues;
+    const pubblicazioniSelectOptions = selectOptions.pubblicazioniSelectValues;
+    // valori delle select 
+    const selectValues = {...organizzaDocumentoSelectOptions, ...pubblicazioniSelectOptions};
     
 
     //LOGICA PER ESCLUSIONE DEI CAMPI DI INPUT QUANDO I FORM NON SONO APERTI / SELEZIONATI
@@ -44,15 +42,15 @@ export const FormStep2 = (props: FormStepProps) => {
 
     return (
         <>  
-            <FirmaSection selectValues={selectOptions} openSection={setFirmaExpanded} isOpen={isFirmaExpanded} className={className} control={control} errors={errors}/>
+            <FirmaSection selectValues={selectValues} openSection={setFirmaExpanded} isOpen={isFirmaExpanded} className={className} control={control} errors={errors}/>
     
-            <ProtocollazioneSection selectValues={selectOptions} openSection={setProtocolloExpanded} isOpen={isProtocolloExpanded} className={className} control={control} register={register} errors={errors} />
+            <ProtocollazioneSection selectValues={selectValues} openSection={setProtocolloExpanded} isOpen={isProtocolloExpanded} className={className} control={control} register={register} errors={errors} />
     
-            <PubblicaAlbo_Section selectValues={selectOptions} register={register} className={className} isOpen={isPubblicaAlboSelected} setIsOpen={setIsPubblicaAlboSelected} control={control} errors={errors}/>
+            <PubblicaAlbo_Section selectValues={selectValues} register={register} className={className} isOpen={isPubblicaAlboSelected} setIsOpen={setIsPubblicaAlboSelected} control={control} errors={errors}/>
     
-            <AmministrazioneTrasparente_Section selectValues={selectOptions} isOpen={isAmministrazioneTrasparenteSelected} setIsOpen={setIsAmministrazioneTrasparenteSelected} control={control} className={className} errors={errors}/>
+            <AmministrazioneTrasparente_Section selectValues={selectValues} isOpen={isAmministrazioneTrasparenteSelected} setIsOpen={setIsAmministrazioneTrasparenteSelected} control={control} className={className} errors={errors}/>
     
-            <BachecheIstituzionali_Section selectValues={selectOptions} isOpen={isBachecheIstituzionaliSelected} setIsOpen={setIsBachecheIstituzionaliSelected} control={control} className={className} errors={errors}/>
+            <BachecheIstituzionali_Section selectValues={selectValues} isOpen={isBachecheIstituzionaliSelected} setIsOpen={setIsBachecheIstituzionaliSelected} control={control} className={className} errors={errors}/>
       
         </>
     )

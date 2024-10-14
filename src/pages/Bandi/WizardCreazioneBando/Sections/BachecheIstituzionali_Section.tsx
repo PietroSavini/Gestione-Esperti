@@ -3,11 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { FieldErrors, UseFormUnregister, useForm } from 'react-hook-form';
 import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
-import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
-import { useSelector } from 'react-redux';
-import { selectOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice';
+import { useWizardBandoContext } from '../WizardBandoContext';
 import { v4 as uuid } from 'uuid';
 import useDebounce from '../../../../app/Hooks/useDebounceHook';
+import { AttivitaObj } from '../WizardCreazioneBando_types';
 
 type Props = {
     isOpen: boolean;
@@ -22,10 +21,15 @@ export const BachecheIstituzionali_Section = (props: Props) => {
     const {isOpen, setIsOpen, className, control, errors, selectValues} = props;
     const newId = uuid();
     const [id, setId] = useState<string>(newId);
-    const attivita = useWizardBandoContext().attivita;
+    const {attivita, listeOrganizzaDocumento} = useWizardBandoContext();
     const {listaAttivita, setListaAttivita} = attivita;
-    const bachecheIstituzionaliAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "BACIST");
+    const bachecheIstituzionaliAction =listeOrganizzaDocumento?.lista_tipi_attivita.find(item => item.actionDett === "BACIST");
     
+    useEffect(() => {
+        console.log(selectValues)
+    }, [])
+    
+
     const handleChange = useDebounce(( newValue: any,  field: string ) => {
         const value = newValue.value; 
         const activity = listaAttivita.find(item => item.Id === id);

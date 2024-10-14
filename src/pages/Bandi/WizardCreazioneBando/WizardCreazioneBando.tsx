@@ -1,7 +1,7 @@
 import  { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import AXIOS_HTTP from '../../../app/AXIOS_ENGINE/AXIOS_HTTP';
-import { Avatar, Box, Button, Dialog, Divider, Icon, MobileStepper, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import { Avatar, Box, Button, Divider, Icon, MobileStepper, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import { FormStep1 } from './Steps/FormStep1';
 import { FormStep2 } from './Steps/FormStep2';
 import { FormStep3 } from './Steps/FormStep3';
@@ -11,43 +11,19 @@ import { convertData} from '../../SettingsPage/functions';
 import { FormStep4 } from './Steps/FormStep4';
 import { FormStep5 } from './Steps/FormStep5';
 import { useWizardBandoContext } from './WizardBandoContext';
-import { useAppDispatch, useAppSelector } from '../../../app/ReduxTSHooks';
-import { selectOrganizzaDocumentoSelect } from '../../../app/store/Slices/organizzaDocumentoSlice';
-import { closeLoader } from '../../../app/store/Slices/loaderSlice';
+import { closeLoader, openLoader } from '../../../app/store/Slices/loaderSlice';
 import Loader from '../../../components/partials/Loader/Loader';
+import dayjs from 'dayjs';
+import { AttivitaObj, DocumentoData, PunteggiFinali } from './WizardCreazioneBando_types';
 
-type DocumentoData = {
-    TEsp : number | null;
-    anno: string | null;
-    aoo: number | null;
-    archivioCollocazione: number | null;
-    classeAddizionale: number | null;
-    classeDocumentale: number | null;
-    descrizioneEstesa: string | null;
-    responsabile:number | null;
-    tagDocumento:string | null
-}
 
-type PunteggiFinali = {
-    reqId: number | null;
-    puntVal:number | null;
-}
-
-export type AttList = {
-    actionId:number, // -> id
-    actionDesc:string; // descrizione attività
-    ActionDett:string; // dettaglio es(UPLOAD_DOC) -> value
-    actionName:string; // lable attività -> lable
-};
 
 export const WizardCreazioneBando = () => {
-    //const {close, isOpen} = params;
     //react Hook Forms
     const { register, handleSubmit, trigger, formState, control, watch, unregister } = useForm<any>();
     const { errors } = formState;
     const [activeStep, setActiveStep] = useState(0);    
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
-    const selectValues = useAppSelector(selectOrganizzaDocumentoSelect)
     //-----------------------variabili di state che servono per invio form finale.-----------------------------------------//
     //variabile di State per sezione "archivio collegato"
     const {archivioCollegato} = useWizardBandoContext().archivi
@@ -61,6 +37,7 @@ export const WizardCreazioneBando = () => {
     const context = useWizardBandoContext();
     const procedimento = context.attivita.listaAttivita;
     const fascicoliSelezionati = context.fascicoli.fascicoliSelezionati;
+    const selectValues = context.selectValues;
 
     //funzione per chiamare i punteggi e salvarli nello state
     async function GET_ALL_PUNTEGGI_COLLEGATI (id:number) {
@@ -75,7 +52,7 @@ export const WizardCreazioneBando = () => {
     };
     //watcher per poter caricare il bando senza errori o crash
     useEffect(() => {
-      if(selectValues !== undefined){
+      if(selectValues && selectValues.organizzaDocumentoSelectValues && selectValues.pubblicazioniSelectValues){
         setIsLoaded(true)
       }
     }, [selectValues])
@@ -113,8 +90,6 @@ export const WizardCreazioneBando = () => {
         })
         setPunteggiFinali(resultArr)
     },[punteggi])
-
-    const dispatch = useAppDispatch();
     
     //steps (x stepper MUI)
     const steps = [
@@ -156,10 +131,30 @@ export const WizardCreazioneBando = () => {
         return true
     }
 
+    // funzione che riprende l'array dei procedimenti, controlla gli oggetti che hanno i parametri delle date contenenti gli oggetti date di dayjs e li formatta in YYYY/MM/DD per il backend.
+    function formatDatesOfAttivitaObjArray (arr: AttivitaObj[]) {
+
+        return arr.map(obj => {
+            const formattedObj = { ...obj }; // Crea una copia dell'oggetto originale
+    
+            if (obj.scadenza) {
+                formattedObj.scadenza = dayjs(obj.scadenza).format('YYYY/MM/DD');
+            }
+            if (obj.fdDataAffissioneInizio) {
+                formattedObj.fdDataAffissioneInizio = dayjs(obj.fdDataAffissioneInizio).format('YYYY/MM/DD');
+            }
+            if (obj.fdDataAffissioneFine) {
+                formattedObj.fdDataAffissioneFine = dayjs(obj.fdDataAffissioneFine).format('YYYY/MM/DD');
+            }
+    
+            return formattedObj; // Restituisce l'oggetto con le date formattate
+        });
+    }
+
     //funzione di submit
     const submitWizard = (data:DocumentoData) => {
         setActiveStep(0)
-        const dataToSend: DocumentoData = {
+        const documentoData: DocumentoData = {
             TEsp: data.TEsp ? data.TEsp : null,
             anno: data.anno ? data.anno : null,
             aoo: data.aoo ? data.aoo : null,
@@ -172,9 +167,9 @@ export const WizardCreazioneBando = () => {
         }
         //struttura dati riformattati
         const dataToSubmit = {
-            documento : {...dataToSend},
+            documento : {...documentoData},
             requisiti: punteggiFinali,
-            procedimento:[...procedimento],
+            procedimento:formatDatesOfAttivitaObjArray(procedimento), // funzione per formattare le date contenute negli oggetti
             linkFascicoliId:[...fascicoliSelezionati],
             archivioCollegato: archivioCollegato 
         };
@@ -210,7 +205,7 @@ export const WizardCreazioneBando = () => {
                 setActiveStep((prev) => prev + 1)
             break;
             case 4:
-               handleNextStep(formStep3Validations);
+                handleNextStep(formStep3Validations);
             break;
         }
     }

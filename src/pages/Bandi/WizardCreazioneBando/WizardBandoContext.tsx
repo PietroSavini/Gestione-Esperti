@@ -1,9 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import AXIOS_HTTP from "../../../app/AXIOS_ENGINE/AXIOS_HTTP";
-import { PubblicazioniSelect, setPubblicazioniData, setPubblicazioniSelect } from "../../../app/store/Slices/pubblicazioneSlice";
-import { OrganizzaDocumentoSelect, setOrganizzaDocumentoData, setOrganizzaDocumentoSelect } from "../../../app/store/Slices/organizzaDocumentoSlice";
-import { useAppDispatch } from "../../../app/ReduxTSHooks";
 import { createOptionArray, createTitolariOptionArray } from "../../../app/AXIOS_ENGINE/functions/handlers";
+import { AttivitaObj, OrganizzaDocumentoListe, OrganizzaDocumentoSelect, PubblicazioniListe, PubblicazioniSelect, } from "./WizardCreazioneBando_types";
 
 type WizardBandoContext = {
     attivita: {
@@ -17,92 +15,63 @@ type WizardBandoContext = {
     archivi: {
         archivioCollegato: number | null;
         setArchivioCollegato: React.Dispatch<React.SetStateAction<number | null>>;
+    };
+    listePubblicazioni: PubblicazioniListe | null;
+    listeOrganizzaDocumento: OrganizzaDocumentoListe | null;
+    selectValues:{
+        pubblicazioniSelectValues: PubblicazioniSelect | null;
+        organizzaDocumentoSelectValues: OrganizzaDocumentoSelect | null;
     }
-};
 
-export type AttivitaObj = {
-    Id: string | number;
-    delete: boolean; //false se è componente che è cancellabile 
-    sortableDisabled?: boolean; //true se componente non ha dragNDrop e riallocazione tramite posizione
-    posizione: number;
-    actionDett?: string;
-    actionId?: string | number;
-    actionDesc?: string;
-    actionName?: string;
-    scadenza?: any;
-    stima?: number | string | null;
-    gruppoUtenti?: string | number | null;
-    utente?: number | null; //credo sia lo user che ha creato il procedimento o il documento
-    descrizioneAttivitaUtente?: string | null;
-    utenteDelProcesso?: string | number | null;
-    oggetto?: string | null;
-    descrizioneAttivita?: string // campi note libere delle sezioni
-    //param x BI - AT - ALBO common
-    annotazioni?: string; //annotazioni 
-    attoId?: string; // chiedere bene a daniele
-    //parametri firma
-    //fsAction: -> campo tipo firma
-    daFirmare?: boolean;
-    tipoFirma?: number;
-    //parametri protocollo
-    daProtocollare?: boolean;
-    //parametri amministrazione trasparente
-    //fsAction: AT
-    daPubblicare?: boolean; // fi?? // amministrazione trasparente -> 
-    //parametri albo online
-    //fsAction: ALBO
-    ufficio?: number;
-    atto?: number | null;
-    destinatarioDescrizione?: string;
-    alboPubblicazione?: boolean; // fi?? dovrebbe essere fb
-    dirittoOblio?: boolean; // trovato per Albo Online
-    richiedente?: string; //trovato per albo online // in agd c'e' scritto "Richiedente Albo"
-    //parametri Bachece Istituzionali
-    //fsAction: BACIST
-    pubblicazioneBI?: boolean; //fi??
-    //param che servono per creare oggetto pubblicazione  es: pubblicazione_albo/bacheche/trasparenza -> ogetto che viene aggiunto al JSON di invio per ogni sezione pubblicazione aggiunta
-    annullato?: boolean;
-    tipoId?: number; //da chiedere bene
-    fdDataAffissioneInizio?:any;
-    fdDataAffissioneFine?:any
-}
+};
 
 type WizardBandoContextProvider = {
     children: React.ReactNode;
 };
 
+
 export const WizardBandoContext = createContext<WizardBandoContext | null>(null);
 
 export default function WizardBandoContextProvider({ children }: WizardBandoContextProvider) {
+    //Array da inserire nella funzione finale di submit da inviare a web service con la chiamata di creazione del bando
     const [listaAttivita, setListaAttivita] = useState<AttivitaObj[] | []>([]);
     const [fascicoliSelezionati, setFascicoliSelezionati] = useState<number[] | []>([]);
     const [archivioCollegato, setArchivioCollegato] = useState<number | null>(null);
-    const dispatch = useAppDispatch();
-    //-------------------------------------------------------------- funzioni di salvataggio in state redux ----------------------------------------------------------------------------------------------
-    // select options x dati di pubblicazioni
-    function saveSelectPubblicazioni(data: any) {
-        const listaUffici = data.uffici_list;
-        const listaTipiAtto = data.tipi_atto_list;
-        const listaTipiAttoBacheche = data.tipo_atto_bacheche_list;
-        const listaAnagrafiche = data.tipi_anagraficha_list;
-        const listaSezioniTrasparenza = data.sezioni_trasparenza_list;
-    
-        const newSelectValuesObject: PubblicazioniSelect = {
-          trasparenza: createOptionArray({ arr: listaSezioniTrasparenza, value: 'id', label: 'name' }),
-          uffici: createOptionArray({ arr: listaUffici, value: 'id', label: 'descrizione' }),
-          atti: createOptionArray({ arr: listaTipiAtto, value: 'id', label: 'descrizione' }),
-          bacheche: createOptionArray({ arr: listaTipiAttoBacheche, value: 'Key', label: 'Value' }),
-          anagrafiche: createOptionArray({ arr: listaAnagrafiche, value: 'id', label: 'descrizione' }),
+    //Liste e selectValues
+    //pubblicazioni
+    const [pubblicazioniListe, setPubblicazioniListe] = useState<PubblicazioniListe | null>(null);
+    const [pubblicazioniSelectValues, setPubblicazioniSelectValues] = useState<PubblicazioniSelect | null>(null);
+    //organizza documento
+    const [organizzaDocumentoListe, setOrganizzaDocumentoListe] = useState<OrganizzaDocumentoListe | null>(null);
+    const [OrganizzaDocumentoSelectValues, setOrganizzaDocumentoSelectValues] = useState<OrganizzaDocumentoSelect | null>(null);
+
+    //-------------------------------------------------------------- funzioni di salvataggio nello state di liste e Select Values provenienti dalle chiamate HTTP----------------------------------------------------------------------------------------------
+    function saveSelectPubblicazioni(data: PubblicazioniListe) {
+        //salvo i dati all' interno delle liste 
+        setPubblicazioniListe(data);
+        //separo le liste per elaborare le select
+        const listaUffici = data.lista_uffici;
+        const listaTipiAtto = data.lista_tipi_atto;
+        const listaTipiAttoBacheche = data.lista_tipi_atto_bacheche;
+        const listaAnagrafiche = data.lista_tipi_anagrafica;
+        const listaSezioniTrasparenza = data.lista_sezioni_trasparenza;
+
+        //preparo l'oggetto contenente gli array di oggetti Option per le select di pubblicazione
+        const pubblicazioniSelectObject: PubblicazioniSelect = {
+            trasparenza: createOptionArray({ arr: listaSezioniTrasparenza, value: 'id', label: 'name' }),
+            uffici: createOptionArray({ arr: listaUffici, value: 'id', label: 'descrizione' }),
+            atti: createOptionArray({ arr: listaTipiAtto, value: 'id', label: 'descrizione' }),
+            bacheche: createOptionArray({ arr: listaTipiAttoBacheche, value: 'Key', label: 'Value' }),
+            anagrafiche: createOptionArray({ arr: listaAnagrafiche, value: 'id', label: 'descrizione' }),
         };
-    
-        dispatch(setPubblicazioniSelect(newSelectValuesObject));
-      };
-    
-      function saveOrganizzaDocumento(data: any) {
-        //salvo i dati cosi come sono 
-        dispatch(setOrganizzaDocumentoData(data));
-    
-        //step 1 preparo la lista  dei volori delle selct
+        //salvo l'oggetto 
+        setPubblicazioniSelectValues(pubblicazioniSelectObject)
+    };
+
+    function saveOrganizzaDocumento(data: OrganizzaDocumentoListe) {
+        //salvo i dati all'interno delle liste
+        setOrganizzaDocumentoListe(data);
+        //separo le liste per elaborare le select
         const aoo = data.lista_aoo;
         const listaArchivi = data.lista_archivi;
         const assegnatari = data.lista_assegnatari;
@@ -112,50 +81,50 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
         const listaAttivita = data.lista_tipi_attivita;
         const titolari = data.lista_titolari;
         const utentiFirmatari = data.lista_utenti_firmatari;
-        
-        const newSelectValuesObject: OrganizzaDocumentoSelect = {
-          aoo: createOptionArray({ arr: aoo, value: 'id', label: 'descrizione' }),
-          archivi: createOptionArray({ arr: listaArchivi, value: 'dossier_id', label: 'dossier_name' }),
-          assegnatari: createOptionArray({ arr: assegnatari, value: 'fgId', label: 'fsAssigneeUser' }),
-          classi_documentali: createOptionArray({ arr: classiDocumentali, value: 'type_id', label: 'type_name' }),
-          gruppo_utenti: createOptionArray({ arr: gruppoUtenti, value: 'id', label: 'groupName' }),   
-          modelli_procedimento: createOptionArray({ arr: modelliProcedimento, value: 'pm_id', label: 'pm_ext_desc' }),
-          tipi_attivita: createOptionArray({ arr: listaAttivita, value: 'actionId', label: 'actionName' }),
-          titolari: createTitolariOptionArray(titolari),
-          utenti_firmatari: createOptionArray({ arr: utentiFirmatari, value: 'user_id', label: 'utente' }),
-        };
-    
-        dispatch(setOrganizzaDocumentoSelect(newSelectValuesObject));
-      };
-  
-      //eseguo chiamate di inizializzazione dati
-      useEffect(() => { 
-        GET_ORGANIZZA_DOCUMENTO_SELECT_DATA();
-        GET_PUBBLICAZIONI_SELECT_DATA();
-      }, []);
 
-    //-----------------------------------------------------------------------CHIAMATE PER VALORI DELLE SELECT----------------------------------------------------------------------------------------------------
-    //CHIAMATE PER INIZIALIZZARE L'APPLICAZIONE
-    //CHIAMATA PER INIZIALIZZARE I DATI CHE VERRANNO DATI ALLE SELECT PER L APPLICAZIONE
+        //preparo l'oggetto contenente gli array di oggetti Option per le select di OrganizzaDocumento
+        const organizzaDocumentoSelecObject: OrganizzaDocumentoSelect = {
+            aoo: createOptionArray({ arr: aoo, value: 'id', label: 'descrizione' }),
+            archivi: createOptionArray({ arr: listaArchivi, value: 'dossier_id', label: 'dossier_name' }),
+            assegnatari: createOptionArray({ arr: assegnatari, value: 'fgId', label: 'fsAssigneeUser' }),
+            classi_documentali: createOptionArray({ arr: classiDocumentali, value: 'type_id', label: 'type_name' }),
+            gruppo_utenti: createOptionArray({ arr: gruppoUtenti, value: 'id', label: 'groupName' }),
+            modelli_procedimento: createOptionArray({ arr: modelliProcedimento, value: 'pm_id', label: 'pm_ext_desc' }),
+            tipi_attivita: createOptionArray({ arr: listaAttivita, value: 'actionId', label: 'actionName' }),
+            titolari: createTitolariOptionArray(titolari),
+            utenti_firmatari: createOptionArray({ arr: utentiFirmatari, value: 'user_id', label: 'utente' }),
+        };
+        //salvo l'oggetto
+        setOrganizzaDocumentoSelectValues(organizzaDocumentoSelecObject)
+       
+    };
+    
+    //CHIAMATE DI INIZIALIZZAZIONE PER PRENDERE VALORI DELLE SELECT E DELLE LISTE CHE SERVONO PER IL CORRETTO FUNZIONAMENTO DEL FORM WIZARDBANDO
     async function GET_ORGANIZZA_DOCUMENTO_SELECT_DATA() {
         await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_ORGANIZZA_DOCUMENTO', sService: 'READ_DOCUMENTI', body: {} })
-          .then((res) => {
-            saveOrganizzaDocumento(res.response);
-          })
-          .catch((err) => console.error(err));
-  
-      };
-    
-      async function GET_PUBBLICAZIONI_SELECT_DATA() {
+            .then((res) => {
+                saveOrganizzaDocumento(res.response);
+            })
+            .catch((err) => console.error(err));
+
+    };
+
+    async function GET_PUBBLICAZIONI_SELECT_DATA() {
         await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_PUBBLICAZIONE', sService: 'READ_DOCUMENTI', body: {} })
-          .then((res) => {
-            dispatch(setPubblicazioniData(res.response));
-            saveSelectPubblicazioni(res.response);
-           
-          })
-          .catch((err) => console.error(err));
-      };
-      
+            .then((res) => {
+                saveSelectPubblicazioni(res.response);
+            })
+            .catch((err) => console.error(err));
+    };
+    //eseguo chiamate di inizializzazione dati al rendering del Context
+    useEffect(() => {
+        Promise.all([
+            GET_ORGANIZZA_DOCUMENTO_SELECT_DATA(),
+            GET_PUBBLICAZIONI_SELECT_DATA()
+        ])
+    }, []);
+
+
     useEffect(() => {
         console.log("Procedimento: ", listaAttivita)
     }, [listaAttivita]);
@@ -175,8 +144,14 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
                 archivi: {
                     archivioCollegato,
                     setArchivioCollegato
+                },
+                listeOrganizzaDocumento: organizzaDocumentoListe,
+                listePubblicazioni: pubblicazioniListe,
+                selectValues: {
+                    organizzaDocumentoSelectValues: OrganizzaDocumentoSelectValues,
+                    pubblicazioniSelectValues: pubblicazioniSelectValues,
                 }
-                //aggiungere anche qui...
+
             }}
         >
             {children}

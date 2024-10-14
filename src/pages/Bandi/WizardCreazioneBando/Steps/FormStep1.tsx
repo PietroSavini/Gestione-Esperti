@@ -5,8 +5,7 @@ import { Custom_Select2, Option } from '../../../../components/partials/Inputs/C
 import { useEffect, useState } from 'react';
 import AXIOS_HTTP from '../../../../app/AXIOS_ENGINE/AXIOS_HTTP';
 import { TipologiaEspertoRow } from '../../../SettingsPage/types';
-import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
-import { useSelector } from 'react-redux';
+import { useWizardBandoContext } from '../WizardBandoContext';
 
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
 export type FormStepProps = {
@@ -26,13 +25,14 @@ export const FormStep1 = (props: FormStepProps) => {
 
     //valori per select Tipologia Esperto select
     const [TEspMenuItems, setTEspMenuItems] = useState<Option[] | []>([])
-
+    //watcher per controllo di select
     useEffect(() => {
         if(TEspMenuItems.length === 0){
             retrieveTEspOptions()
         }
-    }, [])
+    }, []);
 
+    //chiamata per prendere i valori della select di TipologiaEsperto
     const retrieveTEspOptions = async () => {
         await AXIOS_HTTP.Retrieve({ sService: 'READ_TIPOLOGIA_ESPERTO', sModule: 'IMPOSTAZIONI_GET_ALL_TIPOLOGIE_ESPERTO', url: '/api/launch/retrieve', body: null })
             .then((res) => {
@@ -45,7 +45,7 @@ export const FormStep1 = (props: FormStepProps) => {
             .catch((err) => console.log(err))
 
     }
-    const options = useSelector(selectOrganizzaDocumentoSelect);
+    const options = useWizardBandoContext().selectValues.organizzaDocumentoSelectValues
 
     return (
         <>

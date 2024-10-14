@@ -20,14 +20,14 @@ import { RicercaBando } from './pages/Bandi/RicercaBando/RicercaBando';
 
 function App() {
   
-  const data: DrawerData = sidebar;
+  const sidebarData: DrawerData = sidebar;
   
 
   return (
     <>
       <ThemeProvider theme={theme}>
         <div className="APP">
-          <ResponsiveDrawer data={data} />
+          <ResponsiveDrawer data={sidebarData} />
           <main>
             <Routes>
               persistent login ed auth dovrebbero avvolegere tutte le routes ma a scopo di test e sviluppo ancora non possiamo farlo

@@ -1,5 +1,4 @@
 import { Box, Dialog, Typography } from '@mui/material'
-import React from 'react'
 import { RicercaBandoResult_Datagrid } from '../tabels/RicercaBandoResult_Datagrid'
 import { RicercaBandoComponent } from './RicercaBandoComponent'
 import { useRicercaBandoContext } from '../RicercaBandoContext'
@@ -27,7 +26,7 @@ export const RicercaBandoResults = () => {
             </Box>
 
             <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
-                
+
             </Dialog>
 
         </>

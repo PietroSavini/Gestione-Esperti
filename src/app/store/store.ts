@@ -7,8 +7,8 @@ export const store = configureStore({
     reducer:{
         loader: loaderSlice,
         auth: authSlice,
-        organizzaDocumento: organizzaDocumentoSlice,
-        pubblicazioni: pubblicazioniSlice,
+        //organizzaDocumento: organizzaDocumentoSlice,
+        //pubblicazioni: pubblicazioniSlice,
     },
    
 })

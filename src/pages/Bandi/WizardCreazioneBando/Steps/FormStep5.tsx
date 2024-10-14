@@ -2,12 +2,11 @@ import { Grid, Paper } from '@mui/material';
 import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
 import { FormStepProps } from './FormStep1';
 import { AttivitàSection } from '../Sections/AttivitàSection';
-import { useSelector } from 'react-redux';
-import { selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
+import { useWizardBandoContext } from '../WizardBandoContext';
 
 export const FormStep5 = (props:FormStepProps) => {
     const { register, errors, className, control, fn , unregister} = props;
-    const respProc = useSelector(selectOrganizzaDocumentoSelect)?.utenti_firmatari;
+    const respProc = useWizardBandoContext().selectValues.organizzaDocumentoSelectValues!.utenti_firmatari;
     
   return (
     <>  

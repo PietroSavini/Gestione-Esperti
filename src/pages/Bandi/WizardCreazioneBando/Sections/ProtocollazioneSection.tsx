@@ -3,12 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { SingleValue } from 'react-select';
 import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
 import { useSelector } from 'react-redux';
-import {  selectOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice';
 import { v4 as uuid } from 'uuid';
-import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
+import { useWizardBandoContext } from '../WizardBandoContext';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import useDebounce from '../../../../app/Hooks/useDebounceHook';
+import { AttivitaObj } from '../WizardCreazioneBando_types';
 type Params = {
     openSection : React.Dispatch<React.SetStateAction<boolean>>;
     isOpen : boolean;
@@ -44,9 +44,9 @@ export const ProtocollazioneSection = (params:Params) => {
         gruppo:selectValues!.gruppo_utenti,
         utenti_firmatari:selectValues!.utenti_firmatari,
     }
-
-    const protocolloInUscitaAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "PROT_U");
-    const protocolloInEntrataAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett=== "PROT_E");
+    const organizzaDocumentoListe = useWizardBandoContext().listeOrganizzaDocumento
+    const protocolloInUscitaAction = organizzaDocumentoListe?.lista_tipi_attivita.find(item => item.actionDett === "PROT_U");
+    const protocolloInEntrataAction = organizzaDocumentoListe?.lista_tipi_attivita.find(item => item.actionDett=== "PROT_E");
     
 
     //watcher per creare l'oggetto attività firma e modificarlo in live

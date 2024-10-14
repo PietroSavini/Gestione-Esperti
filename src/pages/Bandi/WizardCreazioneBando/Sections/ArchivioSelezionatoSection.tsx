@@ -3,8 +3,6 @@ import { Paper, Box, Typography, Icon, Dialog } from '@mui/material'
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton'
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField'
 import { CustomTreeview, Tview } from '../../../../components/partials/TreeView/Treeview'
-import { useSelector } from 'react-redux'
-import { selectOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice'
 import { OpenFolderSvg } from '../../../../components/partials/svg/OpenFolderSvg'
 import { convertTreeViewData } from '../../../../app/AXIOS_ENGINE/functions/handlers'
 import { useWizardBandoContext } from '../WizardBandoContext'
@@ -18,7 +16,7 @@ export const ArchivioSelezionatoSection = ({ className }: { className: string })
     const setArchivio = useWizardBandoContext().archivi.setArchivioCollegato
 
     //treeViewData
-    const treeview = useSelector(selectOrganizzaDocumentoData)?.lista_archivi;
+    const treeview = useWizardBandoContext().listeOrganizzaDocumento?.lista_archivi;
     // uso useMomo per memorizzare i dati della treview che non dovrebbero cambiare ad ogni rerendering
     const treeViewData = useMemo(() => convertTreeViewData(treeview as any[]), [treeview]);
     //funzione avviata al tasto 'Salva' contenuto nel modal della treeView

@@ -3,13 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { FieldErrors, UseFormRegister, UseFormUnregister} from 'react-hook-form';
 import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
-import { selectOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice';
-import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
+import { useWizardBandoContext } from '../WizardBandoContext';
 import { v4 as uuid } from 'uuid';
-import { useSelector } from 'react-redux';
 import useDebounce from '../../../../app/Hooks/useDebounceHook';
 import { Custom_DatePicker } from '../../../../components/partials/Inputs/Custom_DatePicker';
 import dayjs from 'dayjs';
+import { AttivitaObj } from '../WizardCreazioneBando_types';
 
 type Props = {
     isOpen: boolean;
@@ -27,9 +26,10 @@ export const PubblicaAlbo_Section = (props: Props) => {
     const [id, setId] = useState<string>(newId);
     const [dirittoOblioCheck, setDirittoOblio] = useState<boolean>(false)
     //dati WizardBandoContext
-    const attivita = useWizardBandoContext().attivita;
+    const {attivita, listeOrganizzaDocumento} = useWizardBandoContext();
     const {listaAttivita, setListaAttivita} = attivita;
-    const pubblicaSuAlboAction = useSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find(item => item.actionDett === "ALBO"); //da sostituire con wizard bando context
+
+    const pubblicaSuAlboAction =listeOrganizzaDocumento?.lista_tipi_attivita.find(item => item.actionDett === "ALBO"); //da sostituire con wizard bando context
     //dati e states per datepicker
     const today = dayjs();
     const formattedToday = dayjs(today).format("DD/MM/YYYY")

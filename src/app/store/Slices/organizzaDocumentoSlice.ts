@@ -144,6 +144,6 @@ export const { setOrganizzaDocumentoData, setOrganizzaDocumentoSelect, setOrgani
 //esporto il reducer
 export default organizzaDocumentoSlice.reducer;
 // esporto le funzioni per l'hook UseSelector
-export const selectOrganizzaDocumentoData = (state: RootState) => state.organizzaDocumento.liste;
-export const selectOrganizzaDocumentoSelect = (state: RootState) => state.organizzaDocumento.selectOptions;
-export const selectOrganizzaDocumentoTreeViewData = (state:RootState) => state.organizzaDocumento.treeViewData;
+// export const selectOrganizzaDocumentoData = (state: RootState) => state.organizzaDocumento.liste;
+// export const selectOrganizzaDocumentoSelect = (state: RootState) => state.organizzaDocumento.selectOptions;
+// export const selectOrganizzaDocumentoTreeViewData = (state:RootState) => state.organizzaDocumento.treeViewData;

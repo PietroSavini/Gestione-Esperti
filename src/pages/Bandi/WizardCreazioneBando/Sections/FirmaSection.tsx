@@ -3,15 +3,14 @@ import { SingleValue } from 'react-select'
 import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
 import { Grid, Paper, Typography } from '@mui/material';
 import { FieldErrors } from 'react-hook-form';
-import { selectOrganizzaDocumentoData } from '../../../../app/store/Slices/organizzaDocumentoSlice';
-import { useAppSelector } from '../../../../app/ReduxTSHooks';
 import { v4 as uuid } from 'uuid';
-import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
+import { useWizardBandoContext } from '../WizardBandoContext';
 import dayjs from 'dayjs';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 import useDebounce from '../../../../app/Hooks/useDebounceHook';
 import { Custom_DatePicker } from '../../../../components/partials/Inputs/Custom_DatePicker';
 import { DatePicker } from '@mui/x-date-pickers';
+import { AttivitaObj } from '../WizardCreazioneBando_types';
 
 type Params = {
     openSection: React.Dispatch<React.SetStateAction<boolean>>;
@@ -42,9 +41,10 @@ export const FirmaSection = (params: Params) => {
         utenteFirmatario: selectValues!.utenti_firmatari,
 
     };
+    const organizzaDocumentoListe = useWizardBandoContext().listeOrganizzaDocumento
 
-    const FIRMA_D = useAppSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find((item) => item.actionDett === "FIRMA_D");
-    const FIRMA_G = useAppSelector(selectOrganizzaDocumentoData)!.lista_tipi_attivita.find((item) => item.actionDett === "FIRMA_G");
+    const FIRMA_D = organizzaDocumentoListe?.lista_tipi_attivita.find((item) => item.actionDett === "FIRMA_D");
+    const FIRMA_G = organizzaDocumentoListe?.lista_tipi_attivita.find((item) => item.actionDett === "FIRMA_G");
     const newId = uuid();
     const today = dayjs();
     const [id] = useState<string>(newId);

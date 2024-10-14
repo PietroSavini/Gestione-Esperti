@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import { Option } from '../../../components/partials/Inputs/Custom_Select2';
 
 type Lista_uffici = {
@@ -84,5 +83,5 @@ export const { setPubblicazioniData, setPubblicazioniSelect, setPubblicazioni } 
 //esporto il reducer
 export default pubblicazioniSlice.reducer
 // esporto le funzioni per l'hook UseSelector
-export const selectPubblicazioniData = (state: RootState) => state.pubblicazioni.liste
-export const selectPubblicazioniSelect = (state: RootState) => state.pubblicazioni.selectOptions
+// export const selectPubblicazioniData = (state: RootState) => state.pubblicazioni.liste
+// export const selectPubblicazioniSelect = (state: RootState) => state.pubblicazioni.selectOptions

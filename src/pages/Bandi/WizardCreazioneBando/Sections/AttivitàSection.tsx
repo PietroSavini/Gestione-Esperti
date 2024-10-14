@@ -1,24 +1,25 @@
-import { Box, Grid, Icon, IconButton, Tooltip, Typography } from '@mui/material'
+import { Box, Grid, Icon, IconButton, Typography } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import { Custom_Select2, Option } from '../../../../components/partials/Inputs/Custom_Select2';
 import { ActionButton } from '../../../../components/partials/Buttons/ActionButton';
 import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
-import { lista_tipi_attivita, selectOrganizzaDocumentoData, selectOrganizzaDocumentoSelect } from '../../../../app/store/Slices/organizzaDocumentoSlice';
-import { useSelector } from 'react-redux';
 import { v4 as uuid } from 'uuid';
-import { AttivitaObj, useWizardBandoContext } from '../WizardBandoContext';
+import { useWizardBandoContext } from '../WizardBandoContext';
 import useDebounce from '../../../../app/Hooks/useDebounceHook';
 import { NoResultComponent } from '../../../../components/partials/placeholders/NoResultComponent';
 import { Custom_DatePicker } from '../../../../components/partials/Inputs/Custom_DatePicker';
 import dayjs from 'dayjs';
+import { AttivitaObj, lista_tipi_attivita } from '../WizardCreazioneBando_types';
+
 
 export const AttivitàSection = () => {
+    const context = useWizardBandoContext();
     //states
     const [isDragging, setIsDragging] = useState<number | undefined>(undefined);
     //lista delle attività selezionabili
-    const listaAttivitaData = useSelector(selectOrganizzaDocumentoData)?.lista_tipi_attivita; // da cambiare con contextProvider
-    const selectOptions = useSelector(selectOrganizzaDocumentoSelect); // da cambiare con contextProvider
-    const modelliProcedimentoSelect = useSelector(selectOrganizzaDocumentoSelect)?.modelli_procedimento; // da cambiare con contextProvider
+    const listaAttivitaData = context.listeOrganizzaDocumento?.lista_tipi_attivita;
+    const selectOptions = context.selectValues;
+    const modelliProcedimentoSelect = selectOptions.organizzaDocumentoSelectValues?.modelli_procedimento;
     //ref per stabilire l'elemento da draggare
     const containerRef = useRef<HTMLDivElement>(null);
     //prendo i dati dal contextprovider
@@ -53,7 +54,7 @@ export const AttivitàSection = () => {
                         <Box component={'div'} ref={containerRef} display={'flex'} flexDirection={'column'} gap={1} paddingBottom={'8px'}>
                             {editableData.map((activity, index) =>
                                 <ActivityComponent
-                                    key={index}
+                                    key={activity.Id}
                                     index={index}
                                     activity={activity}
                                     activityList={listaAttivitaData!}
@@ -62,13 +63,14 @@ export const AttivitàSection = () => {
                                     containerRef={containerRef}
                                     data={editableData}
                                     otherData={nonEditableData}
-                                    setData={setListaAttivita} />
+                                    setData={setListaAttivita} 
+                                />
                             )}
                         </Box>
                     }
                 </Box>
                 <Box >
-                    <SelectActivityComponent data={listaAttivita} setData={setListaAttivita} selectOptions={selectOptions!.tipi_attivita} />
+                    <SelectActivityComponent data={listaAttivita} setData={setListaAttivita} selectOptions={selectOptions.organizzaDocumentoSelectValues!.tipi_attivita} />
                 </Box>
             </Box>
         </>
@@ -76,8 +78,8 @@ export const AttivitàSection = () => {
 }
 
 const NonEditableActivityComponent = ({ activity }: { activity: AttivitaObj }) => {
-
-    const selectOptions = useSelector(selectOrganizzaDocumentoSelect); // da cambiare con contextProvider
+    const context = useWizardBandoContext();
+    const selectOptions = context.selectValues.organizzaDocumentoSelectValues
     const assignedUser = selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente)?.label
     const assignedGroup = selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti)?.label;
     const datePikerValue = activity.scadenza
@@ -153,7 +155,6 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
     };
 
     async function dragStart(e: React.PointerEvent<HTMLDivElement>, index: number) {
-
         let dragStart = true;
         //controllo che sia un click con il pulsante sinistro del mouse
         if (!detectLeftMouseClick(e)) return;
@@ -287,25 +288,24 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
 
     //END FUNZIONALITA' DRAG AND DROP DEGLI ELEMENTI--------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    const selectOptions = useSelector(selectOrganizzaDocumentoSelect); // da sostituire con context provider
-    //initial values
-    useEffect(() => {
-        setActivityValue(selectOptions?.tipi_attivita.find((item) => item.value === activity.actionId));
-        setUser(selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente));
-        setUserGroup(selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti));
-        setDescription(activity.descrizioneAttivitaUtente ? activity.descrizioneAttivitaUtente : '');
-        setStima(activity.stima ? activity.stima : '0');
-    }, [data])
+    const context = useWizardBandoContext();
+    const selectOptions = context.selectValues.organizzaDocumentoSelectValues
 
 
     //states
     const [activityValue, setActivityValue] = useState<Option | undefined>(undefined);
     const [user, setUser] = useState<Option | undefined>(undefined);
     const [userGroup, setUserGroup] = useState<Option | undefined>(undefined);
-    const [description, setDescription] = useState<string>('');
+    const [description, setDescription] = useState<string>(activity.descrizioneAttivitaUtente ? activity.descrizioneAttivitaUtente : '');
     const [stima, setStima] = useState<string | number>('');
-    //da aggiungere scadenza attività
+    //initial values
+    useEffect(() => {
+        setActivityValue(selectOptions?.tipi_attivita.find((item) => item.value === activity.actionId));
+        setUser(selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente));
+        setUserGroup(selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti));
+        //setDescription(activity.descrizioneAttivitaUtente ? activity.descrizioneAttivitaUtente : '');
+        setStima(activity.stima ? activity.stima : '0');
+    }, [data])
 
     //useEffect utilizzato per forzare il rendering dei valori, se tolto avviene lo swap delle posizioni nei dati ma non avviene il cambio dei valori nei campi in UI
 
@@ -434,9 +434,9 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
 };
 
 function SelectActivityComponent({ selectOptions, data, setData }: { selectOptions: Option[] | [], data: AttivitaObj[], setData: React.Dispatch<React.SetStateAction<AttivitaObj[]>> }) {
-
+    const context = useWizardBandoContext();
     const [modelliProcedimento, setModelliProcedimento] = useState<string | undefined>(undefined);
-    const listaAttivitaData = useSelector(selectOrganizzaDocumentoData)?.lista_tipi_attivita;
+    const listaAttivitaData = context.listeOrganizzaDocumento!.lista_tipi_attivita;
     const [value, setValue] = useState<string | number | undefined>(undefined);
 
     function addAttivitaToList(value: string | number | undefined) {
