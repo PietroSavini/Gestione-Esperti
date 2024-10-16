@@ -28,7 +28,6 @@ export const TipologiaEsperto = () => {
         const TipologieDiSistema = data.filter((tipologia) => tipologia.TEspSys === true)
         setTipologieDiSistema(TipologieDiSistema)
         setTipologiePersonalizzate(TipologiePersonalizzate)
-        dispatch(closeLoader())
 
       })
       .catch((err) => {
@@ -51,6 +50,12 @@ export const TipologiaEsperto = () => {
     dispatch(openLoader())
     GET_ALL_TIPOLOGIE();
   }, [])
+
+  useEffect(() => {
+    if(tipologieDiSistema.length > 0 || tipologiePersonalizzate.length > 0){
+      dispatch(closeLoader())
+    }
+  }, [tipologieDiSistema, tipologiePersonalizzate])
 
   // hook per gestire espansione degli accordion
   const [expanded, setExpanded] = useState<boolean[]>([true, true]);

@@ -11,7 +11,6 @@ import { Custom_DatePicker } from '../../../../components/partials/Inputs/Custom
 import dayjs from 'dayjs';
 import { AttivitaObj, lista_tipi_attivita } from '../WizardCreazioneBando_types';
 
-
 export const AttivitàSection = () => {
     const context = useWizardBandoContext();
     //states

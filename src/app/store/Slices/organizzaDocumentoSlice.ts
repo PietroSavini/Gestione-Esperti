@@ -3,7 +3,9 @@ import { RootState } from '../store'
 import { Option } from '../../../components/partials/Inputs/Custom_Select2';
 import { Tview } from '../../../components/partials/TreeView/Treeview';
 
-export type lista_aoo = {
+
+//DEPRECATED - UTILIZZATO IL CONTEXT PROVIDER PER MANTENERE LO STATE LOCALE NELLA PAGINA DI CREAZIONE DEL BANDO - SI PUO PENSARE DI FARE UN REDUCER CON LE SOLE SELECTVALUES 
+type lista_aoo = {
     id:number;
     descrizione:string;
     cognomeResp:string;
@@ -11,13 +13,13 @@ export type lista_aoo = {
     default: boolean; //se true è defaultSelected
 }
 
-export type lista_archivi ={
+type lista_archivi ={
     dossier_id:number;
     dossier_ref_id:number;
     dossier_name:string;
 }
 
-export type lista_assegnatari = {
+type lista_assegnatari = {
     fgId:number;
     fiFileId:number;
     fiAssigneeUserId:number;
@@ -28,34 +30,34 @@ export type lista_assegnatari = {
     fsAnnotation:string;
 }
 
-export type lista_classi_documentali = {
+type lista_classi_documentali = {
     type_id:number;
     type_name:string;
     csc:string;
     attributi: string;
 }
 
-export type lista_gruppo_utenti = {
+type lista_gruppo_utenti = {
     id:number;
     groupName:string;
     groupDescription:string;
 }
 
-export type lista_modelli_procedimento = {
+type lista_modelli_procedimento = {
     row:number;
     pm_id:number;
     pm_subject:string;
     pm_ext_desc:string;
 }
 
-export type lista_tipi_attivita = {
+type lista_tipi_attivita = {
     actionId:number;
     actionName:string;
     actionDesc:string;
     actionDett:string;
 }
 
-export type lista_titolari = {
+type lista_titolari = {
     id:number;
     detailId:number;
     rif:string;
@@ -67,17 +69,17 @@ export type lista_titolari = {
     descCodice: string;
 };
 
-export type lista_utenti = {
+type lista_utenti = {
     user_id:number;
     utente:string;
 };
 
-export type lista_utenti_firmatari = {
+type lista_utenti_firmatari = {
     user_id:number;
     utente:string;
 };
 
-export type Liste = {
+type Liste = {
     lista_aoo: lista_aoo[]|[];
     lista_archivi: lista_archivi[]|[];
     lista_assegnatari:lista_assegnatari[]|[];
@@ -89,7 +91,7 @@ export type Liste = {
     lista_utenti_firmatari: lista_utenti_firmatari[]|[];
 };
 
-export type OrganizzaDocumentoSelect= {
+type OrganizzaDocumentoSelect= {
     aoo: Option[]|[];
     archivi: Option[]|[];
     assegnatari: Option[]|[];
@@ -142,7 +144,7 @@ const organizzaDocumentoSlice = createSlice({
 //esporto le azioni
 export const { setOrganizzaDocumentoData, setOrganizzaDocumentoSelect, setOrganizzaDocumentoTreeViewData, setOrganizzaDocumento } = organizzaDocumentoSlice.actions;
 //esporto il reducer
-export default organizzaDocumentoSlice.reducer;
+// export default organizzaDocumentoSlice.reducer;
 // esporto le funzioni per l'hook UseSelector
 // export const selectOrganizzaDocumentoData = (state: RootState) => state.organizzaDocumento.liste;
 // export const selectOrganizzaDocumentoSelect = (state: RootState) => state.organizzaDocumento.selectOptions;

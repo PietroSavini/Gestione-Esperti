@@ -15,6 +15,7 @@ import { closeLoader, openLoader } from '../../../app/store/Slices/loaderSlice';
 import Loader from '../../../components/partials/Loader/Loader';
 import dayjs from 'dayjs';
 import { AttivitaObj, DocumentoData, PunteggiFinali } from './WizardCreazioneBando_types';
+import { useAppDispatch } from '../../../app/ReduxTSHooks';
 
 
 
@@ -38,6 +39,8 @@ export const WizardCreazioneBando = () => {
     const procedimento = context.attivita.listaAttivita;
     const fascicoliSelezionati = context.fascicoli.fascicoliSelezionati;
     const selectValues = context.selectValues;
+    //dispatcher azione redux per loader
+    const dispatch = useAppDispatch();
 
     //funzione per chiamare i punteggi e salvarli nello state
     async function GET_ALL_PUNTEGGI_COLLEGATI (id:number) {
@@ -53,9 +56,14 @@ export const WizardCreazioneBando = () => {
     //watcher per poter caricare il bando senza errori o crash
     useEffect(() => {
       if(selectValues && selectValues.organizzaDocumentoSelectValues && selectValues.pubblicazioniSelectValues){
-        setIsLoaded(true)
+        setIsLoaded(true);
+        dispatch(closeLoader());
       }
     }, [selectValues])
+
+    useEffect(() => {
+        dispatch(openLoader())
+    }, [])
     
 
     //useEffect che utilizzo per chiamare i punteggi collegati alla tipologiaEsperto e salvarli per mostrarli nel 4o step
@@ -136,7 +144,6 @@ export const WizardCreazioneBando = () => {
 
         return arr.map(obj => {
             const formattedObj = { ...obj }; // Crea una copia dell'oggetto originale
-    
             if (obj.scadenza) {
                 formattedObj.scadenza = dayjs(obj.scadenza).format('YYYY/MM/DD');
             }
@@ -213,7 +220,7 @@ export const WizardCreazioneBando = () => {
     //const selectOptions = useAppSelector(selectOrganizzaDocumentoSelect)
   return (
     <>  
-        {selectValues &&
+        {isLoaded &&
         
             <Box className='modello-creazione-bando' height={'100%'}>
                 <Box className={'creazione-bando-header'}>

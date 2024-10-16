@@ -23,8 +23,6 @@ export const CollegaAltriDocumentiSection = (props: Props) => {
                     <Typography sx={{}} component={'h6'} variant='h6'>Collega altri documenti</Typography>
                     <ActionButton color='secondary' text='Collega' endIcon={<Icon>share</Icon>} onClick={() => setIsOpen(true)} />
                 </Box>
-
-
             </Paper>
 
             <Dialog

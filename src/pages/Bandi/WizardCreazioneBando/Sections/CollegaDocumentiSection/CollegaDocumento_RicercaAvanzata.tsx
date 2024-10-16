@@ -137,6 +137,9 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
             </Box>
 
             <Collapse sx={{ backgroundColor: 'aliceblue', borderTop: '1px efefef' }} in={isOpen} timeout={'auto'} unmountOnExit>
+                <Box>
+                    
+                </Box>
                 <Grid container padding={'1rem 0'}>
 
 

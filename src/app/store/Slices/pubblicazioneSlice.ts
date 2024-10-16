@@ -1,6 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Option } from '../../../components/partials/Inputs/Custom_Select2';
 
+//DEPRECATED - UTILIZZATO IL CONTEXT PROVIDER PER MANTENERE LO STATE LOCALE NELLA PAGINA DI CREAZIONE DEL BANDO - SI PUO PENSARE DI FARE UN REDUCER CON LE SOLE SELECTVALUES 
+
+
 type Lista_uffici = {
     id: number;
     descrizione: string;
@@ -30,7 +33,7 @@ type lista_tipi_atto_bacheche = {
     value: string;
 }
 
-export type ListePub = {
+type ListePub = {
     sezioni_trasparenza_list: sezioni_trasparenza_list[] | [];
     lista_tipi_anagrafica: Lista_tipi_anagrafica[] | [];
     lista_tipi_atto: tipi_atto_list[] | [];
@@ -39,7 +42,7 @@ export type ListePub = {
 
 }
 
-export type PubblicazioniSelect = {
+type PubblicazioniSelect = {
     trasparenza: Option[] | [];
     uffici: Option[] | [];
     atti: Option[] | [];

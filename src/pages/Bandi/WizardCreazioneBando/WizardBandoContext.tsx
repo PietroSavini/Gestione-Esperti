@@ -29,7 +29,6 @@ type WizardBandoContextProvider = {
     children: React.ReactNode;
 };
 
-
 export const WizardBandoContext = createContext<WizardBandoContext | null>(null);
 
 export default function WizardBandoContextProvider({ children }: WizardBandoContextProvider) {
@@ -106,7 +105,6 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
                 saveOrganizzaDocumento(res.response);
             })
             .catch((err) => console.error(err));
-
     };
 
     async function GET_PUBBLICAZIONI_SELECT_DATA() {
@@ -123,7 +121,6 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
             GET_PUBBLICAZIONI_SELECT_DATA()
         ])
     }, []);
-
 
     useEffect(() => {
         console.log("Procedimento: ", listaAttivita)
