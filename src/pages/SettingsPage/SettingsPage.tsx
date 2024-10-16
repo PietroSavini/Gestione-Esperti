@@ -20,7 +20,7 @@ export const SettingsPage = () => {
   return (
     <>
       <Typography variant='h4' fontWeight={600}>Impostazioni Gestione esperti</Typography>
-      <Box display={'flex'} alignItems={'flex-end'} position={'absolute'} sx={{ left: '0', right: '0', height: '50px', marginBottom: '1.5rem' }}>
+      <Box display={'flex'} alignItems={'flex-end'} position={'relative'} sx={{ height: '50px', marginBottom: '1rem' }}>
         <Divider absolute sx={{ bottom: '0', backgroundColor: '#52A5CF', height: '2px' }} />
         <TabStack tabs={tabs} setTab={setActiveTab} activeTab={activeTab} />
       </Box>

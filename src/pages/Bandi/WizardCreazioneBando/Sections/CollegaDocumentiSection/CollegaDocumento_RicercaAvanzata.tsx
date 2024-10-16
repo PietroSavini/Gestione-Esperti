@@ -1,6 +1,6 @@
 import { Box, Grid, Icon, Divider, Collapse } from "@mui/material";
 import dayjs from "dayjs";
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 import AXIOS_HTTP from "../../../../../app/AXIOS_ENGINE/AXIOS_HTTP";
 import useDebounce from "../../../../../app/Hooks/useDebounceHook";
 import { ActionButton } from "../../../../../components/partials/Buttons/ActionButton";
@@ -8,6 +8,7 @@ import { Custom_DatePicker } from "../../../../../components/partials/Inputs/Cus
 import { Custom_Select2 } from "../../../../../components/partials/Inputs/Custom_Select2";
 import { Custom_TextField } from "../../../../../components/partials/Inputs/CustomITextField";
 import { Filters } from "../../../RicercaBando/RicercaBandoContext";
+import { TabStack } from "../../../../../components/partials/Tabs/TabStack";
 
 type Props = {
     setRows: React.Dispatch<React.SetStateAction<any[]>>
@@ -16,6 +17,26 @@ type Props = {
 export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
     const [filters, setFilters] = useState<any>({})
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    // variabile per settaggio di Tab in visualizzazione
+    const [activeTab, setActiveTab] = useState<number>(0);
+    const tabs = [
+        {
+            text: 'Tutto il Sistema'
+        },
+        {
+            text: 'Protocolli'
+        },
+        {
+            text: 'Anagrafiche'
+        },
+        {
+            text: 'Archivi'
+        },
+        {
+            text: 'Pubblicazioni'
+        },
+    ];
+
     const options = {
         annoRif: [
             {
@@ -136,12 +157,10 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
                 <Divider />
             </Box>
 
-            <Collapse sx={{ backgroundColor: 'aliceblue', borderTop: '1px efefef' }} in={isOpen} timeout={'auto'} unmountOnExit>
-                <Box>
+            <Collapse sx={{ backgroundColor: 'aliceblue', borderTop: '1px efefef', paddingTop:'.5rem' }} in={isOpen} timeout={'auto'} unmountOnExit>
+                <TabStack tabs={tabs} setTab={setActiveTab} activeTab={activeTab}  />
+                <Grid container padding={'1rem 0'}> 
                     
-                </Box>
-                <Grid container padding={'1rem 0'}>
-
 
                 </Grid>
                 <Divider />

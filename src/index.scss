@@ -120,7 +120,7 @@ body {
         background-color: rgb(255, 166, 0);
     }
   }
- 
+
   //error
   &.ms_button-error{
     color: rgb(255, 34, 0);
@@ -134,7 +134,7 @@ body {
   &.ms_button-disabled{
     border-color: #bdbdbdff !important;
   }
-  
+
 }
 .ms_react-select{
   .react-select__control{
@@ -147,14 +147,14 @@ body {
     color: grey !important;
   }
   .react-select__control{
-    background-color: #e0e0e0ff;  
+    background-color: #e0e0e0ff;
   }
 }
 
 div.MuiInputBase-root.ms_custom-input.Mui-focused{
   border: 1px solid #2684ff;
 }
-.ms_input-disabled{ 
+.ms_input-disabled{
   cursor: default;
   label{
     color: grey!important;
@@ -169,19 +169,19 @@ div.MuiInputBase-root.ms_custom-input.Mui-focused{
 }
 
 .ms_select-error div {
-  border-color: #e74c3c; 
+  border-color: #e74c3c;
 }
 
 .ms_select-error:hover div {
-  border-color: #e74c3c; 
+  border-color: #e74c3c;
 }
 
 .ms_select{
-  
+
   &:hover{
     border: none;
     outline: transparent !important;
-     
+
   }
   &.css-1ag27v5-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root.Mui-focused .MuiOutlinedInput-notchedOutline {
     border: none;
@@ -190,16 +190,16 @@ div.MuiInputBase-root.ms_custom-input.Mui-focused{
 .ms_input{
   background-color: #fff;
   box-shadow: 0px 0px 3px grey ;
-  border-radius: 15px; 
-  min-height: 40px;   
+  border-radius: 15px;
+  min-height: 40px;
   padding: 0 .5rem;
   &.error{
     outline: 1px solid red;
   }
-  
+
 
 }
-  
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -208,7 +208,7 @@ h1 {
 
 .container{
   border: 1px solid red;
-  
+
 }
 
 ul{
@@ -265,5 +265,56 @@ ul{
     height: 80%;
     margin: auto auto;
   }
+}
+
+
+
+//SCROLLBAR
+*::-webkit-scrollbar {
+  width: 8px ;
+
+}
+// ::-webkit-scrollbar {
+//   width: 12px;
+// }
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #a7a7a7 ;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa ;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #d8d8d8 ;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  box-shadow: none;
+  border: 0;
+  background-color: #cecece;
+  cursor: grab;
+  &:active {
+    cursor: grab;
+  }
+}
+
+::-webkit-scrollbar-thumb {
+ 
+}
+*::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 4px #f0f0f0;
+  -webkit-box-shadow: inset 0 0 6px #f0f0f0;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 0;
+  box-shadow: none;
+  border: 0;
+  background-color: #eaeaeab6;
+  border-left: 1px solid #cecece;
 }
 
