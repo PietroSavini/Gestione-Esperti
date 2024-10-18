@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import AXIOS_HTTP from "../../../app/AXIOS_ENGINE/AXIOS_HTTP";
 import { createOptionArray, createTitolariOptionArray } from "../../../app/AXIOS_ENGINE/functions/handlers";
-import { AttivitaObj, OrganizzaDocumentoListe, OrganizzaDocumentoSelect, PubblicazioniListe, PubblicazioniSelect, } from "./WizardCreazioneBando_types";
+import { AttivitaObj, OrganizzaDocumentoListe, OrganizzaDocumentoSelect, PubblicazioniListe, PubblicazioniSelect, PunteggiFinali, } from "./WizardCreazioneBando_types";
+import { Requisito_Table } from "../../SettingsPage/types";
 
 type WizardBandoContext = {
     attivita: {
@@ -16,13 +17,20 @@ type WizardBandoContext = {
         archivioCollegato: number | null;
         setArchivioCollegato: React.Dispatch<React.SetStateAction<number | null>>;
     };
+    punteggi: {
+        punteggi:[] | PunteggiFinali[];
+        setPunteggi: React.Dispatch<React.SetStateAction<[] | PunteggiFinali[]>>;
+    }
+    requisitiPunteggiList:{
+        requisitiPunteggi:Requisito_Table[] | [];
+        setRequisitiPunteggi: React.Dispatch<React.SetStateAction<[] | Requisito_Table[]>>;
+    }
     listePubblicazioni: PubblicazioniListe | null;
     listeOrganizzaDocumento: OrganizzaDocumentoListe | null;
-    selectValues:{
+    selectOptions:{
         pubblicazioniSelectValues: PubblicazioniSelect | null;
         organizzaDocumentoSelectValues: OrganizzaDocumentoSelect | null;
     }
-
 };
 
 type WizardBandoContextProvider = {
@@ -33,17 +41,24 @@ export const WizardBandoContext = createContext<WizardBandoContext | null>(null)
 
 export default function WizardBandoContextProvider({ children }: WizardBandoContextProvider) {
     //Array da inserire nella funzione finale di submit da inviare a web service con la chiamata di creazione del bando
+    //Procedimento
     const [listaAttivita, setListaAttivita] = useState<AttivitaObj[] | []>([]);
+    //fascicoli collegati
     const [fascicoliSelezionati, setFascicoliSelezionati] = useState<number[] | []>([]);
+    //archivi collegati
     const [archivioCollegato, setArchivioCollegato] = useState<number | null>(null);
-    //Liste e selectValues
+    //lista requisiti e punteggi (per le tabelle requisiti e punteggi in formStep1)
+    const [requisitiPunteggi, setRequisitiPunteggi] = useState<Requisito_Table[] | []>([])
+    //punteggi da inviare 
+    const [punteggi, setPunteggi] = useState<PunteggiFinali[] | []>([]);
+
+    //Liste e selectOptions
     //pubblicazioni
     const [pubblicazioniListe, setPubblicazioniListe] = useState<PubblicazioniListe | null>(null);
     const [pubblicazioniSelectValues, setPubblicazioniSelectValues] = useState<PubblicazioniSelect | null>(null);
     //organizza documento
     const [organizzaDocumentoListe, setOrganizzaDocumentoListe] = useState<OrganizzaDocumentoListe | null>(null);
     const [OrganizzaDocumentoSelectValues, setOrganizzaDocumentoSelectValues] = useState<OrganizzaDocumentoSelect | null>(null);
-
     //-------------------------------------------------------------- funzioni di salvataggio nello state di liste e Select Values provenienti dalle chiamate HTTP----------------------------------------------------------------------------------------------
     function saveSelectPubblicazioni(data: PubblicazioniListe) {
         //salvo i dati all' interno delle liste 
@@ -94,7 +109,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
             utenti_firmatari: createOptionArray({ arr: utentiFirmatari, value: 'user_id', label: 'utente' }),
         };
         //salvo l'oggetto
-        setOrganizzaDocumentoSelectValues(organizzaDocumentoSelecObject)
+        setOrganizzaDocumentoSelectValues(organizzaDocumentoSelecObject);
        
     };
     
@@ -105,6 +120,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
                 saveOrganizzaDocumento(res.response);
             })
             .catch((err) => console.error(err));
+
     };
 
     async function GET_PUBBLICAZIONI_SELECT_DATA() {
@@ -122,9 +138,39 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
         ])
     }, []);
 
+    //Watcher per i console.log
     useEffect(() => {
-        console.log("Procedimento: ", listaAttivita)
+        console.log("Procedimento: ", listaAttivita);
     }, [listaAttivita]);
+
+    useEffect(() => {
+        console.log("Punteggi: ", punteggi);
+    }, [punteggi]);
+
+    //watcher che converte la lista dei requisiti e dei punteggi nella lista dei punteggi da inviare a backend
+    useEffect(() => {
+        let resultArr: any = [];
+        requisitiPunteggi.map((item) => {
+            const firstItem = {
+                reqId: item.fi_ee_req_id,
+                puntVal: 0
+            }
+            resultArr.push(firstItem)
+            if (item.requisiti_list.length > 0) {
+                item.requisiti_list.map((sottoItem) => {
+                    const sottoReq = {
+                        reqId: sottoItem.fi_ee_req_id,
+                        puntVal: sottoItem.fi_ee_req_punteggio
+                    }
+                    resultArr.push(sottoReq)
+                })
+            }
+        })
+        setPunteggi(resultArr)
+    }, [requisitiPunteggi])
+
+
+
 
     //aggiungere altri useState necessari per altre liste come i punteggi del bando etc..
     return (
@@ -142,9 +188,17 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
                     archivioCollegato,
                     setArchivioCollegato
                 },
+                punteggi:{
+                    setPunteggi: setPunteggi,
+                    punteggi: punteggi
+                },
+                requisitiPunteggiList:{
+                    requisitiPunteggi: requisitiPunteggi,
+                    setRequisitiPunteggi:setRequisitiPunteggi
+                },
                 listeOrganizzaDocumento: organizzaDocumentoListe,
                 listePubblicazioni: pubblicazioniListe,
-                selectValues: {
+                selectOptions: {
                     organizzaDocumentoSelectValues: OrganizzaDocumentoSelectValues,
                     pubblicazioniSelectValues: pubblicazioniSelectValues,
                 }

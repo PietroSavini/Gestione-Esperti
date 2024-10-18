@@ -22,13 +22,11 @@ type SelectOption = {
 }
 
 //dataTable -------------------------------------------------------------------------------------------------------------------------
-export default function Table_PunteggiBando({ data, setData, tespId }: { data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>, tespId: string | number }) {
+export default function Table_PunteggiBando({ data, setData }: { data: Requisito_Table, setData: React.Dispatch<React.SetStateAction<Requisito_Table[] | []>>}) {
   const requisiti: Requisiti_List = data.requisiti_list;
-
   // variabili del requisito master
   const masterRequisitoTitle = data.fs_ee_req_desc;
   const masterRequisitoId = data.fi_ee_req_id;
-
   // variabili di stato per la tabella
   const [rows, setRows] = useState<RequisitoType_RequisitoTab[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
@@ -52,7 +50,6 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
   async function GET_SELECTABLE_ITEMS() {
     await AXIOS_HTTP.Retrieve({ body: { masterId: masterRequisitoId }, url: '/api/launch/retrieve', sModule: 'IMPOSTAZIONI_GET_SOTTOREQUISITI', sService: 'READ_REQUISITI' })
       .then((resp) => {
-        console.log('SOTTOREQUISITI DEL MASTER', masterRequisitoTitle, ':', resp)
         const rawArr: InboundSelectData = resp.response;
         const outputArr: any = []
         rawArr.forEach(element => {
@@ -155,8 +152,6 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
   //---ATTENZIONE---
   //Questa funzione è triggerata dalla dataGrid (grazie al parametro "processRowUpdate") quando la row passa da edit a view (e NON viceversa), di fatto gestisce l'update in UI ed il salvataggio sul WS
   const handleRowSave = async (oldRow: RequisitoType_RequisitoTab, newRow: RequisitoType_RequisitoTab) => {
-
-    console.log('handleRowSave');
     setIsLoading(true);
     let updatedRequisiti_list: Requisiti_List = rows;
     let outputRow = {};
@@ -173,14 +168,13 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
     if (oldRow.fi_ee_req_id === 'newRow'){
       //INSERT NUOVA ROW
       updatedRequisiti_list = [...requisiti, outputRow as RequisitoType_RequisitoTab];
+      setData((prev) => prev.map((item) => item.fi_ee_req_id === data.fi_ee_req_id ? {...data, requisiti_list: updatedRequisiti_list} : item))
     }else{
       //UPDATE ROW
       //Row non deve essere aggiornata 
       if(oldRow.fi_ee_req_id === newRow.fi_ee_req_id && oldRow.fi_ee_req_punteggio === newRow.fi_ee_req_punteggio){
-        console.log('LA ROW NON HA BISOGNO DI UPDATE')
         outputRow = oldRow;
       }else{
-        console.log('UPDATE ROW')
         outputRow = newRow;
         updatedRequisiti_list = updatedRequisiti_list.map((row) => row.fi_ee_req_id === oldRow.fi_ee_req_id ? outputRow as RequisitoType_RequisitoTab : row);
       }
@@ -209,10 +203,8 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
   //----------------------------------------------------DELETE PUNTEGGIO------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------
   const handleDeletePunteggio = (id: GridRowId, puntId: number | undefined) => () => {
-    console.log('handleDeleteCLick')
     const filteredRows = rows?.filter((row) => row.fi_ee_req_id !== id);
     setRows(filteredRows);
-    
     //aggiorno i dati madre
     const updatedTable: Requisito_Table = {
       fi_ee_req_id: data.fi_ee_req_id,
@@ -229,7 +221,6 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
   //funzioni per gestire comportamenti delle rows
   //funzione triggerata al click del pulsante 'salva'
   const switchRowMode = (id: GridRowId) => {
-    console.log('switchRowMode')
     //controllo in cui un utente malintenzionato sorpassa il disabled del bottone 
     if (rowsInError.some((rowInError) => rowInError.id === id)) return;
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
@@ -237,7 +228,6 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
 
   // listener di eventi 'row edit stop' della Datagrid (enterKeyDown, escapeKeyDown, rowfocusOut ...etc)
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
-    console.log('roweditStop')
     const id = params.id as string
     const rowInError = rowsInError.some(row => row.id === id)
     // Gestione delle varie casistiche di accessibilità della tabella (enter, esc, focusOut, ...etc)
@@ -261,7 +251,6 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
     const arrRowModesModel = Object.values(rowModesModel);
     const isAnyRowInEdit = arrRowModesModel.some((row) => row.mode === 'edit');
     if (isAnyRowInEdit) {
-      console.log('ci sono altre row in edit', arrRowModesModel)
       return
     }
     setRowModesModel(newRowModesModel);
@@ -269,7 +258,6 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
 
   //FUNZIONI TRIGGERATE AL CHANGE DI UNO DEI X CAMPI EDITABILI DELLA ROW
   const preProcessRequisitoEditCellProp = async (params: GridPreProcessEditCellProps) => {
-    console.log('preProcessRequisitoEditCellProp')
     const row: RequisitoType_RequisitoTab = params.row;
     const value = params.props.value;
     //aggiungo il valore selezionato all'array che esclude i campi selezionabili della select
@@ -286,7 +274,6 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
     const isRowAlradyInError = rowsInError.some((rowInError) => rowInError.id === rowId);
     //VALIDAZIONI 
     if (description.trim() === '' || !punteggio) {
-      console.log(rowId, 'in errore perchè descrizione o punteggio vuoti ')
       result = true;
       //se è già in errore ritorno true e basta
       if (isRowAlradyInError) return result;
@@ -319,7 +306,6 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
       const newValue = event.target.value as string;
       api.setEditCellValue({ id, field, value: newValue });
     };
-
     const Custom_select = React.forwardRef(function Custom_Select(props, ref) {
 
       return (
@@ -330,7 +316,6 @@ export default function Table_PunteggiBando({ data, setData, tespId }: { data: R
           defaultValue={''}
           ref={ref}
           {...props}
-
         >
           {selectValues && selectValues.length > 0 && selectValues.map((option, index) => {
             if (!filteredSelectValues.includes(option)) {

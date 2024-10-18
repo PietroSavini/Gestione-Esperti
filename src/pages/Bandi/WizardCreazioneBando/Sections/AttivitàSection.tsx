@@ -17,7 +17,7 @@ export const AttivitàSection = () => {
     const [isDragging, setIsDragging] = useState<number | undefined>(undefined);
     //lista delle attività selezionabili
     const listaAttivitaData = context.listeOrganizzaDocumento?.lista_tipi_attivita;
-    const selectOptions = context.selectValues;
+    const selectOptions = context.selectOptions;
     const modelliProcedimentoSelect = selectOptions.organizzaDocumentoSelectValues?.modelli_procedimento;
     //ref per stabilire l'elemento da draggare
     const containerRef = useRef<HTMLDivElement>(null);
@@ -78,7 +78,7 @@ export const AttivitàSection = () => {
 
 const NonEditableActivityComponent = ({ activity }: { activity: AttivitaObj }) => {
     const context = useWizardBandoContext();
-    const selectOptions = context.selectValues.organizzaDocumentoSelectValues
+    const selectOptions = context.selectOptions.organizzaDocumentoSelectValues
     const assignedUser = selectOptions?.utenti_firmatari.find((item) => item.value === activity.utente)?.label
     const assignedGroup = selectOptions?.gruppo_utenti.find((item) => item.value === activity.gruppoUtenti)?.label;
     const datePikerValue = activity.scadenza
@@ -288,7 +288,7 @@ const ActivityComponent = ({ index, activity, activityList, isDragging, setIsDra
     //END FUNZIONALITA' DRAG AND DROP DEGLI ELEMENTI--------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     const context = useWizardBandoContext();
-    const selectOptions = context.selectValues.organizzaDocumentoSelectValues
+    const selectOptions = context.selectOptions.organizzaDocumentoSelectValues
 
 
     //states
@@ -440,8 +440,8 @@ function SelectActivityComponent({ selectOptions, data, setData }: { selectOptio
 
     function addAttivitaToList(value: string | number | undefined) {
         //se undefined non faccio nulla
-        if (!value) return
-        const uniqueId = uuid()
+        if (!value) return;
+        const uniqueId = uuid();
         //prendo l'oggetto attività alla lista delle attività nel redux state
         const selectedActivity = listaAttivitaData?.find((item) => item.actionId === value);
 
@@ -453,8 +453,8 @@ function SelectActivityComponent({ selectOptions, data, setData }: { selectOptio
                 ...selectedActivity
             };
 
-            setData(prev => [...prev, newActivityObj])
-            setValue(undefined)
+            setData(prev => [...prev, newActivityObj]);
+            setValue(undefined);
         };
     };
 

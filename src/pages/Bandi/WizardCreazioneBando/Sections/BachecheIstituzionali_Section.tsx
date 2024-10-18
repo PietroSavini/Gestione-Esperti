@@ -25,11 +25,6 @@ export const BachecheIstituzionali_Section = (props: Props) => {
     const {listaAttivita, setListaAttivita} = attivita;
     const bachecheIstituzionaliAction =listeOrganizzaDocumento?.lista_tipi_attivita.find(item => item.actionDett === "BACIST");
     
-    useEffect(() => {
-        console.log(selectValues)
-    }, [])
-    
-
     const handleChange = useDebounce(( newValue: any,  field: string ) => {
         const value = newValue.value; 
         const activity = listaAttivita.find(item => item.Id === id);

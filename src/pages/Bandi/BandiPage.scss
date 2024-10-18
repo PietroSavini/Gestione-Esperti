@@ -58,10 +58,9 @@
                 }
                 .navigation{
                     border-bottom: 1px solid #efefef;
-                    
+                    display: none;
                     @media screen and (min-width:800px){
                         display: flex;
-                        
                         padding:.5rem 1rem;
                         border-top:1px solid #efefef;
                         background-color:#fafbffff;

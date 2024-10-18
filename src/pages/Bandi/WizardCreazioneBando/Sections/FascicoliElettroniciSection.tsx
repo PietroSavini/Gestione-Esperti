@@ -51,16 +51,16 @@ async function GET_FASCICOLI(inputValue: string) {
             return response;
         })
         .catch((err) => {
-            console.log(err)
-            return []
-        })
+            console.log(err);
+            return [];
+        });
 }
 //funzione triggerata dalla select che ritorna un oggetto type = FascicoloElettronico
 async function loadOptions(inputValue: string, callback: any) {
     if (!inputValue || inputValue.length < 3) {
-        callback([])
-        return
-    }
+        callback([]);
+        return;
+    };
     const data = await GET_FASCICOLI(inputValue);
     callback(data);
 }
@@ -81,7 +81,6 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
         setError(undefined);
         const fascicolo: FascicoloElettronico = newValue;
         setFascicoloSelezionato(fascicolo);
-
         //faccio chiamata per vedere se ci sono sottofascicoli/inserti per il fascicolo selezionato
         const tempSottofascicoli = await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_SOTTOFASCICOLI_INSERTI', sService: 'READ_DOCUMENTI', body: { idFascicolo: newValue.value } })
             .then((res) => {
@@ -120,13 +119,13 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
                 return data[index] = newFascicolo.fascicolo_id;
             }
         } else {
-            setError('il Fascicolo è già selezionato')
-        }
-    }
+            setError('il Fascicolo è già selezionato');
+        };
+    };
     //funzione che sostituisce  il fascicolo nuovo a quello precedente in UI
     const replaceFascicoloSelezionatoDisplay = (newFascicolo: FascicoloElettronico) => {
-        const data = displayFascicoliSelezionati
-        const oldFascicolo = item
+        const data = displayFascicoliSelezionati;
+        const oldFascicolo = item;
         //trovo l'index dell'oggetto vecchio oggetto
         const index = data.findIndex(existingItem => existingItem.fascicolo_id === oldFascicolo.fascicolo_id);
         if (index !== -1) {
@@ -134,8 +133,8 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
             const newData = [...data];
             newData[index] = newFascicolo;
             setDisplayFascicoliSelezionati(newData);
-        }
-    }
+        };
+    };
     // funzione di delete delle Rows
     const deleteFascicoloSelezionato = () => {
         const fascicolo = item
@@ -145,8 +144,7 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
         // Rimuovo l'elemento dall'array di UI 
         const updatedDisplayFascicoliSelezionati = displayFascicoliSelezionati.filter(item => item.fascicolo_id !== fascicolo.fascicolo_id);
         setDisplayFascicoliSelezionati(updatedDisplayFascicoliSelezionati);
-
-    }
+    };
 
     //funzione di salvataggio
     const save = () => {
@@ -155,14 +153,14 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
         //nel caso in cui sottofascicolo è selezionato, sostituisci il fascicolo corrente con quello selezionato, sia dall'array che consente il display e sia l'id fascicolo dall array dei fascicoli selezionati
         if (sottoFascicoloSelezionato !== null) {
             //sostituisco  il fascicolo_id  precedente con quello nuovo 
-            replaceFascicoloSelezionato(sottoFascicoloSelezionato)
-            return
-        }
+            replaceFascicoloSelezionato(sottoFascicoloSelezionato);
+            return;
+        };
         if (fascicoloSelezionato !== null) {
-            replaceFascicoloSelezionato(fascicoloSelezionato)
-            return
-        }
-    }
+            replaceFascicoloSelezionato(fascicoloSelezionato);
+            return;
+        };
+    };
 
     if (!editMode) {
         return (
@@ -182,7 +180,7 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
                 </Box>
             </>
         )
-    }
+    };
     return (
         <>
             <Box sx={{ borderBottom: '1px solid #eeeeee', backgroundColor: `${error ? 'rgba(237, 81, 81, .2)' : '#fff'}` }} boxShadow={'0 0 10px #efefef'} padding={'1.5rem 1rem'} gap={2} display={'flex'} alignItems={'center'}>
@@ -218,12 +216,12 @@ const FascicoloSelezionatoRow = (props: FascicoloSelezionatoRowTypes) => {
             {error && <Typography color={'error'}>{error}</Typography>}
         </>
     )
-}
+};
 
 
 export const FascicoliElettroniciSection = ({className}: {className:string,}) => {
      // variabili di stato per Fascicoli elettronici collegati
-     const {fascicoliSelezionati, setFascicoliSelezionati} = useWizardBandoContext().fascicoli
+     const {fascicoliSelezionati, setFascicoliSelezionati} = useWizardBandoContext().fascicoli;
      const [fascicoloSelezionato, setFascicoloSelezionato] = useState<FascicoloElettronico | null>(null);
      const [sottoFascicoloSelezionato, setSottoFascicoloSelezionato] = useState<FascicoloElettronico | null>(null);
      const [displayFascicoliSelezionati, setDisplayFascicoliSelezionati] = useState<FascicoloElettronico[]>([]);
@@ -232,20 +230,13 @@ export const FascicoliElettroniciSection = ({className}: {className:string,}) =>
 
     //controllo l'array per pulire gli errori al cambio
     useEffect(() => {
-        setErrorFascicolo(undefined)
-
-    }, [fascicoliSelezionati])
-
-    useEffect(() => {
-        console.log(sottofascicoli)
-        
-    }, [sottofascicoli])
-
+        setErrorFascicolo(undefined);
+    }, [fascicoliSelezionati]);
 
     //funzione passata al'async select per selezionare l'oggetto da salvare sulla variabile di state
     const onFascicoloChange = async (newValue: SingleValue<any>) => {
         //cleanup sottofascicoli necessario se no potrebbe rimanere il value del sottofascicolo incastrato nella select in disabled quando dopo aver inserito un sottofascicolo si cerca un fascicolo senza sottofascicoli
-        setSottofascicoli([])
+        setSottofascicoli([]);
         setErrorFascicolo(undefined);
         const fascicolo: FascicoloElettronico = newValue;
         setFascicoloSelezionato(fascicolo);
@@ -259,9 +250,9 @@ export const FascicoliElettroniciSection = ({className}: {className:string,}) =>
             })
             .catch((err) => {
                 console.error(err);
-                return []
+                return [];
             });
-        setSottofascicoli(tempSottofascicoli)
+        setSottofascicoli(tempSottofascicoli);
     }
     //funzione per selezione di sottofascicolo 
     const onSottoFascicoloChange = (newValue: SingleValue<any>) => {
@@ -270,7 +261,7 @@ export const FascicoliElettroniciSection = ({className}: {className:string,}) =>
             const sottoFascicolo: FascicoloElettronico = { ...newValue, isSottofascicolo: true };
             setSottoFascicoloSelezionato(sottoFascicolo);
         } else {
-            setSottoFascicoloSelezionato(newValue)
+            setSottoFascicoloSelezionato(newValue);
         };
     }
     // funzione che gestisce logica di aggiunta del fascicolo selezionato, aggiunge fascicolo_id del fascicoloselezionato/sottoFascicoloSelezionato all'array fascicoliSelezionati[] 
@@ -278,32 +269,32 @@ export const FascicoliElettroniciSection = ({className}: {className:string,}) =>
     const addToFascicoliSelezionati = () => {
 
         if (sottoFascicoloSelezionato === null && fascicoloSelezionato === null) {
-            setErrorFascicolo('selezionare il fascicolo da collegare')
-            return
-        }
+            setErrorFascicolo('selezionare il fascicolo da collegare');
+            return;
+        };
         if (sottoFascicoloSelezionato !== null) {
             if (!fascicoliSelezionati.includes(sottoFascicoloSelezionato.fascicolo_id)) {
                 setFascicoliSelezionati((prev) => [...prev, sottoFascicoloSelezionato.fascicolo_id]);
-                setDisplayFascicoliSelezionati((prev) => [...prev, sottoFascicoloSelezionato])
-                setErrorFascicolo(undefined)
-                return
+                setDisplayFascicoliSelezionati((prev) => [...prev, sottoFascicoloSelezionato]);
+                setErrorFascicolo(undefined);
+                return;
             } else {
-                setErrorFascicolo('Fascicolo già Collegato')
-                return
+                setErrorFascicolo('Fascicolo già Collegato');
+                return;
             }
-        }
+        };
         if (fascicoloSelezionato !== null) {
             if (!fascicoliSelezionati.includes(fascicoloSelezionato.fascicolo_id)) {
-                setFascicoliSelezionati((prev) => [...prev, fascicoloSelezionato.fascicolo_id])
-                setDisplayFascicoliSelezionati((prev) => [...prev, fascicoloSelezionato])
-                setErrorFascicolo(undefined)
-                return
+                setFascicoliSelezionati((prev) => [...prev, fascicoloSelezionato.fascicolo_id]);
+                setDisplayFascicoliSelezionati((prev) => [...prev, fascicoloSelezionato]);
+                setErrorFascicolo(undefined);
+                return;
             } else {
-                setErrorFascicolo('Fascicolo già Collegato')
-                return
+                setErrorFascicolo('Fascicolo già Collegato');
+                return;
             }
-        }
-    }
+        };
+    };
  
   return (
     

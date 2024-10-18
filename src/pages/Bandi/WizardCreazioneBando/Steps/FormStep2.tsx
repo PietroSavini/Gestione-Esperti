@@ -7,6 +7,9 @@ import { ProtocollazioneSection } from '../Sections/ProtocollazioneSection';
 import { AmministrazioneTrasparente_Section } from '../Sections/AmministrazioneTrasparente_Section';
 import { BachecheIstituzionali_Section } from '../Sections/BachecheIstituzionali_Section';
 import { useWizardBandoContext } from '../WizardBandoContext';
+import { Grid, Paper } from '@mui/material';
+import { Custom_Select2 } from '../../../../components/partials/Inputs/Custom_Select2';
+import { Custom_TextField } from '../../../../components/partials/Inputs/CustomITextField';
 
 //passo funzione register e array di ogetti errore di react hook forms al componente per permettere la validazione
 
@@ -17,12 +20,8 @@ export const FormStep2 = (props: FormStepProps) => {
     const [isPubblicaAlboSelected, setIsPubblicaAlboSelected] = useState<boolean>(false);
     const [isAmministrazioneTrasparenteSelected, setIsAmministrazioneTrasparenteSelected] = useState<boolean>(false);
     const [isBachecheIstituzionaliSelected, setIsBachecheIstituzionaliSelected] = useState<boolean>(false);
-    const selectOptions = useWizardBandoContext().selectValues
-    const organizzaDocumentoSelectOptions = selectOptions.organizzaDocumentoSelectValues;
-    const pubblicazioniSelectOptions = selectOptions.pubblicazioniSelectValues;
-    // valori delle select 
-    const selectValues = {...organizzaDocumentoSelectOptions, ...pubblicazioniSelectOptions};
-    
+    const selectOptions = useWizardBandoContext().selectOptions
+    const selectValues = {...selectOptions.organizzaDocumentoSelectValues!, ...selectOptions.pubblicazioniSelectValues!}
 
     //LOGICA PER ESCLUSIONE DEI CAMPI DI INPUT QUANDO I FORM NON SONO APERTI / SELEZIONATI
     //FIRMA
@@ -42,6 +41,59 @@ export const FormStep2 = (props: FormStepProps) => {
 
     return (
         <>  
+        <Paper className={className}>
+
+            <Grid container sx={{ marginBottom: '1rem' }}>
+
+                <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
+                    <Custom_Select2
+                        options={[{ value: '2024', label: '2024' }]}
+                        disabled
+                        control={control}
+                        defaultValue={{ value: '2024', label: '2024' }}
+                        name='anno'
+                        label='Anno di riferimento'
+                    />
+
+                </Grid>
+
+                <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
+                    <Custom_Select2
+                        placeholder='Seleziona A.O.O...'
+                        control={control}
+                        name='aoo'
+                        options={selectValues.aoo}
+                        label='A.O.O'
+                        isClearable
+                    />
+                </Grid>
+
+                <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
+                <Custom_Select2
+                        control={control}
+                        name='classeAddizionale'
+                        options={selectValues!.classi_documentali}
+                        label='Classe Addizionale'
+                        placeholder='Seleziona classe Addizionale...'
+
+                    />
+                </Grid>
+
+                <Grid padding={'0 1rem'} item xs={12} md={6} lg={3}>
+                    
+                </Grid>
+
+                <Grid padding={'0 1rem'} item xs={12}>
+                    <Custom_TextField
+                        {...register('tagDocumento')}
+                        label='Tag documento (min 2 e max 20 caratteri)'
+                        placeholder='Inserisci tag...'
+                        backgroundColor='#fff'
+                    />
+                </Grid>
+
+            </Grid>
+        </Paper>
             <FirmaSection selectValues={selectValues} openSection={setFirmaExpanded} isOpen={isFirmaExpanded} className={className} control={control} errors={errors}/>
     
             <ProtocollazioneSection selectValues={selectValues} openSection={setProtocolloExpanded} isOpen={isProtocolloExpanded} className={className} control={control} register={register} errors={errors} />

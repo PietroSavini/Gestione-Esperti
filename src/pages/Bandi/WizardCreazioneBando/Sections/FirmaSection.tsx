@@ -29,7 +29,6 @@ export const FirmaSection = (params: Params) => {
         daFirmare: [
             { value: 0, label: 'si' },
             { value: 1, label: 'no' },
-
         ],
         tipoFirma: [
             { value: 0, label: 'Firma digitale Pades', },
@@ -41,20 +40,18 @@ export const FirmaSection = (params: Params) => {
         utenteFirmatario: selectValues!.utenti_firmatari,
 
     };
-    const organizzaDocumentoListe = useWizardBandoContext().listeOrganizzaDocumento
-
+    const organizzaDocumentoListe = useWizardBandoContext().listeOrganizzaDocumento;
     const FIRMA_D = organizzaDocumentoListe?.lista_tipi_attivita.find((item) => item.actionDett === "FIRMA_D");
     const FIRMA_G = organizzaDocumentoListe?.lista_tipi_attivita.find((item) => item.actionDett === "FIRMA_G");
     const newId = uuid();
     const today = dayjs();
     const [id] = useState<string>(newId);
     const [tipoFirma] = useState<Option>(firmaOptions.tipoFirma[0]);
-
     //dati WizardBandoContext
     const attivita = useWizardBandoContext().attivita;
     const { listaAttivita, setListaAttivita } = attivita;
     //states per datepiker
-    const [firmaScadenza, setFirmaScadenza] = useState(today)
+    const [firmaScadenza, setFirmaScadenza] = useState(today);
     //watcher per creare l'oggetto attività firma e modificarlo in live
     useEffect(() => {
         if (isOpen) {
@@ -79,7 +76,7 @@ export const FirmaSection = (params: Params) => {
             //console.log("'firma' deselezionato, rimuovo l'attività dalla lista")
             const firmaRemovedActivityList = listaAttivita.filter((item) => item.Id !== id);
             setListaAttivita(firmaRemovedActivityList);
-        }
+        };
     }, [isOpen]);
 
     //handlers
@@ -96,20 +93,19 @@ export const FirmaSection = (params: Params) => {
         const activity = listaAttivita.find(item => item.Id === id);
         switch (field) {
             case 'fiTipoFirma':
-                
                 if (value !== 3) {
                     const newActivity: AttivitaObj = {
                         ...activity!,
                         tipoFirma: value as number,
                     };
-                    setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item))
+                    setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item));
                 } else {
                     const newActivity: AttivitaObj = {
                         ...activity!,
                         tipoFirma: value as number,
                         ...FIRMA_G
                     };
-                    setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item))
+                    setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity : item));
                 };
                 break;
 
@@ -145,17 +141,17 @@ export const FirmaSection = (params: Params) => {
                 const date = dayjs(newValue);
                 const isDateBeforeToday1 = dayjs(date).isBefore(dayjs(today));
                 if (isDateBeforeToday1) {
-                    console.log('data di scadenza non valida ')
+                    console.log('data di scadenza non valida ');
                     return;
                 }
                 setFirmaScadenza(newValue);
                 const newActivity3: AttivitaObj = {
                     ...activity!,
                     scadenza: date
-                }
+                };
                 setListaAttivita(listaAttivita.map((item) => item.Id === id ? newActivity3 : item));
                 break;
-        }
+        };
 
     }, 200);
 

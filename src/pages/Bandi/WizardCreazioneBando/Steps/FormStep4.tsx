@@ -47,10 +47,6 @@ export const FormStep4 = (props: FormStep4Props) => {
 
   }, [TEspId])
 
-  useEffect(()=>{
-    console.log(data)
-  },[data])
-
   const addNewSection = () => {
     if (!selectedItem) {
       setIsError(true)
@@ -103,7 +99,7 @@ export const FormStep4 = (props: FormStep4Props) => {
         </Box>
         
         {data && data.length > 0 && data.map((item: Requisito_Table, index:any) =>
-          <Table_PunteggiBando data={item} key={index} setData={setData!} tespId={TEspId!}/>
+          <Table_PunteggiBando data={item} key={index} setData={setData!}/>
         )}
 
         {!data || data.length === 0 &&

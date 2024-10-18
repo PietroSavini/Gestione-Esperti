@@ -13,8 +13,7 @@ export const ArchivioSelezionatoSection = ({ className }: { className: string })
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [selectedTreeViewItem, setSelectedTreeViewItem] = useState<Tview | null>(null);
     const [archivioLabel, setArchivioLabel] = useState<string | undefined>(undefined);
-    const setArchivio = useWizardBandoContext().archivi.setArchivioCollegato
-
+    const setArchivio = useWizardBandoContext().archivi.setArchivioCollegato;
     //treeViewData
     const treeview = useWizardBandoContext().listeOrganizzaDocumento?.lista_archivi;
     // uso useMomo per memorizzare i dati della treview che non dovrebbero cambiare ad ogni rerendering
@@ -30,7 +29,7 @@ export const ArchivioSelezionatoSection = ({ className }: { className: string })
         setArchivio(() => archivioSelezionato);
         setArchivioLabel(() => param ? param.label : undefined);
         setIsOpen(false);
-    }
+    };
     //funzione che renderizza la lable dell' archivio collegato
     function displayArchivioLabel(str: string) {
         return (
@@ -41,7 +40,7 @@ export const ArchivioSelezionatoSection = ({ className }: { className: string })
                 </Box>
             </>
         )
-    }
+    };
 
     return (
         <Paper className={className} sx={{ padding: '1rem 1rem', marginBottom: '1rem' }} elevation={2}>

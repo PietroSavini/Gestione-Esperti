@@ -6,7 +6,7 @@ import { useWizardBandoContext } from '../WizardBandoContext';
 
 export const FormStep5 = (props:FormStepProps) => {
     const { register, errors, className, control, fn , unregister} = props;
-    const respProc = useWizardBandoContext().selectValues.organizzaDocumentoSelectValues!.utenti_firmatari;
+    const respProc = useWizardBandoContext().selectOptions.organizzaDocumentoSelectValues!.utenti_firmatari;
     
   return (
     <>  

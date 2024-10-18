@@ -30,7 +30,7 @@ export const CollegaAltriDocumentiSection = (props: Props) => {
                 onClose={() => onClose()}
                 fullScreen
                 sx={{
-                    padding: '4rem 4rem',
+                    padding: '2rem 2rem',
                     "& .MuiPaper-root": {
                         borderRadius: '10px'
                     }
