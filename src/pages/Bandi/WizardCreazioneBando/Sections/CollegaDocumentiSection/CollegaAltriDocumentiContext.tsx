@@ -25,14 +25,12 @@ type RicercaBandoContextProvider = {
 export const CollegaAltriDocumentiContext = createContext<RicercaBandoContext | null>(null);
 
 export default function CollegaAltriDocumentiContextProvider({ children }: RicercaBandoContextProvider) {
-    //Accedo ai dati che mi servono dal WizardBando Context Provider.
-
+    //filteri impostati di default
     const defaultFilters: any = {
         annoRif: 2024,
+        searchText: ''
     };
-
     //states
-    //filtri
     const [ filters, setFilters] = useState<any>(defaultFilters);
     //rows per la datagrid dei risultati
     const [dataGridData, setDataGridData] = useState<any[]>([])

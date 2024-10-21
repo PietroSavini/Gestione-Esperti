@@ -14,6 +14,7 @@ type CustomProps = {
   isRequired?: boolean;
   backgroundColor?:string;
   heigth?:string;
+  isClearable?: boolean
 }
 const id = uuid();
 
@@ -21,6 +22,7 @@ export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='it'>
       <DatePicker
+        slotProps={{ field: { clearable: props.isClearable ? props.isClearable : false } }}
         slots={{ textField: DatePickerTextfield }}
         label={  <LabelComponent label={props.label}  isRequired={props.isRequired ? props.isRequired : false}/>}
         {...props}
@@ -50,7 +52,7 @@ export const Custom_DatePicker = (props: DatePickerProps<any> & CustomProps) => 
           },
 
           "& fieldset": {
-            borderColor:'rgba(0,0,0,.2)',
+            borderColor: props.error ? 'red':'rgba(0,0,0,.2)',
             borderWidth:'1px',
             borderStyle:'solid',
             boxShadow: "0px 0px 2px grey",
@@ -75,7 +77,7 @@ const DatePickerTextfield = React.forwardRef(
       props.label && 
       <InputLabel 
         id={id}
-        sx={{  color: '#127aa3ff', fontWeight: 600, fontSize: 12.6, marginBottom: '4.2px' }}
+        sx={{  color:'#127aa3ff', fontWeight: 600, fontSize: 12.6, marginBottom: '4.2px' }}
       >
         {props.label}
       </InputLabel>
@@ -85,7 +87,7 @@ const DatePickerTextfield = React.forwardRef(
         {...props}
         label={null}
         aria-labelledby={props.label ? id : undefined}
-        ref={ref} 
+        ref={ref}
       />
     </>
     )

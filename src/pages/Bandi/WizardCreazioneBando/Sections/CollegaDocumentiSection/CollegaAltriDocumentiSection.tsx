@@ -16,6 +16,7 @@ export const CollegaAltriDocumentiSection = (props: Props) => {
     function onClose() {
         setIsOpen(false)
     }
+    
     return (
         <>
             <Paper className={props.className} sx={{ padding: '1rem 1rem', marginBottom: '1rem', }} elevation={2}>

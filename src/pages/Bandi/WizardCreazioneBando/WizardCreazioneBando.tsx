@@ -65,12 +65,12 @@ export const WizardCreazioneBando = () => {
         dispatch(closeLoader());
     }, [isLoaded]);
 
-    //watcher che utilizzo per chiamare i punteggi collegati alla tipologiaEsperto e salvarli per mostrarli nel 4o step
+    //watcher che utilizzo per chiamare i punteggi collegati al cambio della tipologia esperto
     useEffect(() => {
         if (TEsp) {
             GET_ALL_PUNTEGGI_COLLEGATI(TEsp);
         };
-        if (TEsp === undefined || null && punteggi.length > 0) {
+        if (!TEsp && punteggi.length > 0) {
             setRequisitiPunteggi([]);
         };
     }, [TEsp]);
@@ -81,12 +81,12 @@ export const WizardCreazioneBando = () => {
     //steps (x stepper MUI)
     const steps = [
         {
-            label: 'Dati Generali e metadati',
+            label: 'Dati enerali ',
             isCurrentStep: true,
             isStepCompleted: false
         },
         {
-            label: 'Attività',
+            label: 'metadati e attività',
             isCurrentStep: false,
             isStepCompleted: false
         },

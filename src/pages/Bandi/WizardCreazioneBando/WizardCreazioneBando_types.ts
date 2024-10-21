@@ -73,7 +73,7 @@ export type PubblicazioniListe = {
 }
 
 export type PubblicazioniSelect = {
-    trasparenza: Option[] | [];
+    trasparenza: Option[] | [] ;
     uffici: Option[] | [];
     atti: Option[] | [];
     bacheche: Option[] | [];

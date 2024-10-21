@@ -16,7 +16,7 @@ type Props = {
     defaultValue?: Option | null
     readOnly?:boolean;
     disabled?:boolean;
-    options:Option[] | [];
+    options:Option[] | [] | undefined;
     placeholder?:string;
     validations?:Object;
     isMulti?:boolean;
@@ -86,7 +86,7 @@ export const Custom_Select2 = (props:Props) => {
                             isSearchable
                             classNamePrefix='react-select'
                             ref={ref}
-                            options={options}
+                            options={options ? options : []}
                             onChange={ (selectedOption) => {
                                 if (selectedOption) {
                                     if(onChangeSelect){
@@ -99,7 +99,7 @@ export const Custom_Select2 = (props:Props) => {
                                     onChange(null); //Imposta il valore a null quando l'opzione "clear" viene selezionata
                                 }
                             } }
-                            value={options.find(c => c.value === value)}
+                            value={options ? options.find(c => c.value === value) : null}
                             name={name}
                             placeholder={placeholder ? placeholder : 'Seleziona...'}
                             id={id? id : rndId}

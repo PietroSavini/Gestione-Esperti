@@ -9,6 +9,7 @@ type Props = {
 }
 export const CollegaDocumentiContent = (props:Props) => {
     const {closeDialog} = props;
+
     return (
         <>
             <Box display={'flex'} flexDirection={'column'} height={'100%'} padding={'1rem 0rem 0rem 0rem'} >

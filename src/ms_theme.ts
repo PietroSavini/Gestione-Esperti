@@ -13,14 +13,15 @@ export const theme = createTheme({
 
         }
       },
-      
-      // Mui: {
-      //   styleOverrides: {
-      //     footerContainer: {
-      //       justifyContent: 'initial',
-      //     },
-      //   },
-      // },
+      //@ts-ignore
+      MuiDataGrid: {
+        styleOverrides: {
+          footerContainer: {
+            justifyContent: 'initial',
+          },
+        },
+      },
+
       MuiTablePagination:{
         styleOverrides:{
           root:{
