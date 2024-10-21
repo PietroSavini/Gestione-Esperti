@@ -6,18 +6,14 @@ import { FormStep1 } from './Steps/FormStep1';
 import { FormStep2 } from './Steps/FormStep2';
 import { FormStep3 } from './Steps/FormStep3';
 import { ActionButton } from '../../../components/partials/Buttons/ActionButton';
-import { Requisito_Table } from '../../SettingsPage/types';
 import { convertData } from '../../SettingsPage/functions';
-import { FormStep4 } from './Steps/FormStep4';
 import { FormStep5 } from './Steps/FormStep5';
 import { useWizardBandoContext } from './WizardBandoContext';
 import { closeLoader, openLoader } from '../../../app/store/Slices/loaderSlice';
 import Loader from '../../../components/partials/Loader/Loader';
 import dayjs from 'dayjs';
-import { AttivitaObj, DocumentoData, PunteggiFinali } from './WizardCreazioneBando_types';
+import { AttivitaObj, DocumentoData } from './WizardCreazioneBando_types';
 import { useAppDispatch } from '../../../app/ReduxTSHooks';
-
-
 
 export const WizardCreazioneBando = () => {
     //react Hook Forms

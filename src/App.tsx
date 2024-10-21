@@ -16,12 +16,13 @@ import { theme } from './ms_theme'
 import { WizardBando } from './pages/Bandi/WizardBando';
 import { TipologiaShow } from './pages/SettingsPage/Tabs/TipologiaEspertoTab/TipologiaShow/TipologiaShow';
 import { RicercaBando } from './pages/Bandi/RicercaBando/RicercaBando';
+import { Login } from './pages/LoginPage/Login';
 
 
 function App() {
-  
+
   const sidebarData: DrawerData = sidebar;
-  
+
 
   return (
     <>
@@ -30,7 +31,7 @@ function App() {
           <ResponsiveDrawer data={sidebarData} />
           <main>
             <Routes>
-              persistent login ed auth dovrebbero avvolegere tutte le routes ma a scopo di test e sviluppo ancora non possiamo farlo
+            <Route path='/' element={<Login />} />
               <Route element={<PersistentLogin />}>
                 <Route element={<RequireAuth />}>
                   <Route index path='/Dashboard' element={<Dashboard />} />
@@ -39,10 +40,10 @@ function App() {
                   <Route path='/impostazioni/visualizza-tipologia' element={<TipologiaShow />} />
                   <Route path='/Bandi' element={<WizardBando />} />
                   <Route path='/Ricerca-bandi' element={<RicercaBando />} />
-                  {/* Catch All */}
-                  <Route path='*' element={<NotFound />} />
                 </Route>
               </Route>
+              {/* Catch All */}
+              <Route path='*' element={<NotFound />} />
             </Routes>
             <Loader />
           </main>

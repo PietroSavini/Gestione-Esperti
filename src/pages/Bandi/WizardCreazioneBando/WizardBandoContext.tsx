@@ -154,7 +154,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
             const firstItem = {
                 reqId: item.fi_ee_req_id,
                 puntVal: 0
-            }
+            };
             resultArr.push(firstItem)
             if (item.requisiti_list.length > 0) {
                 item.requisiti_list.map((sottoItem) => {
@@ -163,11 +163,11 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
                         puntVal: sottoItem.fi_ee_req_punteggio
                     }
                     resultArr.push(sottoReq)
-                })
-            }
+                });
+            };
         })
-        setPunteggi(resultArr)
-    }, [requisitiPunteggi])
+        setPunteggi(resultArr);
+    }, [requisitiPunteggi]);
 
 
 
