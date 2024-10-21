@@ -1,5 +1,5 @@
-import { itIT as CoreLanguage } from "@mui/material/locale";
 import { createTheme } from "@mui/material/styles";
+import { itIT as CoreLanguage } from "@mui/material/locale";
 import { itIT } from "@mui/x-data-grid";
 import { itIT as dateLanguage } from "@mui/x-date-pickers";
 
@@ -13,14 +13,14 @@ export const theme = createTheme({
 
         }
       },
-      // @ts-ignore
-      MuiDataGrid: {
-        styleOverrides: {
-          footerContainer: {
-            justifyContent: 'initial',
-          },
-        },
-      },
+      
+      // Mui: {
+      //   styleOverrides: {
+      //     footerContainer: {
+      //       justifyContent: 'initial',
+      //     },
+      //   },
+      // },
       MuiTablePagination:{
         styleOverrides:{
           root:{

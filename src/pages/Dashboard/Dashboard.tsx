@@ -1,12 +1,11 @@
-import { Box, Grid } from '@mui/material'
 import './Dashboard.scss'
+import { Box, Grid } from '@mui/material'
 import { Widget } from '../../components/Widget/Widget';
 import { DashboardSection } from '../../components/DashboardSection/DashboardSection';
 import { data, otherData } from '../../components/SectionRows/data';
 
 export const Dashboard = () => {
 
-  
   return (
     <>
       {/* //widgets

@@ -6,7 +6,21 @@ import { selectToken, setCredentials } from "../../app/store/Slices/authSlice";
 import { AxiosHTTP } from "../../app/AXIOS_ENGINE/AxiosHTTP";
 import { closeLoader, openLoader } from "../../app/store/Slices/loaderSlice";
 import Loader from "../partials/Loader/Loader";
+import ResponsiveDrawer from "../partials/Drawer/Drawer";
+import { sidebar } from "../partials/Drawer/sidebarProps";
 
+const Main = () => {
+  return(
+    <>
+      <div className="APP">
+        <ResponsiveDrawer data={sidebar} />
+        <main>
+          <Outlet />
+        </main>
+      </div>
+    </>
+  )
+};
 
 export const PersistentLogin = () => {
 
@@ -20,8 +34,8 @@ export const PersistentLogin = () => {
         dispatch(openLoader())
         const result: any = await AxiosHTTP({url:'/api/oauth2/Refresh', auth:true, body:{}});
         const newCredentials = {
-          user: result.iCustomerType, //da sostituire con lo user giusto
-          accessToken: result.token
+          user: result.response.iCustomerType, //da sostituire con lo user giusto
+          accessToken: result.response.token
         };
         dispatch(setCredentials(newCredentials));
        }catch(err){
@@ -34,15 +48,15 @@ export const PersistentLogin = () => {
 
     useEffect(()=>{
         !isAuth ? verifyRefreshToken() : setIsLoading(false);
-    },[])
+    },[]);
 
-  
-  return (
-    <>
+    
+    return (
+      <>
         {
-            isLoading 
-                ? <Loader />
-                : <Outlet />
+          isLoading 
+          ? <Loader />
+          : <Main />
         }
     </>
   )

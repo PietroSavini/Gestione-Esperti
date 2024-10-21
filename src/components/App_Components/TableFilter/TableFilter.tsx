@@ -1,6 +1,6 @@
 import './TabelFilter.scss'
 import {  Grid, Paper, TextField,Button,FormControl, InputLabel, Select, MenuItem} from '@mui/material';
-import { DataTable } from '../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/Tables/Table_tipologieDiSistema'
+//import { DataTable } from '../../../pages/SettingsPage/Tabs/TipologiaEspertoTab/Tables/Table_tipologieDiSistema'
 import { useState } from 'react';
 
 interface UserData {
@@ -135,7 +135,7 @@ export const TableFilter = ({data}: {data: UserData[]}) => {
           {/* fine del form */}
 
           {/* Data Table generata dinamicamente */}
-          {filteredData.length > 0 && (<DataTable data={filteredData} />)}
+          {filteredData.length > 0 && (<></>)}
           <br />
           {/* /Data Table */}
         </Paper>

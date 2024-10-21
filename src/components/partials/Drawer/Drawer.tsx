@@ -1,5 +1,5 @@
+import './Drawer.scss'
 import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -10,8 +10,8 @@ import { Link, useLocation } from 'react-router-dom';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { DrawerData, Item, Section, Variant } from './DrawerTypes';
-import './Drawer.scss'
 import useThrottled from '../../../app/Hooks/useThrottledHook';
+import Box from '@mui/material/Box';
 
 
 

@@ -1,4 +1,4 @@
-import { Box, Dialog, FormHelperText, Grid, Icon, Paper, Typography } from '@mui/material'
+import React from 'react';
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../../../../app/ReduxTSHooks';
@@ -11,7 +11,7 @@ import { Custom_Select2 } from '../../../../../components/partials/Inputs/Custom
 import { Custom_TextField } from '../../../../../components/partials/Inputs/CustomITextField';
 import { Requisito_Table, TipologiaEspertoRow } from '../../../types';
 import { convertData } from '../../../functions';
-import React from 'react';
+import { Box, Dialog, FormHelperText, Grid, Icon, Paper, Typography } from '@mui/material'
 
 export type InboundSelectData = {
     fi_ee_req_id: number;

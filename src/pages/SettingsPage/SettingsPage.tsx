@@ -1,6 +1,6 @@
+import './settings.scss'
 import { useState } from 'react'
 import { Box, Divider, Typography } from '@mui/material'
-import './settings.scss'
 import { TipologiaEsperto } from './Tabs/TipologiaEspertoTab/TipologiaEsperto'
 import { RequisitiTab } from './Tabs/RequisitiTab/RequisitiTab'
 import { TabStack } from '../../components/partials/Tabs/TabStack'

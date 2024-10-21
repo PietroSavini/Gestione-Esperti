@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Skeleton,  Divider } from '@mui/material'
 import './DashboardSection.scss'
+import { useEffect, useState } from 'react';
 import { AxiosHTTP, Options } from '../../app/AXIOS_ENGINE/AxiosHTTP';
 import { RowBando } from '../SectionRows/Bandi/RowBando';
 import { RowCandidatura } from '../SectionRows/Candidature/RowCandidatura';
 import { Settings } from '../SectionRows/settingsType';
 import { ActionButton } from '../partials/Buttons/ActionButton';
+import {  Typography, Paper, Skeleton,  Divider, Box } from '@mui/material'
 
 
 type Props = {
