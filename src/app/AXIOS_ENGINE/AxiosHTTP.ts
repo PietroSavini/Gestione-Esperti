@@ -237,11 +237,13 @@ async function refreshAccessToken(fn: Function, api: any, extraOptions: any) {
                 method: 'POST'
             }, api, extraOptions);
 
-            if (refreshResult?.data) {
+            console.log('esito chiamata di refresh: ',refreshResult)
+
+            if (refreshResult?.data.errorCode === 0) {
                 const user = api.getState().auth.user;
-                const accessToken = (refreshResult.data as { token: string }).token;
+                const accessToken = refreshResult.data.response.token ;
                 api.dispatch(setCredentials({ user, accessToken }));
-                console.log('AccessToken Salvato con successo',refreshResult);
+                console.log('AccessToken Salvato con successo');
                 resolve(true);
             } else {
                 processErrorResponse(refreshResult.error as FetchBaseQueryError)

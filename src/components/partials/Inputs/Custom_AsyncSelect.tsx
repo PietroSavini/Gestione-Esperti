@@ -139,7 +139,7 @@ export const Custom_AsyncSelect = (props:SelectProps) => {
                     classNamePrefix='react-select'
                     defaultValue={defaultValue}
                     name={name}
-                    placeholder={placeholder}
+                    placeholder={placeholder ? placeholder : 'seleziona...'}
                     id={id? id : rndId}
                     aria-labelledby={`${name}-select-label`}
                     styles={{ 

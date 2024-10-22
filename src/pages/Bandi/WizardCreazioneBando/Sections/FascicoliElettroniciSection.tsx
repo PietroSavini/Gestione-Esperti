@@ -35,7 +35,7 @@ type FascicoloSelezionatoRowTypes = {
     fascicoloElettronicoSelezionato: FascicoloElettronico | null;
 }
 
-//funzione che chiama il webservice per fare la ricerca dei fascicoli fatti sulla stringa passata
+//funzione che chiama il webservice per fare la ricerca dei fascicoli in base alla stringa passata
 async function GET_FASCICOLI(inputValue: string) {
     return await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_LISTA_FASCICOLI', sService: 'READ_DOCUMENTI', body: { search: inputValue } })
         .then((res) => {

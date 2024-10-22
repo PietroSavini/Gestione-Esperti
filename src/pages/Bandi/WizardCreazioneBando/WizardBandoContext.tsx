@@ -67,7 +67,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
         const listaUffici = data.lista_uffici;
         const listaTipiAtto = data.lista_tipi_atto;
         const listaTipiAttoBacheche = data.lista_tipi_atto_bacheche;
-        const listaAnagrafiche = data.lista_tipi_anagrafica;
+        const anagrafiche = data.lista_tipi_anagrafica;
         const listaSezioniTrasparenza = data.lista_sezioni_trasparenza;
 
         //preparo l'oggetto contenente gli array di oggetti Option per le select di pubblicazione
@@ -76,7 +76,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
             uffici: createOptionArray({ arr: listaUffici, value: 'id', label: 'descrizione' }),
             atti: createOptionArray({ arr: listaTipiAtto, value: 'id', label: 'descrizione' }),
             bacheche: createOptionArray({ arr: listaTipiAttoBacheche, value: 'Key', label: 'Value' }),
-            anagrafiche: createOptionArray({ arr: listaAnagrafiche, value: 'id', label: 'descrizione' }),
+            anagrafiche : createOptionArray({arr: anagrafiche, value:'idTipoAnagrafica', label:'descrizione'}),
         };
         //salvo l'oggetto 
         setPubblicazioniSelectValues(pubblicazioniSelectObject)
@@ -86,6 +86,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
         //salvo i dati all'interno delle liste
         setOrganizzaDocumentoListe(data);
         //separo le liste per elaborare le select
+        
         const aoo = data.lista_aoo;
         const listaArchivi = data.lista_archivi;
         const assegnatari = data.lista_assegnatari;
@@ -95,9 +96,10 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
         const listaAttivita = data.lista_tipi_attivita;
         const titolari = data.lista_titolari;
         const utentiFirmatari = data.lista_utenti_firmatari;
-
+        
         //preparo l'oggetto contenente gli array di oggetti Option per le select di OrganizzaDocumento
         const organizzaDocumentoSelecObject: OrganizzaDocumentoSelect = {
+            
             aoo: createOptionArray({ arr: aoo, value: 'id', label: 'descrizione' }),
             archivi: createOptionArray({ arr: listaArchivi, value: 'dossier_id', label: 'dossier_name' }),
             assegnatari: createOptionArray({ arr: assegnatari, value: 'fgId', label: 'fsAssigneeUser' }),
@@ -108,9 +110,9 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
             titolari: createTitolariOptionArray(titolari),
             utenti_firmatari: createOptionArray({ arr: utentiFirmatari, value: 'user_id', label: 'utente' }),
         };
+
         //salvo l'oggetto
         setOrganizzaDocumentoSelectValues(organizzaDocumentoSelecObject);
-       
     };
     
     //CHIAMATE DI INIZIALIZZAZIONE PER PRENDERE VALORI DELLE SELECT E DELLE LISTE CHE SERVONO PER IL CORRETTO FUNZIONAMENTO DEL FORM WIZARDBANDO

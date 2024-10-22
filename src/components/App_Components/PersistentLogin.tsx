@@ -30,9 +30,10 @@ export const PersistentLogin = () => {
     const isAuth = ( token !== null);
 
     const verifyRefreshToken = async () => {
+      console.log('refresho')
        try{
         dispatch(openLoader())
-        const result: any = await AxiosHTTP({url:'/api/oauth2/Refresh', auth:true, body:{}});
+        const result: any = await AxiosHTTP({url:'/api/oauth2/refresh', auth:true, body:{}});
         const newCredentials = {
           user: result.response.iCustomerType, //da sostituire con lo user giusto
           accessToken: result.response.token

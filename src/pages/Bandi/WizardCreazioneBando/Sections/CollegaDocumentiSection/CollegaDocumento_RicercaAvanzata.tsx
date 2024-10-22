@@ -1,22 +1,23 @@
 import { Box, Grid, Icon, Divider, Collapse } from "@mui/material";
 import dayjs from "dayjs";
-import { useState, useEffect, SetStateAction } from "react";
+import { useState, useEffect, SetStateAction, useMemo } from "react";
 import AXIOS_HTTP from "../../../../../app/AXIOS_ENGINE/AXIOS_HTTP";
 import useDebounce from "../../../../../app/Hooks/useDebounceHook";
 import { ActionButton } from "../../../../../components/partials/Buttons/ActionButton";
 import { Custom_DatePicker } from "../../../../../components/partials/Inputs/Custom_DatePicker";
-import { Custom_Select2 } from "../../../../../components/partials/Inputs/Custom_Select2";
+import { Custom_Select2, Option } from "../../../../../components/partials/Inputs/Custom_Select2";
 import { Custom_TextField } from "../../../../../components/partials/Inputs/CustomITextField";
-import { Filters } from "../../../RicercaBando/RicercaBandoContext";
 import { TabStack } from "../../../../../components/partials/Tabs/TabStack";
 import { useCollegaAltriDocumentiContext } from "./CollegaAltriDocumentiContext";
 import { useWizardBandoContext } from "../../WizardBandoContext";
-import { Option } from "../../../../../components/partials/Inputs/Custom_Select2";
 import { OrganizzaDocumentoSelect, PubblicazioniSelect } from "../../WizardCreazioneBando_types";
-import { ActionMeta, SingleValue } from "react-select";
+import { Custom_AsyncSelect } from "../../../../../components/partials/Inputs/Custom_AsyncSelect";
 import { Value } from "sass";
 import { Label } from "@mui/icons-material";
-import { DatePicker } from "@mui/x-date-pickers";
+import { convertTreeViewData, createOptionArray } from "../../../../../app/AXIOS_ENGINE/functions/handlers";
+import { CustomTreeview, Tview } from "../../../../../components/partials/TreeView/Treeview";
+
+
 type Props = {
     setRows: React.Dispatch<React.SetStateAction<any[]>>
 }
@@ -99,40 +100,59 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
 
             case 'searchText':
                 newFilters.searchText = newValue;
-            break;
+                break;
 
             case 'anno-riferimento':
                 newValue ? newFilters.annoRif = parseInt(newValue.value) : delete newFilters['annoRif'];
-            break;
+                break;
 
             case 'aoo':
                 newValue ? newFilters.fiAooId = newValue.value : delete newFilters['fiAooId'];
-            break;
+                break;
 
             case 'classi-doc':
                 newValue ? newFilters.fiTypeId = newValue.value : delete newFilters['fiTypeId'];
-            break;
+                break;
 
             case 'stato-firma':
                 newValue ? newFilters.StatoFirma = newValue.value : delete newFilters['StatoFirma'];
-            break;
+                break;
 
             case 'caricato-da':
                 newValue ? newFilters.fiUserId = newValue.value : delete newFilters['fiUserId'];
-            break;
+                break;
 
             case 'stato-doc':
                 newValue ? newFilters.fiFileStatus = newValue.value : delete newFilters['fiFileStatus'];
-            break;
+                break;
 
             case 'data-inizio':
                 newValue ? newFilters.fdDataInizio = dayjs(newValue) : delete newFilters['fdDataInizio'];
-            break;
+                break;
 
             case 'data-fine':
                 newValue ? newFilters.fdDataFine = dayjs(newValue) : delete newFilters['fdDataFine'];
-            break;
+                break;
 
+            case 'tipo-protocollo':
+                newValue ? newFilters.fsProtType = newValue.value : delete newFilters['fsProtType'];
+                break;
+
+            case 'protocollo-num':
+                newValue !== '' ? newFilters.fsNumeroPro = newValue.value : delete newFilters['fsNumeroPro']; 
+                break;
+
+            case 'titolario':
+                newValue ? newFilters.fiFileTitolarioId = newValue.value : delete newFilters['fiFileTitolarioId'];
+                break;
+
+            case 'anagrafica':
+                newValue ? newFilters.fiAnagraficaId = newValue.value : delete newFilters['fiAnagraficaId'];
+                break;
+
+            case 'anagrafica-tipo':
+                newValue ? newFilters.fiAnagraficaTypeId = newValue.value : delete newFilters['fiAnagraficaTypeId']; delete newFilters['fiAnagraficaId'];
+                break;
 
         }
 
@@ -208,14 +228,14 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
             <Collapse sx={{ backgroundColor: 'aliceblue', borderTop: '1px efefef', paddingTop: '.5rem' }} in={isOpen} timeout={'auto'} unmountOnExit>
                 <TabStack tabs={tabs} setTab={setActiveTab} activeTab={activeTab} />
                 <DisplayTabContentComponent filters={filters} activeTab={activeTab} onChangeFunction={handleChange} />
-                <Divider /> 
+                <Divider />
             </Collapse>
         </Box>
     )
 }
 
 
-const DisplayTabContentComponent = ({ activeTab, onChangeFunction, filters }: { activeTab: number, onChangeFunction: (newValue: any, field: string) => void, filters:any }) => {
+const DisplayTabContentComponent = ({ activeTab, onChangeFunction, filters }: { activeTab: number, onChangeFunction: (newValue: any, field: string) => void, filters: any }) => {
     //creo un oggetto comprendente tutte le opzioni per le select
     const selectOptionsObj = useWizardBandoContext().selectOptions;
     const selectOptions = {
@@ -226,7 +246,11 @@ const DisplayTabContentComponent = ({ activeTab, onChangeFunction, filters }: { 
 
     return (
         <>
-            <FirstFormStep className={activeTab !== 0 ? 'd-none' : ''} onChangeFunction={onChangeFunction} selectOptions={selectOptions} filters={filters}/>
+            <TuttoIlSistemaFormStep className={activeTab !== 0 ? 'd-none' : ''} onChangeFunction={onChangeFunction} selectOptions={selectOptions} filters={filters} />
+            <ProtocolliFormStep className={activeTab !== 1 ? 'd-none' : ''} onChangeFunction={onChangeFunction} selectOptions={selectOptions} />
+            <AnagraficheFormStep className={activeTab !== 2 ? 'd-none' : ''} onChangeFunction={onChangeFunction} selectOptions={selectOptions} />
+            <ArchiviFormStep className={activeTab !== 3 ? 'd-none' : ''} onChangeFunction={onChangeFunction}  /> 
+            <PubblicazioniFormStep className={activeTab !== 4 ? 'd-none' : ''} onChangeFunction={onChangeFunction} /> 
         </>
     );
 
@@ -234,7 +258,7 @@ const DisplayTabContentComponent = ({ activeTab, onChangeFunction, filters }: { 
 }
 
 
-const FirstFormStep = ({ onChangeFunction, selectOptions, className, filters }: { onChangeFunction: (newValue: any, field: string) => void, selectOptions: PubblicazioniSelect & OrganizzaDocumentoSelect, className: string, filters?:any }) => {
+const TuttoIlSistemaFormStep = ({ onChangeFunction, selectOptions, className, filters }: { onChangeFunction: (newValue: any, field: string) => void, selectOptions: PubblicazioniSelect & OrganizzaDocumentoSelect, className: string, filters?: any }) => {
     const statoDocOptions = [
         { value: 0, label: 'Da archiviare' },
         { value: 1, label: 'Archiviato' },
@@ -257,7 +281,7 @@ const FirstFormStep = ({ onChangeFunction, selectOptions, className, filters }: 
                 </Grid>
 
                 <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
-                    <Custom_Select2 label="Classe documentale" options={selectOptions.classi_documentali} onChangeSelect={(newValue) => onChangeFunction(newValue, 'classi-doc')} placeholder="Seleziona classe documentale..."  isClearable/>
+                    <Custom_Select2 label="Classe documentale" options={selectOptions.classi_documentali} onChangeSelect={(newValue) => onChangeFunction(newValue, 'classi-doc')} placeholder="Seleziona classe documentale..." isClearable />
                 </Grid>
 
                 <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
@@ -271,7 +295,7 @@ const FirstFormStep = ({ onChangeFunction, selectOptions, className, filters }: 
                 </Grid>
 
                 <Grid item xs={12} md={6} lg={3} padding={'0 .5rem'}>
-                    <Custom_Select2 label="Caricato da" options={selectOptions.utenti_firmatari} onChangeSelect={(newValue) => onChangeFunction(newValue, 'caricato-da')} placeholder="Seleziona stato del documento..."  isClearable/>
+                    <Custom_Select2 label="Caricato da" options={selectOptions.utenti_firmatari} onChangeSelect={(newValue) => onChangeFunction(newValue, 'caricato-da')} placeholder="Seleziona utente..." isClearable />
 
                 </Grid>
 
@@ -280,9 +304,147 @@ const FirstFormStep = ({ onChangeFunction, selectOptions, className, filters }: 
                 </Grid>
 
                 <Grid item xs={12} md={6} lg={3} padding={'0 .5rem'}>
-                    <Custom_DatePicker minDate={filters.fdDataInizio ? filters.fdDataInizio : null} label={'Data fine'} onChange={(newValue) => onChangeFunction(newValue, 'data-fine')} isClearable/>
+                    <Custom_DatePicker minDate={filters.fdDataInizio ? filters.fdDataInizio : null} label={'Data fine'} onChange={(newValue) => onChangeFunction(newValue, 'data-fine')} isClearable />
                 </Grid>
             </Grid>
+        </Box>
+    )
+}
+
+const ProtocolliFormStep = ({ onChangeFunction, selectOptions, className, filters }: { onChangeFunction: (newValue: any, field: string) => void, selectOptions: PubblicazioniSelect & OrganizzaDocumentoSelect, className: string, filters?: any }) => {
+
+    const protocolloTypeOptions = [
+        { value: 'E', label: 'In entrata' },
+        { value: 'U', label: 'In uscita' }
+    ]
+
+    return (
+        <Box className={className}>
+            <Grid container padding={'.3rem 0'}>
+                <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
+                    <Custom_Select2 label="Tipo protocollo" options={protocolloTypeOptions} onChangeSelect={(newValue) => onChangeFunction(newValue, 'tipo-protocollo')} isClearable />
+                </Grid>
+
+                <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
+                    <Custom_TextField label="numero protocollo" onChange={(newValue) => onChangeFunction(newValue.target, 'protocollo-num')} placeholder="Digita numero..." type="number" backgroundColor="#fff" />
+                </Grid>
+
+                <Grid item xs={12} md={12} lg={4} padding={'0 .5rem'}>
+                    <Custom_Select2 label="Titolari" options={selectOptions.titolari} onChangeSelect={(newValue) => onChangeFunction(newValue, 'titolario')} placeholder="Seleziona titolario..." isClearable />
+                </Grid>
+
+            </Grid>
+
+        </Box>
+    )
+}
+
+const AnagraficheFormStep = ({ onChangeFunction, className, selectOptions }: { onChangeFunction: (newValue: any, field: string) => void, className: string, selectOptions: PubblicazioniSelect & OrganizzaDocumentoSelect }) => {
+
+    const [anagrafichevalue, setAnagraficheValue] = useState<Option | null>(null);
+
+    async function GET_ANAGRAFICA (inputValue: string)  {
+        return await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', body: { typeId: anagrafichevalue!.value, searchText:inputValue }, sModule: 'GET_DATI_ANAGRAFICA', sService: 'READ_ANAGRAFICA' })
+            .then((res) => {
+                const optionArr = createOptionArray({arr:res.response, label:'text', value:'Id'});
+                return optionArr
+            })
+            .catch((err) => console.error(err))
+    }
+
+    async function loadOptions(inputValue: string, callback: any) {
+        if (!inputValue || inputValue.length < 3) {
+            callback([]);
+            return;
+        };
+        const selectOptions = await GET_ANAGRAFICA(inputValue);
+        callback(selectOptions)
+        
+    }
+
+    return (
+        <Box className={className}>
+            <Grid container padding={'.3rem 0'}>
+                <Grid item xs={12} md={!anagrafichevalue ? 12 : 6} padding={'0 .5rem'}>
+                    <Custom_Select2
+                        label="Tipo Anagrafica"
+                        options={selectOptions.anagrafiche}
+                        isClearable
+                        onChangeSelect={(newValue) => {
+                            setAnagraficheValue(newValue)
+                            onChangeFunction(newValue,'anagrafica-tipo');
+                        }}
+                    />
+                </Grid>
+                { anagrafichevalue && 
+                    <Grid item xs={12} md={6} padding={'0 .5rem'}>
+                        <Custom_AsyncSelect label="Anagrafica" onChange={(newValue) => onChangeFunction(newValue, 'anagrafica')} loadOptions={loadOptions}  isClearable/>
+                    </Grid>                
+                }
+
+            </Grid>
+
+        </Box>
+    )
+}
+
+const ArchiviFormStep = ({ onChangeFunction,className}: { onChangeFunction: (newValue: any, field: string) => void, className: string}) => {
+
+    const [selectedTreeViewItem, setSelectedTreeViewItem] = useState<Tview | null>(null);
+    //treeViewData
+    const treeview = useWizardBandoContext().listeOrganizzaDocumento?.lista_archivi;
+    // uso useMomo per memorizzare i dati della treview che non dovrebbero cambiare ad ogni rerendering
+    const treeViewData = useMemo(() => convertTreeViewData(treeview as any[]), [treeview]);
+
+    useEffect(() => {
+        
+        onChangeFunction(selectedTreeViewItem, 'archivi')
+    }, [selectedTreeViewItem])
+
+    return (
+        <Box className={className} padding={'.0rem .3rem'} sx={{maxHeight:'250px', overflowY:'auto'}}>
+           <CustomTreeview data={treeViewData} setTreeItem={setSelectedTreeViewItem} selectedTreeItem={selectedTreeViewItem} />
+        </Box>
+    )
+}
+
+const PubblicazioniFormStep = ({ onChangeFunction,className}: { onChangeFunction: (newValue: any, field: string) => void, className: string}) => {
+
+    const albo = [
+        { value: 0, label: 'Non Pubblicato' },
+        { value: 1, label: 'Da Pubblicare' },
+        { value: 2, label: 'Pubblicato'}
+    ]
+
+    const amministrazionetrasparente = [
+        { value: 0, label: 'Non Pubblicato' },
+        { value: 1, label: 'Da Pubblicare' },
+        { value: 2, label: 'Pubblicato'}
+    ]
+
+    const bachecheIstituzionali = [
+        { value: 0, label: 'Non Pubblicato' },
+        { value: 1, label: 'Da Pubblicare' },
+        { value: 2, label: 'Pubblicato'}
+    ]
+
+    return (
+        <Box className={className}>
+            <Grid container padding={'.3rem 0'}>
+                <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
+                    <Custom_Select2 label="Pubblicati in albo" options={albo} onChangeSelect={(newValue) => onChangeFunction(newValue, 'pubblicato-albo')} isClearable />
+                </Grid>
+
+                <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
+                    <Custom_Select2 label="Pubblicati in Amministrazione trasparente" options={amministrazionetrasparente} onChangeSelect={(newValue) => onChangeFunction(newValue, 'pubblicato-am')}  isClearable/>
+                </Grid>
+
+                <Grid item xs={12} md={12} lg={4} padding={'0 .5rem'}>
+                    <Custom_Select2 label="Pubblicati in Bacheche istituzionali" options={bachecheIstituzionali} onChangeSelect={(newValue) => onChangeFunction(newValue, 'pubblicato-bi')} isClearable />
+                </Grid>
+
+            </Grid>
+
         </Box>
     )
 }
