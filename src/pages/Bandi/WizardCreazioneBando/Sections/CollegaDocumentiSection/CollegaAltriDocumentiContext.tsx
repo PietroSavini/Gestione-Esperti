@@ -3,17 +3,17 @@ import { Option } from "../../../../../components/partials/Inputs/Custom_Select2
 import { useWizardBandoContext } from "../../WizardBandoContext";
 
 type RicercaBandoContext = {
-    filtriRicerca:{
+    filtriRicerca: {
         filters: any
         setFilters: React.Dispatch<React.SetStateAction<any>>;
     },
-    dataGrid:{
+    dataGrid: {
         dataGridData: any[];
         setDataGridData: React.Dispatch<React.SetStateAction<any[]>>;
     }
-    advancedResearchSteps:{
+    advancedResearchSteps: {
         currentStep: number;
-        setStep:React.Dispatch<React.SetStateAction<number>>;
+        setStep: React.Dispatch<React.SetStateAction<number>>;
     }
 };
 
@@ -31,36 +31,36 @@ export default function CollegaAltriDocumentiContextProvider({ children }: Ricer
         searchText: ''
     };
     //states
-    const [ filters, setFilters] = useState<any>(defaultFilters);
+    const [filters, setFilters] = useState<any>(defaultFilters);
     //rows per la datagrid dei risultati
     const [dataGridData, setDataGridData] = useState<any[]>([])
     //state degli step della ricerca avanzata 
     const [currentStep, setStep] = useState<number>(0);
 
     useEffect(() => {
-      
+
     }, []);
 
     useEffect(() => {
-        console.log('filtri ricerca avanzata: ',filters)
-    },[filters]);
-   
+        console.log('filtri ricerca avanzata: ', filters)
+    }, [filters]);
+
     //aggiungere altri useState necessari per altre liste come i punteggi del bando etc..
     return (
         <CollegaAltriDocumentiContext.Provider
             value={{
-               filtriRicerca:{
+                filtriRicerca: {
                     filters: filters,
                     setFilters: setFilters
-               },
-               dataGrid:{
-                dataGridData: dataGridData,
-                setDataGridData: setDataGridData
-               },
-               advancedResearchSteps:{
-                currentStep: currentStep,
-                setStep: setStep
-               }
+                },
+                dataGrid: {
+                    dataGridData: dataGridData,
+                    setDataGridData: setDataGridData
+                },
+                advancedResearchSteps: {
+                    currentStep: currentStep,
+                    setStep: setStep
+                }
             }}
         >
             {children}

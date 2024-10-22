@@ -49,8 +49,6 @@ export type AttivitaObj = {
     fdDataAffissioneFine?: any
 }
 
-
-
 export type OrganizzaDocumentoSelect = {
     aoo: Option[] | [];
     archivi: Option[] | [];
@@ -64,7 +62,7 @@ export type OrganizzaDocumentoSelect = {
 };
 
 export type PubblicazioniListe = {
-    lista_tipi_anagrafica:  lista_tipi_anagrafica[] | [];
+    lista_tipi_anagrafica: lista_tipi_anagrafica[] | [];
     lista_sezioni_trasparenza: sezioni_trasparenza_list[] | [];
     lista_tipi_atto: tipi_atto_list[] | [];
     lista_tipi_atto_bacheche: lista_tipi_atto_bacheche[] | [];
@@ -190,7 +188,7 @@ type lista_tipi_anagrafica = {
 
 
 export type OrganizzaDocumentoListe = {
-    
+
     lista_aoo: lista_aoo[] | [];
     lista_archivi: lista_archivi[] | [];
     lista_assegnatari: lista_assegnatari[] | [];

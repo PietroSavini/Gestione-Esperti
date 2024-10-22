@@ -24,33 +24,33 @@ type Props = {
 export const CustomTreeview = (props: Props) => {
     const { data, setTreeItem, selectedTreeItem, backgroundColor } = props;
 
-    function setTreeItemWithDeselection (node: Tview | null) {
-        if(node === selectedTreeItem) {
+    function setTreeItemWithDeselection(node: Tview | null) {
+        if (node === selectedTreeItem) {
             setTreeItem(null);
             return
         }
         setTreeItem(node)
     }
-    
+
     return (
         <>
             {data.map((item: Tview, index) => (
                 <TreeView
-                key={index}
-                onNodeSelect={(event, nodeIds) => {
-                    const selectedNode = findNodeById(data, nodeIds);
-                    setTreeItemWithDeselection(selectedNode);
-                    
-                }}
-                sx={{ marginBottom: '-px', width: '100%' }}
-                aria-labelledby='treeView-title'
+                    key={index}
+                    onNodeSelect={(event, nodeIds) => {
+                        const selectedNode = findNodeById(data, nodeIds);
+                        setTreeItemWithDeselection(selectedNode);
+
+                    }}
+                    sx={{ marginBottom: '-px', width: '100%' }}
+                    aria-labelledby='treeView-title'
                 >
-                    {renderTreeItems({nodes:item, selectedTreeItem: selectedTreeItem , setTreeItem:setTreeItemWithDeselection, depth:1, bgColor:backgroundColor ? backgroundColor : '#ffff', border: 'none'})}
+                    {renderTreeItems({ nodes: item, selectedTreeItem: selectedTreeItem, setTreeItem: setTreeItemWithDeselection, depth: 1, bgColor: backgroundColor ? backgroundColor : '#ffff', border: 'none' })}
                 </TreeView>
             ))}
         </>
     )
-    
+
 }
 
 //Icona cartella 
@@ -142,7 +142,7 @@ const CustomContent = React.forwardRef(function CustomContent(
             })}
             onMouseDown={handleMouseDown}
             ref={ref as React.Ref<HTMLDivElement>}
-                
+
         >
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
             <div onClick={handleExpansionClick} className={classes.iconContainer}>
@@ -157,11 +157,11 @@ const CustomContent = React.forwardRef(function CustomContent(
             </Typography>
         </div>
     );
-}); 
+});
 //funzione ricorsiva che restituisce l'oggetto Tview alla selezione del treeItem
 function findNodeById(nodes: Tview[], id: string | number): Tview | null {
     let foundNode: Tview | null = null;
-    
+
     nodes.forEach(node => {
         if (node.value === id) {
             foundNode = node; // Se l'ID corrisponde, assegna il nodo trovato
@@ -172,7 +172,7 @@ function findNodeById(nodes: Tview[], id: string | number): Tview | null {
             }
         }
     });
-    
+
     return foundNode;
 }
 
@@ -184,15 +184,15 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
 });
 
 type CustomTreeItemProps = {
-    nodes: Tview, 
-    depth: number | 1, 
-    bgColor: string 
-    border: string 
+    nodes: Tview,
+    depth: number | 1,
+    bgColor: string
+    border: string
     selectedTreeItem: Tview | null;
-    setTreeItem: (node:Tview) => void
+    setTreeItem: (node: Tview) => void
 }
 //Componente che renderizza la struttura ad albero da cambiare con componente personalizzato per via del comportamento da applicare
-const renderTreeItems = ({nodes, depth = 1, bgColor ='#ffff', border= 'none', selectedTreeItem, setTreeItem}: CustomTreeItemProps): JSX.Element => {
+const renderTreeItems = ({ nodes, depth = 1, bgColor = '#ffff', border = 'none', selectedTreeItem, setTreeItem }: CustomTreeItemProps): JSX.Element => {
     const nodeId = `${nodes.value}`
 
     const isSelected = selectedTreeItem ? selectedTreeItem.value === nodes.value : null;
@@ -212,8 +212,8 @@ const renderTreeItems = ({nodes, depth = 1, bgColor ='#ffff', border= 'none', se
                         <Typography component={'span'} fontWeight={600} fontSize={'.9rem'} sx={{ marginLeft: '5px' }}>({nodes.children.length})</Typography>
                     </Typography>
                 }>
-                {nodes.children.map((node) => 
-                    renderTreeItems({nodes:node, depth: depth + 1, bgColor:`rgba(${80 - depth * 3}, ${130 + depth * 3}, ${180 + depth * 3}, ${0.1 + 0 * depth})`, border:'3px solid #426389', selectedTreeItem: selectedTreeItem, setTreeItem:setTreeItem}))}
+                {nodes.children.map((node) =>
+                    renderTreeItems({ nodes: node, depth: depth + 1, bgColor: `rgba(${80 - depth * 3}, ${130 + depth * 3}, ${180 + depth * 3}, ${0.1 + 0 * depth})`, border: '3px solid #426389', selectedTreeItem: selectedTreeItem, setTreeItem: setTreeItem }))}
             </CustomTreeItem>
         )
     } else {

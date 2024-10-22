@@ -18,16 +18,16 @@ type WizardBandoContext = {
         setArchivioCollegato: React.Dispatch<React.SetStateAction<number | null>>;
     };
     punteggi: {
-        punteggi:[] | PunteggiFinali[];
+        punteggi: [] | PunteggiFinali[];
         setPunteggi: React.Dispatch<React.SetStateAction<[] | PunteggiFinali[]>>;
     }
-    requisitiPunteggiList:{
-        requisitiPunteggi:Requisito_Table[] | [];
+    requisitiPunteggiList: {
+        requisitiPunteggi: Requisito_Table[] | [];
         setRequisitiPunteggi: React.Dispatch<React.SetStateAction<[] | Requisito_Table[]>>;
     }
     listePubblicazioni: PubblicazioniListe | null;
     listeOrganizzaDocumento: OrganizzaDocumentoListe | null;
-    selectOptions:{
+    selectOptions: {
         pubblicazioniSelectValues: PubblicazioniSelect | null;
         organizzaDocumentoSelectValues: OrganizzaDocumentoSelect | null;
     }
@@ -76,7 +76,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
             uffici: createOptionArray({ arr: listaUffici, value: 'id', label: 'descrizione' }),
             atti: createOptionArray({ arr: listaTipiAtto, value: 'id', label: 'descrizione' }),
             bacheche: createOptionArray({ arr: listaTipiAttoBacheche, value: 'Key', label: 'Value' }),
-            anagrafiche : createOptionArray({arr: anagrafiche, value:'idTipoAnagrafica', label:'descrizione'}),
+            anagrafiche: createOptionArray({ arr: anagrafiche, value: 'idTipoAnagrafica', label: 'descrizione' }),
         };
         //salvo l'oggetto 
         setPubblicazioniSelectValues(pubblicazioniSelectObject)
@@ -86,7 +86,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
         //salvo i dati all'interno delle liste
         setOrganizzaDocumentoListe(data);
         //separo le liste per elaborare le select
-        
+
         const aoo = data.lista_aoo;
         const listaArchivi = data.lista_archivi;
         const assegnatari = data.lista_assegnatari;
@@ -96,10 +96,10 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
         const listaAttivita = data.lista_tipi_attivita;
         const titolari = data.lista_titolari;
         const utentiFirmatari = data.lista_utenti_firmatari;
-        
+
         //preparo l'oggetto contenente gli array di oggetti Option per le select di OrganizzaDocumento
         const organizzaDocumentoSelecObject: OrganizzaDocumentoSelect = {
-            
+
             aoo: createOptionArray({ arr: aoo, value: 'id', label: 'descrizione' }),
             archivi: createOptionArray({ arr: listaArchivi, value: 'dossier_id', label: 'dossier_name' }),
             assegnatari: createOptionArray({ arr: assegnatari, value: 'fgId', label: 'fsAssigneeUser' }),
@@ -114,7 +114,7 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
         //salvo l'oggetto
         setOrganizzaDocumentoSelectValues(organizzaDocumentoSelecObject);
     };
-    
+
     //CHIAMATE DI INIZIALIZZAZIONE PER PRENDERE VALORI DELLE SELECT E DELLE LISTE CHE SERVONO PER IL CORRETTO FUNZIONAMENTO DEL FORM WIZARDBANDO
     async function GET_ORGANIZZA_DOCUMENTO_SELECT_DATA() {
         await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', sModule: 'GET_ORGANIZZA_DOCUMENTO', sService: 'READ_DOCUMENTI', body: {} })
@@ -190,13 +190,13 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
                     archivioCollegato,
                     setArchivioCollegato
                 },
-                punteggi:{
+                punteggi: {
                     setPunteggi: setPunteggi,
                     punteggi: punteggi
                 },
-                requisitiPunteggiList:{
+                requisitiPunteggiList: {
                     requisitiPunteggi: requisitiPunteggi,
-                    setRequisitiPunteggi:setRequisitiPunteggi
+                    setRequisitiPunteggi: setRequisitiPunteggi
                 },
                 listeOrganizzaDocumento: organizzaDocumentoListe,
                 listePubblicazioni: pubblicazioniListe,

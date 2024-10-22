@@ -76,7 +76,7 @@ export const WizardCreazioneBando = () => {
     }, [TEsp]);
 
     //watcher che controlla la lista dei requisiti e punteggi e li traduce in array di oggetti da mandare con submit
-    
+
 
     //steps (x stepper MUI)
     const steps = [

@@ -139,7 +139,7 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
                 break;
 
             case 'protocollo-num':
-                newValue !== '' ? newFilters.fsNumeroPro = newValue.value : delete newFilters['fsNumeroPro']; 
+                newValue !== '' ? newFilters.fsNumeroPro = newValue.value : delete newFilters['fsNumeroPro'];
                 break;
 
             case 'titolario':
@@ -249,8 +249,8 @@ const DisplayTabContentComponent = ({ activeTab, onChangeFunction, filters }: { 
             <TuttoIlSistemaFormStep className={activeTab !== 0 ? 'd-none' : ''} onChangeFunction={onChangeFunction} selectOptions={selectOptions} filters={filters} />
             <ProtocolliFormStep className={activeTab !== 1 ? 'd-none' : ''} onChangeFunction={onChangeFunction} selectOptions={selectOptions} />
             <AnagraficheFormStep className={activeTab !== 2 ? 'd-none' : ''} onChangeFunction={onChangeFunction} selectOptions={selectOptions} />
-            <ArchiviFormStep className={activeTab !== 3 ? 'd-none' : ''} onChangeFunction={onChangeFunction}  /> 
-            <PubblicazioniFormStep className={activeTab !== 4 ? 'd-none' : ''} onChangeFunction={onChangeFunction} /> 
+            <ArchiviFormStep className={activeTab !== 3 ? 'd-none' : ''} onChangeFunction={onChangeFunction} />
+            <PubblicazioniFormStep className={activeTab !== 4 ? 'd-none' : ''} onChangeFunction={onChangeFunction} />
         </>
     );
 
@@ -343,10 +343,10 @@ const AnagraficheFormStep = ({ onChangeFunction, className, selectOptions }: { o
 
     const [anagrafichevalue, setAnagraficheValue] = useState<Option | null>(null);
 
-    async function GET_ANAGRAFICA (inputValue: string)  {
-        return await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', body: { typeId: anagrafichevalue!.value, searchText:inputValue }, sModule: 'GET_DATI_ANAGRAFICA', sService: 'READ_ANAGRAFICA' })
+    async function GET_ANAGRAFICA(inputValue: string) {
+        return await AXIOS_HTTP.Retrieve({ url: '/api/launch/organizzaDocumento', body: { typeId: anagrafichevalue!.value, searchText: inputValue }, sModule: 'GET_DATI_ANAGRAFICA', sService: 'READ_ANAGRAFICA' })
             .then((res) => {
-                const optionArr = createOptionArray({arr:res.response, label:'text', value:'Id'});
+                const optionArr = createOptionArray({ arr: res.response, label: 'text', value: 'Id' });
                 return optionArr
             })
             .catch((err) => console.error(err))
@@ -359,7 +359,7 @@ const AnagraficheFormStep = ({ onChangeFunction, className, selectOptions }: { o
         };
         const selectOptions = await GET_ANAGRAFICA(inputValue);
         callback(selectOptions)
-        
+
     }
 
     return (
@@ -372,14 +372,14 @@ const AnagraficheFormStep = ({ onChangeFunction, className, selectOptions }: { o
                         isClearable
                         onChangeSelect={(newValue) => {
                             setAnagraficheValue(newValue)
-                            onChangeFunction(newValue,'anagrafica-tipo');
+                            onChangeFunction(newValue, 'anagrafica-tipo');
                         }}
                     />
                 </Grid>
-                { anagrafichevalue && 
+                {anagrafichevalue &&
                     <Grid item xs={12} md={6} padding={'0 .5rem'}>
-                        <Custom_AsyncSelect label="Anagrafica" onChange={(newValue) => onChangeFunction(newValue, 'anagrafica')} loadOptions={loadOptions}  isClearable/>
-                    </Grid>                
+                        <Custom_AsyncSelect label="Anagrafica" onChange={(newValue) => onChangeFunction(newValue, 'anagrafica')} loadOptions={loadOptions} isClearable />
+                    </Grid>
                 }
 
             </Grid>
@@ -388,7 +388,7 @@ const AnagraficheFormStep = ({ onChangeFunction, className, selectOptions }: { o
     )
 }
 
-const ArchiviFormStep = ({ onChangeFunction,className}: { onChangeFunction: (newValue: any, field: string) => void, className: string}) => {
+const ArchiviFormStep = ({ onChangeFunction, className }: { onChangeFunction: (newValue: any, field: string) => void, className: string }) => {
 
     const [selectedTreeViewItem, setSelectedTreeViewItem] = useState<Tview | null>(null);
     //treeViewData
@@ -397,35 +397,35 @@ const ArchiviFormStep = ({ onChangeFunction,className}: { onChangeFunction: (new
     const treeViewData = useMemo(() => convertTreeViewData(treeview as any[]), [treeview]);
 
     useEffect(() => {
-        
+
         onChangeFunction(selectedTreeViewItem, 'archivi')
     }, [selectedTreeViewItem])
 
     return (
-        <Box className={className} padding={'.0rem .3rem'} sx={{maxHeight:'250px', overflowY:'auto'}}>
-           <CustomTreeview data={treeViewData} setTreeItem={setSelectedTreeViewItem} selectedTreeItem={selectedTreeViewItem} />
+        <Box className={className} padding={'.0rem .3rem'} sx={{ maxHeight: '250px', overflowY: 'auto' }}>
+            <CustomTreeview data={treeViewData} setTreeItem={setSelectedTreeViewItem} selectedTreeItem={selectedTreeViewItem} />
         </Box>
     )
 }
 
-const PubblicazioniFormStep = ({ onChangeFunction,className}: { onChangeFunction: (newValue: any, field: string) => void, className: string}) => {
+const PubblicazioniFormStep = ({ onChangeFunction, className }: { onChangeFunction: (newValue: any, field: string) => void, className: string }) => {
 
     const albo = [
         { value: 0, label: 'Non Pubblicato' },
         { value: 1, label: 'Da Pubblicare' },
-        { value: 2, label: 'Pubblicato'}
+        { value: 2, label: 'Pubblicato' }
     ]
 
     const amministrazionetrasparente = [
         { value: 0, label: 'Non Pubblicato' },
         { value: 1, label: 'Da Pubblicare' },
-        { value: 2, label: 'Pubblicato'}
+        { value: 2, label: 'Pubblicato' }
     ]
 
     const bachecheIstituzionali = [
         { value: 0, label: 'Non Pubblicato' },
         { value: 1, label: 'Da Pubblicare' },
-        { value: 2, label: 'Pubblicato'}
+        { value: 2, label: 'Pubblicato' }
     ]
 
     return (
@@ -436,7 +436,7 @@ const PubblicazioniFormStep = ({ onChangeFunction,className}: { onChangeFunction
                 </Grid>
 
                 <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
-                    <Custom_Select2 label="Pubblicati in Amministrazione trasparente" options={amministrazionetrasparente} onChangeSelect={(newValue) => onChangeFunction(newValue, 'pubblicato-am')}  isClearable/>
+                    <Custom_Select2 label="Pubblicati in Amministrazione trasparente" options={amministrazionetrasparente} onChangeSelect={(newValue) => onChangeFunction(newValue, 'pubblicato-am')} isClearable />
                 </Grid>
 
                 <Grid item xs={12} md={12} lg={4} padding={'0 .5rem'}>
