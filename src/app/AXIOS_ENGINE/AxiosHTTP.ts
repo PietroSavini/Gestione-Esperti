@@ -237,8 +237,6 @@ async function refreshAccessToken(fn: Function, api: any, extraOptions: any) {
                 method: 'POST'
             }, api, extraOptions);
 
-            console.log('esito chiamata di refresh: ',refreshResult)
-
             if (refreshResult?.data.errorCode === 0) {
                 const user = api.getState().auth.user;
                 const accessToken = refreshResult.data.response.token ;

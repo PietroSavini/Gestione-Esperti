@@ -99,7 +99,7 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
         switch (field) {
 
             case 'searchText':
-                newFilters.searchText = newValue;
+                newValue.trim('') ? newFilters.searchText = newValue : delete newFilters['searchText'];
                 break;
 
             case 'anno-riferimento':
@@ -139,7 +139,7 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
                 break;
 
             case 'protocollo-num':
-                newValue !== '' ? newFilters.fsNumeroPro = newValue.value : delete newFilters['fsNumeroPro'];
+                newValue.trim('') ? newFilters.fsNumeroPro = newValue : delete newFilters['fsNumeroPro'];
                 break;
 
             case 'titolario':
@@ -153,7 +153,22 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
             case 'anagrafica-tipo':
                 newValue ? newFilters.fiAnagraficaTypeId = newValue.value : delete newFilters['fiAnagraficaTypeId']; delete newFilters['fiAnagraficaId'];
                 break;
+            
+            case 'archivi':
+                newValue ? newFilters.fiDossierId = newValue.value : delete newFilters['fiDossierId'];
+                break;
 
+            case 'pubblicato-albo':
+                newValue ? newFilters.fiAPDPubblicationStatus = newValue.value : delete newFilters['fiAPDPubblicationStatus'];
+                break;
+            
+            case 'pubblicato-am':
+                newValue ? newFilters.fiATPubblicationStatus = newValue.value : delete newFilters['fiATPubblicationStatus'];
+                break;
+
+            case 'pubblicato-bi':
+                newValue ? newFilters.fiBACHPubblicationStatus = newValue.value : delete newFilters['fiBACHPubblicationStatus'];
+                break;
         }
 
         setFilters(newFilters);
@@ -170,11 +185,11 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
     };
 
     //watcher per pulire i filtri se si effettua quando isOpen è false
-    useEffect(() => {
-        if (!isOpen) {
-            resetFilters();
-        }
-    }, [isOpen]);
+    // useEffect(() => {
+    //     if (!isOpen) {
+    //         resetFilters();
+    //     }
+    // }, [isOpen]);
 
     return (
         <Box sx={{ margin: '0 1rem' }}>
@@ -225,7 +240,7 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
                 <Divider />
             </Box>
 
-            <Collapse sx={{ backgroundColor: 'aliceblue', borderTop: '1px efefef', paddingTop: '.5rem' }} in={isOpen} timeout={'auto'} unmountOnExit>
+            <Collapse sx={{ backgroundColor: 'aliceblue', borderTop: '1px efefef', paddingTop: '.5rem' }} in={isOpen} timeout={'auto'}>
                 <TabStack tabs={tabs} setTab={setActiveTab} activeTab={activeTab} />
                 <DisplayTabContentComponent filters={filters} activeTab={activeTab} onChangeFunction={handleChange} />
                 <Divider />
@@ -326,7 +341,7 @@ const ProtocolliFormStep = ({ onChangeFunction, selectOptions, className, filter
                 </Grid>
 
                 <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
-                    <Custom_TextField label="numero protocollo" onChange={(newValue) => onChangeFunction(newValue.target, 'protocollo-num')} placeholder="Digita numero..." type="number" backgroundColor="#fff" />
+                    <Custom_TextField label="numero protocollo" onChange={(newValue) => onChangeFunction(newValue.target.value, 'protocollo-num')} placeholder="Digita numero..." type="number" backgroundColor="#fff" />
                 </Grid>
 
                 <Grid item xs={12} md={12} lg={4} padding={'0 .5rem'}>
@@ -397,7 +412,6 @@ const ArchiviFormStep = ({ onChangeFunction, className }: { onChangeFunction: (n
     const treeViewData = useMemo(() => convertTreeViewData(treeview as any[]), [treeview]);
 
     useEffect(() => {
-
         onChangeFunction(selectedTreeViewItem, 'archivi')
     }, [selectedTreeViewItem])
 
