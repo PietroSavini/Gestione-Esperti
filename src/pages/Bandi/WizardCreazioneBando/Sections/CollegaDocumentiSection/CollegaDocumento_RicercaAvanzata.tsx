@@ -1,6 +1,6 @@
-import { Box, Grid, Icon, Divider, Collapse } from "@mui/material";
+import { Box, Grid, Icon, Divider, Collapse, Typography } from "@mui/material";
 import dayjs from "dayjs";
-import { useState, useEffect, SetStateAction, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import AXIOS_HTTP from "../../../../../app/AXIOS_ENGINE/AXIOS_HTTP";
 import useDebounce from "../../../../../app/Hooks/useDebounceHook";
 import { ActionButton } from "../../../../../components/partials/Buttons/ActionButton";
@@ -12,86 +12,107 @@ import { useCollegaAltriDocumentiContext } from "./CollegaAltriDocumentiContext"
 import { useWizardBandoContext } from "../../WizardBandoContext";
 import { OrganizzaDocumentoSelect, PubblicazioniSelect } from "../../WizardCreazioneBando_types";
 import { Custom_AsyncSelect } from "../../../../../components/partials/Inputs/Custom_AsyncSelect";
-import { Value } from "sass";
-import { Label } from "@mui/icons-material";
 import { convertTreeViewData, createOptionArray } from "../../../../../app/AXIOS_ENGINE/functions/handlers";
 import { CustomTreeview, Tview } from "../../../../../components/partials/TreeView/Treeview";
 
-
 type Props = {
-    setRows: React.Dispatch<React.SetStateAction<any[]>>
+    setRows: React.Dispatch<React.SetStateAction<any[]>>;
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
+    //destrutturo i props
+    const { setRows, setIsLoading } = props;
     //oggetto filtri ricerca del context della sezione
-    const { filters, setFilters } = useCollegaAltriDocumentiContext().filtriRicerca
+    const { filters, setFilters } = useCollegaAltriDocumentiContext().filtriRicerca;
     //booleano che determina l'apertura o la chiusura della ricerca avanzata
     const [isOpen, setIsOpen] = useState<boolean>(false);
     // variabile delle tab della ricerca avanzata
     const [activeTab, setActiveTab] = useState<number>(0);
-    //variabili per select fuori dalla ricerca avanzata
-    const [annoRif, setAnnoRif] = useState<any>({ label: `${filters.annoRif}`, value: filters.annoRif })
-    const [searchText, setSearchText] = useState<string>(filters.searchText);
+    //variabili per select anno di riferimento (fuori dalla ricerca avanzata)
+    const [searchYear, setsearchYear] = useState<any>({ label: `${filters.searchYear}`, value: filters.searchYear });
+    //variabili per counter filtri avanzati selezionati
+    const [advancedResearchfilterSelected, setAdvancedResearchFilterSelected] = useState<number>(0);
+    // HACKFIX !!! trigger per forzare il rerendering della finestra di ricerca avanzata alla cancellazione dei filtri tramite resetFilters() => imposto il trigger sulla key del componente che esegue il display della tab, al cambio della key React forza il rerendering del componente
+    const [trigger, setTrigger] = useState<number>(0);
 
+    // funzione per conteggio filtri avanzati che esclude i parametri di ricerca base
+    const getAdvancedResearchCounter = () => {
+        //parametri da escludere nel reset della ricerca avanzata
+        const baseParametersOfFilters = ['searchYear', 'searchText'];
+        //creo un oggetto partendo dall'oggetto filters includendo tutti i parametri tranne i due di base
+        const counter = Object.keys(filters).filter(key => !baseParametersOfFilters.includes(key)).length;
+        setAdvancedResearchFilterSelected(counter);
+    };
+
+    //funzione per resettare la ricerca avanzata ed elimina i filtri selezionati
+    const resetFilters = () => {
+        //creo un oggetto partendo dall'oggetto filters escludendo tutti i parametri tranne i due di base
+        const { searchText, searchYear } = filters;
+        let resettedFilters = {};
+
+        if (searchText && searchText.trim('')) {
+            resettedFilters = {
+                ...resettedFilters,
+                searchText: searchText,
+            };
+        };
+        if (searchYear) {
+            resettedFilters = {
+                ...resettedFilters,
+                searchYear: searchYear,
+            };
+        };
+        //forzo il rerender del componente di ricerca avanzata
+        setIsOpen(false)
+        setTrigger(trigger + 1);
+        setFilters(resettedFilters);
+    };
+
+    //watcher per il counter dei filtri avanzati
+    useEffect(() => {
+        getAdvancedResearchCounter();
+    }, [filters]);
+
+    //array per display delle tab in ricerca avanzata 
     const tabs = [
-        {
-            text: 'Tutto il Sistema'
-        },
-        {
-            text: 'Protocolli'
-        },
-        {
-            text: 'Anagrafiche'
-        },
-        {
-            text: 'Archivi'
-        },
-        {
-            text: 'Pubblicazioni'
-        },
+        { text: 'Tutto il Sistema' },
+        { text: 'Protocolli' },
+        { text: 'Anagrafiche' },
+        { text: 'Archivi' },
+        { text: 'Pubblicazioni' },
     ];
-
+    //opzioni select anno di riferimento
     const options = {
-        annoRif: [
-            {
-                value: 2024,
-                label: "2024"
-            },
-            {
-                value: 2025,
-                label: "2025",
-            },
-            {
-                value: 2026,
-                label: "2026"
-            },
-            {
-                value: 2027,
-                label: "2027"
-            },
-            {
-                value: 2028,
-                label: "2028"
-            },
-            {
-                value: 2029,
-                label: "2029"
-
-            },
-            {
-                value: 2030,
-                label: "2030"
-            },
+        searchYear: [
+            { value: 2024, label: "2024" },
+            { value: 2025, label: "2025" },
+            { value: 2026, label: "2026" },
+            { value: 2027, label: "2027" },
+            { value: 2028, label: "2028" },
+            { value: 2029, label: "2029" },
+            { value: 2030, label: "2030" },
         ],
-
     }
-
+    //funzione che prepara il body della richiesta, e salva la risposta alle rows della tabella 
     const handleSearch = async () => {
+        setIsLoading(true)
+        //preparo il body
+        const body = {
+            ...filters,
+            rowsPerPage: 25,
+        }
         // DEVI RIPASSARE GLI OGGETTI DATA IN FORMATO YYYY/MM/DD !!!!
-    }
+        const result = await AXIOS_HTTP.Retrieve({ url: "/api/launch/organizzaDocumento", body: body, sModule: 'SEARCH_DOCUMENTI', sService: 'READ_DOCUMENTI' });
+        setIsLoading(false)
+        setRows(result.response)
+        
+    };
+
     //funzione che gestisce l'handleChange di tutti gli input 
-    //NOTA BENE: se sono input TEXT utilizzare solo newValue come valore in quanto arriverà gia di per se come stringa
+    //NOTA BENE: se sono input TEXT utilizzare solo newValue come valore, non newValue.value (passare direttamente e.target.value come valore alla funzione quando la si utiizza)
     const handleChange = useDebounce((newValue: any, field: string) => {
+
         let newFilters: any = {
             ...filters
         }
@@ -103,7 +124,7 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
                 break;
 
             case 'anno-riferimento':
-                newValue ? newFilters.annoRif = parseInt(newValue.value) : delete newFilters['annoRif'];
+                newValue ? newFilters.searchYear = parseInt(newValue.value) : delete newFilters['searchYear'];
                 break;
 
             case 'aoo':
@@ -153,7 +174,7 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
             case 'anagrafica-tipo':
                 newValue ? newFilters.fiAnagraficaTypeId = newValue.value : delete newFilters['fiAnagraficaTypeId']; delete newFilters['fiAnagraficaId'];
                 break;
-            
+
             case 'archivi':
                 newValue ? newFilters.fiDossierId = newValue.value : delete newFilters['fiDossierId'];
                 break;
@@ -161,7 +182,7 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
             case 'pubblicato-albo':
                 newValue ? newFilters.fiAPDPubblicationStatus = newValue.value : delete newFilters['fiAPDPubblicationStatus'];
                 break;
-            
+
             case 'pubblicato-am':
                 newValue ? newFilters.fiATPubblicationStatus = newValue.value : delete newFilters['fiATPubblicationStatus'];
                 break;
@@ -173,23 +194,7 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
 
         setFilters(newFilters);
 
-    }, 300)
-
-    const resetFilters = () => {
-        const resettedFilters = {
-            annoRif: annoRif ? annoRif.value : null,
-            searchText: searchText
-        }
-        // resetta tutti gli state degli input
-        setFilters(resettedFilters);
-    };
-
-    //watcher per pulire i filtri se si effettua quando isOpen è false
-    // useEffect(() => {
-    //     if (!isOpen) {
-    //         resetFilters();
-    //     }
-    // }, [isOpen]);
+    }, 300);
 
     return (
         <Box sx={{ margin: '0 1rem' }}>
@@ -198,10 +203,9 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
                     <Grid item xs={12} sm={8} lg={6} padding={'0 .5rem'}>
                         <Custom_TextField
                             onChange={(e) => {
-                                setSearchText(e.target.value);
+                                //setSearchText(e.target.value);
                                 handleChange(e.target.value, 'searchText')
-                            }
-                            }
+                            }}
                             backgroundColor='#fff'
                             label={'Parola chiave'}
                             placeholder='Inserisci parola chiave...'
@@ -210,14 +214,14 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
                     <Grid item xs={12} sm={4} lg={3} padding={'0 .5rem'}>
                         <Custom_Select2
                             onChangeSelect={(newValue) => {
-                                setAnnoRif(newValue);
+                                setsearchYear(newValue);
                                 handleChange(newValue, 'anno-riferimento')
                             }}
                             label='Anno di riferimento'
                             isClearable
-                            options={options.annoRif}
-                            defaultValue={options.annoRif[0]}
-                            value={annoRif}
+                            options={options.searchYear}
+                            defaultValue={options.searchYear[0]}
+                            value={searchYear}
                         />
 
                     </Grid>
@@ -232,8 +236,8 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
                         <ActionButton
                             onClick={() => setIsOpen(!isOpen)}
                             sx={{ minHeight: '40px', maxHeight: '50px', marginTop: '10px' }}
-                            color={isOpen ? 'error' : 'warning'} text={isOpen ? 'Annulla' : 'Ricerca Avanzata'}
-                            endIcon={<Icon>{isOpen ? 'filter_alt_off' : 'filter_alt'}</Icon>}
+                            color={'warning-secondary'} text={isOpen ? 'Chiudi ricerca avanzata' : 'Apri ricerca Avanzata'}
+                            endIcon={<Icon sx={{ transition: '200ms', transform: `rotate(${isOpen ? '180deg' : '0deg'})` }}>keyboard_arrow_up</Icon>}
                         />
                     </Grid>
                 </Grid>
@@ -242,13 +246,20 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
 
             <Collapse sx={{ backgroundColor: 'aliceblue', borderTop: '1px efefef', paddingTop: '.5rem' }} in={isOpen} timeout={'auto'}>
                 <TabStack tabs={tabs} setTab={setActiveTab} activeTab={activeTab} />
-                <DisplayTabContentComponent filters={filters} activeTab={activeTab} onChangeFunction={handleChange} />
+                <DisplayTabContentComponent key={trigger} filters={filters} activeTab={activeTab} onChangeFunction={handleChange} />
                 <Divider />
             </Collapse>
+
+            {advancedResearchfilterSelected > 0 &&
+                <Box display={'flex'} alignItems={'center'}>
+                    <Typography sx={{ marginRight: '10px' }} fontSize={18} >Ricerca Avanzata Attiva, filtri selezionati: {advancedResearchfilterSelected}</Typography>
+                    <Icon onClick={() => resetFilters()} sx={{ cursor: 'pointer' }} color="error" >cancel</Icon>
+                </Box>
+            }
+
         </Box>
     )
 }
-
 
 const DisplayTabContentComponent = ({ activeTab, onChangeFunction, filters }: { activeTab: number, onChangeFunction: (newValue: any, field: string) => void, filters: any }) => {
     //creo un oggetto comprendente tutte le opzioni per le select
@@ -257,7 +268,6 @@ const DisplayTabContentComponent = ({ activeTab, onChangeFunction, filters }: { 
         ...selectOptionsObj.organizzaDocumentoSelectValues!,
         ...selectOptionsObj.pubblicazioniSelectValues!
     };
-    //switch per fare eseguire il display delle sezioni del form
 
     return (
         <>
@@ -268,10 +278,7 @@ const DisplayTabContentComponent = ({ activeTab, onChangeFunction, filters }: { 
             <PubblicazioniFormStep className={activeTab !== 4 ? 'd-none' : ''} onChangeFunction={onChangeFunction} />
         </>
     );
-
-
 }
-
 
 const TuttoIlSistemaFormStep = ({ onChangeFunction, selectOptions, className, filters }: { onChangeFunction: (newValue: any, field: string) => void, selectOptions: PubblicazioniSelect & OrganizzaDocumentoSelect, className: string, filters?: any }) => {
     const statoDocOptions = [
@@ -292,7 +299,7 @@ const TuttoIlSistemaFormStep = ({ onChangeFunction, selectOptions, className, fi
         <Box className={className}>
             <Grid container padding={'.3rem 0'}>
                 <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
-                    <Custom_Select2 label="A.O.O." options={selectOptions.aoo} onChangeSelect={(newValue) => onChangeFunction(newValue, 'aoo')} isClearable />
+                    <Custom_Select2 label="A.O.O." options={selectOptions.aoo} onChangeSelect={(newValue) => onChangeFunction(newValue, 'aoo')} defaultValue={filters.fiAooId ? selectOptions.aoo.find((item) => item.value === filters.fiAooId) : null} isClearable />
                 </Grid>
 
                 <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
@@ -341,7 +348,7 @@ const ProtocolliFormStep = ({ onChangeFunction, selectOptions, className, filter
                 </Grid>
 
                 <Grid item xs={12} md={6} lg={4} padding={'0 .5rem'}>
-                    <Custom_TextField label="numero protocollo" onChange={(newValue) => onChangeFunction(newValue.target.value, 'protocollo-num')} placeholder="Digita numero..." type="number" backgroundColor="#fff" />
+                    <Custom_TextField label="numero protocollo" onChange={(newValue) => onChangeFunction(newValue.target.value, 'protocollo-num')} placeholder="Digita numero..." backgroundColor="#fff" />
                 </Grid>
 
                 <Grid item xs={12} md={12} lg={4} padding={'0 .5rem'}>

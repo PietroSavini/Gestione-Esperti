@@ -29,11 +29,11 @@ export const ActionButton = (props:Props) => {
       ) : (
         
         <Button 
+          
           {...buttonProps}
           //@ts-ignore
           sx={{ ...buttonProps?.sx, flexDirection:`${direction}`}} 
-          onClick={onClick} 
-          color={color}  
+          onClick={onClick}  
           className={`ms_button ms_button-${color} ${buttonProps.disabled && 'ms_button-disabled'}`}
         >
           { text && <Typography  className='button-text' variant='caption'>{text}</Typography>}

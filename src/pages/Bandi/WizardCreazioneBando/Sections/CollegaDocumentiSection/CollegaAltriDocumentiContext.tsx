@@ -1,6 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Option } from "../../../../../components/partials/Inputs/Custom_Select2";
-import { useWizardBandoContext } from "../../WizardBandoContext";
 
 type RicercaBandoContext = {
     filtriRicerca: {
@@ -27,8 +25,7 @@ export const CollegaAltriDocumentiContext = createContext<RicercaBandoContext | 
 export default function CollegaAltriDocumentiContextProvider({ children }: RicercaBandoContextProvider) {
     //filteri impostati di default
     const defaultFilters: any = {
-        annoRif: 2024,
-        searchText: ''
+        searchYear: 2024,
     };
     //states
     const [filters, setFilters] = useState<any>(defaultFilters);

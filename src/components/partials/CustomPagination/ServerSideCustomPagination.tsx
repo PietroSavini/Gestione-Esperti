@@ -3,7 +3,7 @@ import { GridPagination, gridPageCountSelector, useGridApiContext, useGridSelect
 import { ActionButton } from "../Buttons/ActionButton";
 import './CustomPagination.scss'
 
-function pagination({
+function serverSidePagination({
     page,
     onPageChange,
     className,
@@ -11,7 +11,6 @@ function pagination({
     
     const apiRef = useGridApiContext();
     const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-
     const handlePageChange = (event : any) => {
         const newPage = event.target.value as number;
         onPageChange(event, newPage - 1);
@@ -122,6 +121,6 @@ function pagination({
     );
 }
 
-export function CustomPagination(props: any) {
-    return <GridPagination ActionsComponent={pagination} {...props} />;
+export function ServerSideCustomPagination(props: any) {
+    return <GridPagination ActionsComponent={serverSidePagination} {...props} />;
 }
