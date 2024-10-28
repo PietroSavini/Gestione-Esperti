@@ -35,6 +35,8 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
     const [advancedResearchfilterSelected, setAdvancedResearchFilterSelected] = useState<number>(0);
     // HACKFIX !!! trigger per forzare il rerendering della finestra di ricerca avanzata alla cancellazione dei filtri tramite resetFilters() => imposto il trigger sulla key del componente che esegue il display della tab, al cambio della key React forza il rerendering del componente
     const [trigger, setTrigger] = useState<number>(0);
+    // state del wizardBando che utilizzo per darmi un array di Rows gia filtrato dai documenti che ho già collegato al bando
+    const { documentiCollegatiList } = useWizardBandoContext().documentiCollegati;
 
     // funzione per conteggio filtri avanzati che esclude i parametri di ricerca base
     const getAdvancedResearchCounter = () => {
@@ -104,8 +106,17 @@ export const CollegaDocumento_RicercaAvanzata = (props: Props) => {
         }
         // DEVI RIPASSARE GLI OGGETTI DATA IN FORMATO YYYY/MM/DD !!!!
         const result = await AXIOS_HTTP.Retrieve({ url: "/api/launch/organizzaDocumento", body: body, sModule: 'SEARCH_DOCUMENTI', sService: 'READ_DOCUMENTI' });
-        setIsLoading(false)
-        setRows(result.response)
+
+        //filtro le righe della tabella in modo che mi appaiano solo i documenti ancora da collegare 
+        if (documentiCollegatiList.length > 0) {
+            const idsToExclude = new Set(documentiCollegatiList.map(doc => doc.idDocumento));
+            const filteredRows = result.response.filter((document: any) => !idsToExclude.has(document.idDocumento));
+            setRows(filteredRows);
+        } else {
+            setRows(result.response);
+        }
+    
+        setIsLoading(false);
         
     };
 

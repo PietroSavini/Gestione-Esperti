@@ -30,6 +30,10 @@ type WizardBandoContext = {
     selectOptions: {
         pubblicazioniSelectValues: PubblicazioniSelect | null;
         organizzaDocumentoSelectValues: OrganizzaDocumentoSelect | null;
+    },
+    documentiCollegati:{
+        documentiCollegatiList:any[]
+        setDocumentiCollegatiList: React.Dispatch<React.SetStateAction<any[]>>
     }
 };
 
@@ -48,9 +52,11 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
     //archivi collegati
     const [archivioCollegato, setArchivioCollegato] = useState<number | null>(null);
     //lista requisiti e punteggi (per le tabelle requisiti e punteggi in formStep1)
-    const [requisitiPunteggi, setRequisitiPunteggi] = useState<Requisito_Table[] | []>([])
+    const [requisitiPunteggi, setRequisitiPunteggi] = useState<Requisito_Table[] | []>([]);
     //punteggi da inviare 
     const [punteggi, setPunteggi] = useState<PunteggiFinali[] | []>([]);
+    // documenti collegati al bando
+    const [documentiCollegatiList, setDocumentiCollegatiList] = useState<any[]>([]);
 
     //Liste e selectOptions
     //pubblicazioni
@@ -173,7 +179,11 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
 
 
 
-
+    useEffect(() => {
+        console.log('DOCUMENTI COLLEGATI AL BANDO: ', documentiCollegatiList);
+    },
+    [documentiCollegatiList]);
+    
     //aggiungere altri useState necessari per altre liste come i punteggi del bando etc..
     return (
         <WizardBandoContext.Provider
@@ -196,13 +206,17 @@ export default function WizardBandoContextProvider({ children }: WizardBandoCont
                 },
                 requisitiPunteggiList: {
                     requisitiPunteggi: requisitiPunteggi,
-                    setRequisitiPunteggi: setRequisitiPunteggi
+                    setRequisitiPunteggi: setRequisitiPunteggi,
                 },
                 listeOrganizzaDocumento: organizzaDocumentoListe,
                 listePubblicazioni: pubblicazioniListe,
                 selectOptions: {
                     organizzaDocumentoSelectValues: OrganizzaDocumentoSelectValues,
                     pubblicazioniSelectValues: pubblicazioniSelectValues,
+                },
+                documentiCollegati:{
+                    documentiCollegatiList:documentiCollegatiList,
+                    setDocumentiCollegatiList:setDocumentiCollegatiList,
                 }
 
             }}

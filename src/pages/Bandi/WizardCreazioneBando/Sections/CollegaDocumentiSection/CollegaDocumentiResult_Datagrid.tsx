@@ -12,6 +12,7 @@ type Props = {
     rows: any[]; //array sdi oggetti (righe) della tabella
     setRows: React.Dispatch<React.SetStateAction<any[]>>; //funzione per settaggio delle righe della tabella
     noRowsOverlay?: () => JSX.Element; //funzione che ritorna componente placeholder per quando non ci sono risultati
+    customToolbar?: (params:any) => JSX.Element; //funzione che ritorna componente custom della toolbar
     rowId: string //parametro dell'oggetto riga da utilizzare come ID univoco
     customRow?:{
         row: (params: GridRowParams<any>) => JSX.Element; //funzione che ritorna una row personalizzata
@@ -47,6 +48,7 @@ export const CollegaDocumentiResult_Datagrid = (props: Props) => {
         setIsLoading,
         columns,
         noRowsOverlay,
+        customToolbar,
         customRow,
         rowId
     } = props;
@@ -66,17 +68,21 @@ export const CollegaDocumentiResult_Datagrid = (props: Props) => {
         noRowsOverlay: noRowsOverlay || NoResultOverlay,
     } 
 
-    //se esiste la customRow() aggiungo all oggetto slots il parametro "row"
+    // aggiungo all oggetto slots i vari parametri in base ai prop ricevuti
     if(customRow) {
         slots.row = (params: GridRowParams<any>) => customRow.row(params);
     }
+    if(customToolbar) {
+        slots.toolbar = (params:any) => customToolbar(params);
+    }
+
 
     return (
         <>
             <DataGrid
                 disableVirtualization={customRow ? true : false}//virtualizzazione disabilitata quando le rows sono custom => da problemi se attiva
                 loading={isLoading}
-                
+
                 //parametri delle rows
                 rows={rows}
                 getRowId={(params: any) => params[rowId]}

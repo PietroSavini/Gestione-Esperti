@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useWizardBandoContext } from "../../WizardBandoContext";
 
 type RicercaBandoContext = {
     filtriRicerca: {
@@ -12,6 +13,10 @@ type RicercaBandoContext = {
     advancedResearchSteps: {
         currentStep: number;
         setStep: React.Dispatch<React.SetStateAction<number>>;
+    },
+    connectedDocuments:{
+        selectedDocuments:any[];
+        setSelectedDocuments: React.Dispatch<React.SetStateAction<any[]>>
     }
 };
 
@@ -33,6 +38,10 @@ export default function CollegaAltriDocumentiContextProvider({ children }: Ricer
     const [dataGridData, setDataGridData] = useState<any[]>([])
     //state degli step della ricerca avanzata 
     const [currentStep, setStep] = useState<number>(0);
+    //state dei documenti collegati al bando che inizializza i documenti selezionati
+    const { documentiCollegatiList } = useWizardBandoContext().documentiCollegati
+    //state dei documenti selezionati da collegare
+    const [selectedDocuments, setSelectedDocuments] = useState<any[]>([])
 
     useEffect(() => {
 
@@ -41,6 +50,10 @@ export default function CollegaAltriDocumentiContextProvider({ children }: Ricer
     useEffect(() => {
         console.log('filtri ricerca avanzata: ', filters)
     }, [filters]);
+
+    useEffect(() => {
+        console.log('DOCUMENTI DA COLLEGARE: ',selectedDocuments)
+    },[selectedDocuments])
 
     //aggiungere altri useState necessari per altre liste come i punteggi del bando etc..
     return (
@@ -57,6 +70,10 @@ export default function CollegaAltriDocumentiContextProvider({ children }: Ricer
                 advancedResearchSteps: {
                     currentStep: currentStep,
                     setStep: setStep
+                },
+                connectedDocuments:{
+                    selectedDocuments:selectedDocuments,
+                    setSelectedDocuments:setSelectedDocuments
                 }
             }}
         >
