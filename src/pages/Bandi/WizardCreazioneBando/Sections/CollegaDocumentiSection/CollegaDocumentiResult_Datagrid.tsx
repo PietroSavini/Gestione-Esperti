@@ -6,6 +6,14 @@ import { NoResultComponent } from '../../../../../components/partials/placeholde
 import { UncapitalizeObjectKeys } from '@mui/x-data-grid/internals';
 import { Box, SxProps, Theme } from '@mui/material';
 
+/*
+----------------------------------------------------------------------
+
+Datagrid generale che potrà  essere utilizzata da ogni parte e a cui si passano tutti i parametri necessari - resa totalmente dinamica e smart
+
+----------------------------------------------------------------------
+*/
+
 type Props = {
     sx?: SxProps<Theme>; //stile da applicare alla tabella oltre lo stile di base
     columns: GridColDef[]; // oggetti delle colonne della tabella

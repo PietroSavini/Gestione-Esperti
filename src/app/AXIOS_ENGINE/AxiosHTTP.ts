@@ -3,6 +3,7 @@ import { fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query/reac
 import { setCredentials, logOut } from '../store/Slices/authSlice';
 import AxiosUtils from './AxiosUTILS';
 import { store } from '../store/store';
+import { closeLoader } from '../store/Slices/loaderSlice';
 
 export type Options = {
     baseUrl?: string;
@@ -246,12 +247,14 @@ async function refreshAccessToken(fn: Function, api: any, extraOptions: any) {
             } else {
                 processErrorResponse(refreshResult.error as FetchBaseQueryError)
                 api.dispatch(logOut());
+                api.dispatch(closeLoader());
                 resolve(false);
             }
         }catch (error) {
             console.log(error)
             processErrorResponse(error as FetchBaseQueryError)
             api.dispatch(logOut());
+            api.dispatch(closeLoader());
             reject(false);
         } finally {
             isRefreshing = false;
@@ -264,6 +267,7 @@ async function refreshAccessToken(fn: Function, api: any, extraOptions: any) {
 
 const processErrorResponse = (error: FetchBaseQueryError) => {
     const status = error.status;
+    
     switch (status) {
         case 401:
             console.error('RefreshToken scaduto, eseguire nuovamente il log in')

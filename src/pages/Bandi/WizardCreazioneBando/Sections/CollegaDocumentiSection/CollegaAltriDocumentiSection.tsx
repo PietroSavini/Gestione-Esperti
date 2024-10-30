@@ -1,69 +1,41 @@
 import { Paper, Box, Typography, Dialog, Icon } from '@mui/material'
 import React, { useState } from 'react'
 import { ActionButton } from '../../../../../components/partials/Buttons/ActionButton'
-import { CollegaDocumentiContent } from './CollegaDocumentiDialogContent'
-import CollegaAltriDocumentiContextProvider from './CollegaAltriDocumentiContext'
+import { CollegaDocumentiDialog } from './CollegaDocumentiDialog'
+import CollegaAltriDocumentiContextProvider, { useCollegaAltriDocumentiContext } from './CollegaAltriDocumentiContext'
 import { useWizardBandoContext } from '../../WizardBandoContext'
-
+import { DocumentoCollegatoRow } from './DocumentoCollegatoRow'
 
 type Props = {
     className: string
 }
 
 export const CollegaAltriDocumentiSection = (props: Props) => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-    const {documentiCollegatiList, setDocumentiCollegatiList} = useWizardBandoContext().documentiCollegati;
+  
+    const { documentiCollegatiList, setDocumentiCollegatiList } = useWizardBandoContext().documentiCollegati;
+    const {setIsOpen, isOpen} = useCollegaAltriDocumentiContext().dialog
 
-    function onClose() {
-        setIsOpen(false)
-    }
-    
 
-    const deleteDocumentoCollegato = (item:any) => {
-        setDocumentiCollegatiList((prev) => prev.filter((documento) => documento.idDocumento !==  item.idDocumento))
-    }
     return (
         <>
             <Paper className={props.className} sx={{ padding: '1rem 1rem', marginBottom: '1rem', }} elevation={2}>
                 <Box display={'flex'} justifyContent={'space-between'}>
-                    <Typography sx={{}} component={'h6'} variant='h6'>Collega altri documenti</Typography>
+                    <Typography sx={{}} component={'h6'} variant='h6'>{documentiCollegatiList.length > 0 ? 'Documenti collegati' : ' Collega altri documenti'}</Typography>
                     <ActionButton color='secondary' text='Collega' endIcon={<Icon>account_tree</Icon>} onClick={() => setIsOpen(true)} />
                 </Box>
-                { documentiCollegatiList &&
-                    <Box>
-                        {documentiCollegatiList.map((item) => {
-                            return(
-                                <>
-                                    <Box display={'flex'} justifyContent={'space-between'}>
-                                        <Box>
-                                            {item.idDocumento}
-                                        </Box>
-                                        <Icon color='error' onClick={() => deleteDocumentoCollegato(item)}>cancel</Icon>
-                                    </Box>
-                                </>
+                {documentiCollegatiList.length > 0 &&
+                    <Box padding={'1rem .5rem'} marginTop={1} maxHeight={'400px'} overflow={'auto'} sx={{ backgroundColor: 'aliceblue' }} >
+
+                        {documentiCollegatiList.map((item, index) => {
+                            return (
+                                <DocumentoCollegatoRow key={index} document={item} setDocumentiCollegatiList={setDocumentiCollegatiList} />
                             )
-                        }
-                        )}
+                        })}
                     </Box>
                 }
             </Paper>
 
-            <Dialog
-                open={isOpen}
-                onClose={() => onClose()}
-                fullScreen
-                sx={{
-                    padding: '2rem 2rem',
-                    "& .MuiPaper-root": {
-                        borderRadius: '10px'
-                    }
-                }} >
-                    
-                <CollegaAltriDocumentiContextProvider>
-                    <CollegaDocumentiContent closeDialog={onClose} />
-                </CollegaAltriDocumentiContextProvider>
-                
-            </Dialog>
+            <CollegaDocumentiDialog />
         </>
     )
 }

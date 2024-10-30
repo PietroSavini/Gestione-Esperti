@@ -3,6 +3,7 @@ import { FormStepProps } from './FormStep1';
 import { FascicoliElettroniciSection } from '../Sections/FascicoliElettroniciSection';
 import { ArchivioSelezionatoSection } from '../Sections/ArchivioSelezionatoSection';
 import { CollegaAltriDocumentiSection } from '../Sections/CollegaDocumentiSection/CollegaAltriDocumentiSection';
+import CollegaAltriDocumentiContextProvider from '../Sections/CollegaDocumentiSection/CollegaAltriDocumentiContext';
 
 export const FormStep3 = (props: FormStepProps) => {
     const { register, errors, className } = props;
@@ -14,7 +15,9 @@ export const FormStep3 = (props: FormStepProps) => {
             {/* --------------------------------------------------------------------------------------------------------------------------------------------------------------- */}
             <FascicoliElettroniciSection className={className} />
             {/* --------------------------------------------------------------------------------------------------------------------------------------------------------------- */}
-            <CollegaAltriDocumentiSection className={className} />
+            <CollegaAltriDocumentiContextProvider>
+                <CollegaAltriDocumentiSection className={className} />
+            </CollegaAltriDocumentiContextProvider>
         </>
     )
 }

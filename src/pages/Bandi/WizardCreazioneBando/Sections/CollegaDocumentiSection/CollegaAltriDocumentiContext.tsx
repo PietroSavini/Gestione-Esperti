@@ -2,13 +2,17 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useWizardBandoContext } from "../../WizardBandoContext";
 
 type RicercaBandoContext = {
+    dialog:{
+        isOpen: boolean;
+        setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    }
     filtriRicerca: {
         filters: any
         setFilters: React.Dispatch<React.SetStateAction<any>>;
     },
     dataGrid: {
-        dataGridData: any[];
-        setDataGridData: React.Dispatch<React.SetStateAction<any[]>>;
+        rows: any[];
+        setRows: React.Dispatch<React.SetStateAction<any[]>>;
     }
     advancedResearchSteps: {
         currentStep: number;
@@ -33,19 +37,27 @@ export default function CollegaAltriDocumentiContextProvider({ children }: Ricer
         searchYear: 2024,
     };
     //states
+    //state del dialog
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     const [filters, setFilters] = useState<any>(defaultFilters);
     //rows per la datagrid dei risultati
-    const [dataGridData, setDataGridData] = useState<any[]>([])
+    const [rows, setRows] = useState<any[]>([])
     //state degli step della ricerca avanzata 
     const [currentStep, setStep] = useState<number>(0);
-    //state dei documenti collegati al bando che inizializza i documenti selezionati
-    const { documentiCollegatiList } = useWizardBandoContext().documentiCollegati
     //state dei documenti selezionati da collegare
-    const [selectedDocuments, setSelectedDocuments] = useState<any[]>([])
+    const [selectedDocuments, setSelectedDocuments] = useState<any[]>([]);
+
+    const resetStateAndClose = () => {
+        setSelectedDocuments([]);
+        setRows([]);
+        setFilters(defaultFilters);
+    };
 
     useEffect(() => {
-
-    }, []);
+        if(!isOpen){
+            resetStateAndClose();
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         console.log('filtri ricerca avanzata: ', filters)
@@ -59,13 +71,17 @@ export default function CollegaAltriDocumentiContextProvider({ children }: Ricer
     return (
         <CollegaAltriDocumentiContext.Provider
             value={{
+                dialog:{
+                    isOpen: isOpen,
+                    setIsOpen: setIsOpen
+                },
                 filtriRicerca: {
                     filters: filters,
                     setFilters: setFilters
                 },
                 dataGrid: {
-                    dataGridData: dataGridData,
-                    setDataGridData: setDataGridData
+                    rows: rows,
+                   setRows: setRows
                 },
                 advancedResearchSteps: {
                     currentStep: currentStep,

@@ -82,7 +82,7 @@ export const RequisitiPunteggiSection = (props: Props) => {
                     }
                 </>
             ) : (
-                <Typography>Seleziona una tipologia esperto per iniziare</Typography>
+                <Typography fontSize={20} padding={5} textAlign={'center'}>Seleziona una tipologia esperto per iniziare</Typography>
             )}
 
 
