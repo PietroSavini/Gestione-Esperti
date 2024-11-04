@@ -10,6 +10,8 @@ type Props = {
     className: string
 }
 
+
+
 export const CollegaAltriDocumentiSection = (props: Props) => {
   
     const { documentiCollegatiList, setDocumentiCollegatiList } = useWizardBandoContext().documentiCollegati;
