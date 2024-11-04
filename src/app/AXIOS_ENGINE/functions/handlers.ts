@@ -1,6 +1,6 @@
-import { lista_archivi } from "../../store/Slices/organizzaDocumentoSlice";
 import { Tview } from "../../../components/partials/TreeView/Treeview";
 import { Option } from "../../../components/partials/Inputs/Custom_Select2";
+import { lista_archivi } from "../../../pages/Bandi/WizardCreazioneBando/WizardCreazioneBando_types";
 
 //
 export function convertTreeViewData (data:any[]): Tview[] | [] {
@@ -94,20 +94,21 @@ export const createTitolariOptionArray = (titolariArr : Titolari[]) => {
                 value: titolario.detailId,
                 label: titolario.descCodice,
                 level: level,
-                isDisabled: level === 0, // disabilitiamo solo i genitori (titoli)
-                isTitle: level === 0,    // consideriamo solo i genitori come titoli
+                isDisabled: level === 0, // disabilito solo i genitori (titoli)
+                isTitle: level === 0,    // considero solo i genitori come titoli
             }))
             .reduce((acc: Option[], parentOption) => {
                 acc.push(parentOption);
-                // Aggiungiamo i figli (e poi i nipoti) sotto ogni genitore, aumentando il livello
+                // Aggiungo i figli (e poi i nipoti) sotto ogni genitore, aumentando il livello
                 const childOptions = buildOptions(parentOption.value, level + 1);
                 return acc.concat(childOptions);
             }, []);
     };
-    // Partiamo dai genitori, ovvero quelli con `rifDetailId === 0` e livello 0
+    // parto dai genitori, ovvero quelli con `rifDetailId === 0` e livello 0
     const finalOptions = buildOptions(0, 0);
     return finalOptions;
 };
+
 //funzione per preparare gli array semplici di Opzioni per le select
 export const createOptionArray = ({ arr, value, label }: { arr: any[], value: string, label: string }) => {
     if (arr && arr.length > 0) {

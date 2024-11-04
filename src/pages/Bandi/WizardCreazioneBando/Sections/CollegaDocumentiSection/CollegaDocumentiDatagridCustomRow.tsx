@@ -7,7 +7,7 @@ import { useCollegaAltriDocumentiContext } from "./CollegaAltriDocumentiContext"
 import pdfIcon from '../../../../../components/partials/svg/pdfIcon.svg'
 import { useWizardBandoContext } from "../../WizardBandoContext";
 
-const CollegaDocumentiDatagridCustomRow = (params: GridRowParams) => {
+export const CollegaDocumentiDatagridCustomRow = (params: GridRowParams) => {
     const document = params.row;
     const collegaDocumentiContext = useCollegaAltriDocumentiContext();
     const { setSelectedDocuments, selectedDocuments } = collegaDocumentiContext.connectedDocuments;
@@ -34,7 +34,8 @@ const CollegaDocumentiDatagridCustomRow = (params: GridRowParams) => {
 
     return (
         <Box role='row' data-id={params.row.id} sx={{
-            overflow: 'hidden', padding: '10px 10px 10px 0px', transition: '200ms', backgroundColor: 'transparent', borderTopLeftRadius: '10px', borderTopRightRadius: '10px', ":hover>div.headerRow": {
+            overflow: 'hidden',marginBottom:'10px', transition: '200ms', backgroundColor: 'transparent', borderTopLeftRadius: '10px', borderTopRightRadius: '10px', 
+            ":hover>div.headerRow": {
                 backgroundColor: '#efefef',
 
             }
@@ -44,7 +45,7 @@ const CollegaDocumentiDatagridCustomRow = (params: GridRowParams) => {
                 <Box display={'flex'} alignItems={'center'} sx={{ minHeight: '48px', display: 'flex', padding: '0px 10px', width: '150px' }}>
                     <Box width={'60%'} display={'flex'} alignItems={'start'} flexDirection={'column'} justifyContent={'center'}>
                         <Checkbox checked={selected} onClick={() => addToSelectedDocuments(document)} />
-
+                        
                     </Box>
                     <img style={{width:'35px'}} src={pdfIcon}></img>
                 </Box>
@@ -95,4 +96,3 @@ const CollegaDocumentiDatagridCustomRow = (params: GridRowParams) => {
     );
 };
 
-export default CollegaDocumentiDatagridCustomRow

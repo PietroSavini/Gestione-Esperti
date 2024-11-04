@@ -2,6 +2,7 @@ import { Box, FormControl, FormHelperText, InputBase, InputBaseProps, InputLabel
 import { forwardRef, } from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 import { v4 as uuidv4 } from 'uuid';
+import './inputs.scss'
 
 type Props = {
     disabled?: boolean;

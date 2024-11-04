@@ -24,7 +24,7 @@ type Props = {
     rowId: string //parametro dell'oggetto riga da utilizzare come ID univoco
     customRow?:{
         row: (params: GridRowParams<any>) => JSX.Element; //funzione che ritorna una row personalizzata
-        rowHeight:number // altezza in px della customRow da specificare per creare correttamente righe personalizzate
+        rowHeight:number | 'auto'// altezza in px della customRow da specificare per creare correttamente righe personalizzate
     } 
     isLoading?: boolean; // stato del loader della tabella
     setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>; // funzione per settare il loading della tabella
@@ -89,8 +89,8 @@ export const CollegaDocumentiResult_Datagrid = (props: Props) => {
         <>
             <DataGrid
                 disableVirtualization={customRow ? true : false}//virtualizzazione disabilitata quando le rows sono custom => da problemi se attiva
-                loading={isLoading}
-
+                loading={isLoading} 
+                
                 //parametri delle rows
                 rows={rows}
                 getRowId={(params: any) => params[rowId]}
@@ -104,7 +104,7 @@ export const CollegaDocumentiResult_Datagrid = (props: Props) => {
                 disableColumnFilter
                 disableColumnSelector
                 disableRowSelectionOnClick
-
+                
                 //parametri per paginazione dinamici 
                 paginationMode={serverSidePagination ? 'server' : 'client'}
                 rowCount={serverSidePagination?.rowCount}
@@ -120,13 +120,13 @@ export const CollegaDocumentiResult_Datagrid = (props: Props) => {
                 sx={{
                     margin: '0 1rem',
                     border: 'none',
-                    height: '100%',
                     "& .MuiDataGrid-virtualScroller": {
-                        marginTop: "0!important",
-                        backgroundColor: 'aliceblue'
+                        backgroundColor: 'aliceblue',
+                        
                     },
                     "& .MuiDataGrid-virtualScrollerRenderZone ": {
                         minWidth: '100%',
+                        
                     },
                     "& .MuiDataGrid-overlayWrapperInner": {
                         transition: '200ms'

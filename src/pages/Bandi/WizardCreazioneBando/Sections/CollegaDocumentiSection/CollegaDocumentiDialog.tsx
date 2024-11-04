@@ -6,20 +6,18 @@ import { useState } from 'react'
 import { GridColDef } from '@mui/x-data-grid'
 import { useCollegaAltriDocumentiContext } from './CollegaAltriDocumentiContext'
 import { useWizardBandoContext } from '../../WizardBandoContext'
-import CollegaDocumentiDatagridCustomRow from './CollegaDocumentiDatagridCustomRow'
+import { CollegaDocumentiDatagridCustomRow } from './CollegaDocumentiDatagridCustomRow'
 
 export const CollegaDocumentiDialog = () => {
 
     const collegaAltriDocumentiContext = useCollegaAltriDocumentiContext();
-    const {setFilters} = collegaAltriDocumentiContext.filtriRicerca
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const { selectedDocuments, setSelectedDocuments } = collegaAltriDocumentiContext.connectedDocuments;
+    const { selectedDocuments } = collegaAltriDocumentiContext.connectedDocuments;
     const { isOpen, setIsOpen } = collegaAltriDocumentiContext.dialog;
-    const { documentiCollegatiList, setDocumentiCollegatiList } = useWizardBandoContext().documentiCollegati
+    const { setDocumentiCollegatiList } = useWizardBandoContext().documentiCollegati
     const {rows, setRows} = collegaAltriDocumentiContext.dataGrid
     //variabili per la paginazione
     const [rowCount, setRowCount] = useState<number>(0);
-
 
     //colonne tabella
     const columns: GridColDef[] = [
@@ -38,24 +36,24 @@ export const CollegaDocumentiDialog = () => {
     return (
         <>
             <Dialog
-
                 open={isOpen}
                 onClose={() => setIsOpen(!isOpen)}
                 fullScreen
                 sx={{
-                    padding: '2rem 2rem',
+                    margin: '2rem 2rem',
                     "& .MuiPaper-root": {
-                        borderRadius: '10px'
-                    }
+                        borderRadius: '10px',
+                    },
+                    
                 }}
-                keepMounted={false}
+                
             >
 
 
-                <Box display={'flex'} sx={{border:'1px solid green'}} flexDirection={'column'} height={'100%'} padding={'1rem 0rem 0rem 0rem'} >
+                <Box display={'flex'} height={'100%'} flexDirection={'column'}  >
 
                     <Box >
-                        <Box marginBottom={2} padding={'0 1rem'} display={'flex'} justifyContent={'space-between'}>
+                        <Box  marginBottom={2} padding={'1rem 1rem'} display={'flex'} justifyContent={'space-between'}>
                             <Typography variant='h5' fontWeight={600}>
                                 Collega Documento
                             </Typography>
@@ -71,19 +69,17 @@ export const CollegaDocumentiDialog = () => {
                                 <Icon sx={{
                                     transition: '100ms',
                                 }}
-                                >close
+                                >
+                                    close
                                 </Icon>
 
                             </IconButton>
-
-
                         </Box>
                         <CollegaDocumento_RicercaAvanzata setIsLoading={setIsLoading} setRows={setRows} />
                     </Box>
 
-                    <Box >
+                    <Box flexGrow={1} height={'100%'} sx={{border:'3px solid green'}}>
                         <CollegaDocumentiResult_Datagrid
-                        
                             rowId='idDocumento'
                             columns={columns}
                             isLoading={isLoading}
@@ -92,15 +88,14 @@ export const CollegaDocumentiDialog = () => {
                             customRow={
                                 {
                                     row: CollegaDocumentiDatagridCustomRow,
-                                    rowHeight: 122
+                                    rowHeight: 102
                                 }
                             }
-                            sx={{maxHeight:'100%'}}
-
+                            sx={{height:'100%'}}
                         />
                     </Box>
 
-                    <Box display={'flex'} justifyContent={'end'} padding={1}>
+                    <Box sx={{border:'1px solid red'}} display={'flex'} justifyContent={'end'} padding={1}>
 
                         {selectedDocuments.length > 0 && rows.length > 0 &&
                             <ActionButton
@@ -120,7 +115,6 @@ export const CollegaDocumentiDialog = () => {
                             onClick={() => setIsOpen(!isOpen)}
                         />
                     </Box>
-
                 </Box>
 
             </Dialog>

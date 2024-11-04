@@ -3,9 +3,10 @@ import { DatePicker, DatePickerProps } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import React from 'react'
-import { Box, InputLabel, TextField, TextFieldProps, Typography } from '@mui/material';
+import { InputLabel, TextField, TextFieldProps, Typography } from '@mui/material';
 import './inputs.scss'
 import { v4 as uuid } from 'uuid';
+
 type CustomProps = {
   disabled?: boolean;
   label?: string;

@@ -1,10 +1,12 @@
-/*
-*Componente Wrapper per la Select della libreria React-select => https://react-select.com/home
-*/
 import { v4 as uuidv4 } from 'uuid';
 import { Box, FormHelperText, Icon, InputLabel, Typography } from '@mui/material';
 import { Controller } from 'react-hook-form';
 import Select, { ActionMeta, CSSObjectWithLabel, SingleValue } from 'react-select';
+import './inputs.scss'
+
+/*
+*Componente Wrapper per la Select della libreria React-select => https://react-select.com/home
+*/
 
 type Props = {
     id?:string;
@@ -146,7 +148,6 @@ export const Custom_Select2 = (props:Props) => {
             }
             {!control && 
                 <Select 
-                    
                     //implementare isMulti
                     value={value? value : undefined}
                     components={{NoOptionsMessage:()=><Typography marginLeft={'1rem'} component={'span'} fontSize={'.8rem'} textAlign={'center'}>Nessun elemento trovato</Typography>}}

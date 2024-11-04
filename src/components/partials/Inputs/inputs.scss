@@ -1,4 +1,73 @@
-.css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline{
-    border: 1px solid rgba(128, 128, 128, .7) ;
+.css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border: 1px solid rgba(128, 128, 128, .7);
     transition: 100ms;
+}
+
+.ms_react-select {
+    .react-select__control {
+        cursor: pointer;
+    }
+}
+
+.ms_react-select-readOnly {
+    label {
+        color: grey !important;
+    }
+
+    .react-select__control {
+        background-color: #e0e0e0ff;
+    }
+}
+
+div.MuiInputBase-root.ms_custom-input.Mui-focused {
+    border: 1px solid #2684ff;
+}
+
+.ms_input-disabled {
+    cursor: default;
+
+    label {
+        color: grey !important;
+    }
+
+    .MuiInputBase-root {
+        background-color: rgb(225, 225, 225);
+
+        input {
+            color: grey;
+            cursor: default;
+        }
+    }
+}
+
+.ms_select-error div {
+    border-color: #e74c3c;
+}
+
+.ms_select-error:hover div {
+    border-color: #e74c3c;
+}
+
+.ms_select {
+
+    &:hover {
+        border: none;
+        outline: transparent !important;
+    }
+
+    &.css-1ag27v5-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+        border: none;
+    }
+}
+
+.ms_input {
+    background-color: #fff;
+    box-shadow: 0px 0px 3px grey;
+    border-radius: 15px;
+    min-height: 40px;
+    padding: 0 .5rem;
+
+    &.error {
+        outline: 1px solid red;
+    }
 }
